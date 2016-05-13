@@ -16,5 +16,7 @@ Utilizamos o software *open source* [**JabRef**] (https://github.com/JabRef/jabr
         *Importação de ítens bibliográficos na base corrente. 
 Um relatório de cobertura estrutural sobre os testes gerados e documentados por nós foi feito, de forma a gerar um documento que mostre possíveis erros e melhorias no código fonte original;
   2. Realizamos manutenções perfectivas (melhoramento do software) de acordo com os resultados obtidos com os testes feitos.
-  3. 
+  3. Realizamos novos casos de teste para podermos testar as novas funcionalidades inseridas em *3*. Novamente, um novo relatório de cobertura estrutural dos testes foram gerados.
+  4. Realizamos uma manutenção perfectiva na seguinte funcionalidade do **JabRef**: .
+  5. Em cima da nova funcionalidade gerada, realizamos novos casos de teste para podermos exercitá-las e vermos suas limitações. Novamente, um relatório de cobertura estrutural foi gerado.
 
