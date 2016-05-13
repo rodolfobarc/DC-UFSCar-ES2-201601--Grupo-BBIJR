@@ -1,4 +1,4 @@
-# Grupo-BBIJR - Engenharia de Software 2
+# Grupo BBIJR - Engenharia de Software 2
 
 ## Integrantes
 
