@@ -14,12 +14,12 @@
 
 package net.sf.jabref.logic.cleanup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Runs a formatter on every field.

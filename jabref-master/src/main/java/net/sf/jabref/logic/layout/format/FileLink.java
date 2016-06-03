@@ -15,20 +15,19 @@
 */
 package net.sf.jabref.logic.layout.format;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.ParamLayoutFormatter;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Export formatter that handles the file link list of JabRef 2.3 and later, by
@@ -55,8 +54,7 @@ public class FileLink implements ParamLayoutFormatter {
             if (!(fileList.isEmpty())) {
                 link = fileList.get(0).getLink();
             }
-        }
-        else {
+        } else {
             // A file type is specified:
             for (ParsedFileField flEntry : fileList) {
                 if (flEntry.getFileType().equalsIgnoreCase(fileType)) {
@@ -104,6 +102,7 @@ public class FileLink implements ParamLayoutFormatter {
     /**
      * This method is called if the layout file specifies an argument for this
      * formatter. We use it as an indicator of which file type we should look for.
+     *
      * @param arg The file type.
      */
     @Override

@@ -15,17 +15,9 @@
  */
 package net.sf.jabref.logic.fulltext;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import net.sf.jabref.logic.io.MimeTypeDetector;
 import net.sf.jabref.logic.util.DOI;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Connection;
@@ -33,6 +25,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * FullTextFinder implementation that follows the DOI resolution redirects and scans for a full-text PDF URL.
@@ -47,7 +46,7 @@ public class DoiResolution implements FullTextFinder {
 
         Optional<DOI> doi = DOI.build(entry.getField("doi"));
 
-        if(doi.isPresent()) {
+        if (doi.isPresent()) {
             String sciLink = doi.get().getURLAsASCIIString();
 
             // follow all redirects and scan for a single pdf link

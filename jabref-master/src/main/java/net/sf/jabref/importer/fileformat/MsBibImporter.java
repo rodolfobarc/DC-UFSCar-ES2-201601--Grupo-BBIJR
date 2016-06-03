@@ -15,23 +15,21 @@
 */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.msbib.MSBibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.msbib.MSBibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.w3c.dom.Document;
-
 /**
  * Importer for the MS Office 2007 XML bibliography format
  * By S. M. Mahbub Murshed
- *
+ * <p>
  * ...
  */
 public class MsBibImporter extends ImportFormat {
@@ -63,6 +61,7 @@ public class MsBibImporter extends ImportFormat {
 
     /**
      * String used to identify this import filter on the command line.
+     *
      * @return "msbib"
      */
     public String getCommandLineId() {

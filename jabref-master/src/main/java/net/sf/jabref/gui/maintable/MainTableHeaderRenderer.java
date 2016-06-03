@@ -15,12 +15,9 @@
 */
 package net.sf.jabref.gui.maintable;
 
-import java.awt.Component;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 
 public class MainTableHeaderRenderer implements TableCellRenderer {
 
@@ -32,7 +29,7 @@ public class MainTableHeaderRenderer implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-            boolean hasFocus, int row, int column) {
+                                                   boolean hasFocus, int row, int column) {
         // delegate to previously used TableCellRenderer which styles the component
         Component resultFromDelegate = delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 

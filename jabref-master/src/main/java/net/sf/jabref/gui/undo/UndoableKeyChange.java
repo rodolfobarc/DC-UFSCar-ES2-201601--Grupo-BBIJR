@@ -15,11 +15,11 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 /**
  * This class represents a change in any field value. The relevant
@@ -35,7 +35,7 @@ public class UndoableKeyChange extends AbstractUndoableEdit {
 
 
     public UndoableKeyChange(BibDatabase base, BibEntry entry,
-            String oldValue, String newValue) {
+                             String oldValue, String newValue) {
         this.base = base;
         this.entry = entry;
         this.oldValue = oldValue;

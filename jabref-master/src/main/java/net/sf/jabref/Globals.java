@@ -37,19 +37,14 @@ public class Globals {
     // Signature written at the top of the .bib file.
     public static final String SIGNATURE = "This file was created with JabRef";
     public static final String ENCODING_PREFIX = "Encoding: ";
+    // Remote listener
+    public static final RemoteListenerServerLifecycle REMOTE_LISTENER = new RemoteListenerServerLifecycle();
+    public static final ImportFormatReader IMPORT_FORMAT_READER = new ImportFormatReader();
+    public static final String NONE = "_non__";
+    public static final String SPECIAL_COMMAND_CHARS = "\"`^~'c=";
     // Newlines
     // will be overridden in initialization due to feature #857 @ JabRef.java
     public static String NEWLINE = System.lineSeparator();
-
-    // Remote listener
-    public static final RemoteListenerServerLifecycle REMOTE_LISTENER = new RemoteListenerServerLifecycle();
-
-    public static final ImportFormatReader IMPORT_FORMAT_READER = new ImportFormatReader();
-
-    public static final String NONE = "_non__";
-
-    public static final String SPECIAL_COMMAND_CHARS = "\"`^~'c=";
-
     // In the main program, this field is initialized in JabRef.java
     // Each test case initializes this field if required
     public static JabRefPreferences prefs;
@@ -59,7 +54,12 @@ public class Globals {
      * Only GUI code is allowed to access it, logic code should use dependency injection.
      */
     public static JournalAbbreviationLoader journalAbbreviationLoader;
-
+    // Background tasks
+    public static GlobalFocusListener focusListener;
+    public static FileUpdateMonitor fileUpdateMonitor;
+    public static StreamEavesdropper streamEavesdropper;
+    // Autosave manager
+    public static AutoSaveManager autoSaveManager;
     private static KeyBindingPreferences keyPrefs;
 
     public static KeyBindingPreferences getKeyPrefs() {
@@ -69,12 +69,6 @@ public class Globals {
         return keyPrefs;
     }
 
-
-    // Background tasks
-    public static GlobalFocusListener focusListener;
-    public static FileUpdateMonitor fileUpdateMonitor;
-    public static StreamEavesdropper streamEavesdropper;
-
     public static void startBackgroundTasks() {
         Globals.focusListener = new GlobalFocusListener();
 
@@ -83,10 +77,6 @@ public class Globals {
         Globals.fileUpdateMonitor = new FileUpdateMonitor();
         JabRefExecutorService.INSTANCE.executeWithLowPriorityInOwnThread(Globals.fileUpdateMonitor, "FileUpdateMonitor");
     }
-
-
-    // Autosave manager
-    public static AutoSaveManager autoSaveManager;
 
     public static void startAutoSaveManager(JabRefFrame frame) {
         Globals.autoSaveManager = new AutoSaveManager(frame);

@@ -15,13 +15,6 @@
 */
 package net.sf.jabref.bibtex.comparator;
 
-import java.text.Collator;
-import java.text.ParseException;
-import java.text.RuleBasedCollator;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Objects;
-
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.gui.maintable.MainTableFormat;
@@ -31,52 +24,41 @@ import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.MonthUtil;
 
+import java.text.Collator;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Objects;
+
 /**
- *
  * A comparator for BibEntry fields
- *
+ * <p>
  * Initial Version:
  *
  * @author alver
  * @version Date: Oct 13, 2005 Time: 10:10:04 PM To
- *
- * TODO: Testcases
- *
+ *          <p>
+ *          TODO: Testcases
  */
 public class FieldComparator implements Comparator<BibEntry> {
 
     private static final Collator COLLATOR = getCollator();
-
-    private static Collator getCollator() {
-        try {
-            return new RuleBasedCollator(
-                    ((RuleBasedCollator) Collator.getInstance()).getRules().replace("<'\u005f'", "<' '<'\u005f'"));
-        } catch (ParseException e) {
-            return Collator.getInstance();
-        }
-    }
-
-    enum FieldType {
-        NAME, TYPE, YEAR, MONTH, OTHER;
-    }
-
     private final String[] field;
     private final String fieldName;
     private final FieldType fieldType;
     private final boolean isNumeric;
     private final int multiplier;
-
     public FieldComparator(String field) {
         this(field, false);
     }
-
     public FieldComparator(String field, boolean reversed) {
         this.fieldName = Objects.requireNonNull(field);
         this.field = fieldName.split(MainTableFormat.COL_DEFINITION_FIELD_SEPARATOR);
         fieldType = determineFieldType();
         isNumeric = InternalBibtexFields.isNumeric(this.field[0]);
 
-        if(fieldType == FieldType.MONTH) {
+        if (fieldType == FieldType.MONTH) {
             /*
              * [ 1598777 ] Month sorting
              *
@@ -88,22 +70,31 @@ public class FieldComparator implements Comparator<BibEntry> {
         }
     }
 
+    public FieldComparator(SaveOrderConfig.SortCriterion sortCriterion) {
+        this(sortCriterion.field, sortCriterion.descending);
+    }
+
+    private static Collator getCollator() {
+        try {
+            return new RuleBasedCollator(
+                    ((RuleBasedCollator) Collator.getInstance()).getRules().replace("<'\u005f'", "<' '<'\u005f'"));
+        } catch (ParseException e) {
+            return Collator.getInstance();
+        }
+    }
+
     private FieldType determineFieldType() {
-        if(BibEntry.TYPE_HEADER.equals(this.field[0])) {
+        if (BibEntry.TYPE_HEADER.equals(this.field[0])) {
             return FieldType.TYPE;
         } else if (InternalBibtexFields.getFieldExtras(this.field[0]).contains(FieldProperties.PERSON_NAMES)) {
             return FieldType.NAME;
         } else if ("year".equals(this.field[0])) {
             return FieldType.YEAR;
-        } else if("month".equals(this.field[0])) {
+        } else if ("month".equals(this.field[0])) {
             return FieldType.MONTH;
         } else {
             return FieldType.OTHER;
         }
-    }
-
-    public FieldComparator(SaveOrderConfig.SortCriterion sortCriterion) {
-        this(sortCriterion.field, sortCriterion.descending);
     }
 
     @Override
@@ -125,7 +116,7 @@ public class FieldComparator implements Comparator<BibEntry> {
         // Catch all cases involving null:
         if ((f1 == null) && (f2 == null)) {
             return 0;
-        } else if(f1 == null) {
+        } else if (f1 == null) {
             return multiplier;
         } else if (f2 == null) {
             return -multiplier;
@@ -185,5 +176,9 @@ public class FieldComparator implements Comparator<BibEntry> {
      */
     public String getFieldName() {
         return fieldName;
+    }
+
+    enum FieldType {
+        NAME, TYPE, YEAR, MONTH, OTHER;
     }
 }

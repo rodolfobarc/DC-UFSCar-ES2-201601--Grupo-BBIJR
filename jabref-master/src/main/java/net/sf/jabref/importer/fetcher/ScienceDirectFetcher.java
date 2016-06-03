@@ -15,6 +15,15 @@
  */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.gui.help.HelpFiles;
+import net.sf.jabref.importer.ImportInspector;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.logic.net.URLDownload;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -24,22 +33,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import net.sf.jabref.gui.help.HelpFiles;
-import net.sf.jabref.importer.ImportInspector;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.logic.net.URLDownload;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- *
  * The current ScienceDirect fetcher implementation does no longer work
- *
  */
 @Deprecated
 public class ScienceDirectFetcher implements EntryFetcher {
@@ -58,6 +53,40 @@ public class ScienceDirectFetcher implements EntryFetcher {
 
     private boolean stopFetching;
 
+    /**
+     * @param query The search term to query JStor for.
+     * @return a list of IDs
+     * @throws java.io.IOException
+     */
+    private static List<String> getCitations(String query) throws IOException {
+        String urlQuery;
+        List<String> ids = new ArrayList<>();
+        urlQuery = ScienceDirectFetcher.SEARCH_URL + URLEncoder.encode(query, StandardCharsets.UTF_8.name());
+        int count = 1;
+        String nextPage;
+        while (((nextPage = getCitationsFromUrl(urlQuery, ids)) != null)
+                && (count < ScienceDirectFetcher.MAX_PAGES_TO_LOAD)) {
+            urlQuery = nextPage;
+            count++;
+        }
+        return ids;
+    }
+
+    private static String getCitationsFromUrl(String urlQuery, List<String> ids) throws IOException {
+        URL url = new URL(urlQuery);
+        String cont = new URLDownload(url).downloadToString();
+        Matcher m = ScienceDirectFetcher.LINK_PATTERN.matcher(cont);
+        if (m.find()) {
+            while (m.find()) {
+                ids.add(ScienceDirectFetcher.LINK_PREFIX + m.group(1));
+                cont = cont.substring(m.end());
+                m = ScienceDirectFetcher.LINK_PATTERN.matcher(cont);
+            }
+        } else {
+            return null;
+        }
+        return null;
+    }
 
     @Override
     public HelpFiles getHelpPage() {
@@ -112,45 +141,6 @@ public class ScienceDirectFetcher implements EntryFetcher {
                     Localization.lang("Error while fetching from %0", SCIENCE_DIRECT) + ": " + e.getMessage());
         }
         return false;
-    }
-
-    /**
-     *
-     * @param query
-     *            The search term to query JStor for.
-     * @return a list of IDs
-     * @throws java.io.IOException
-     */
-    private static List<String> getCitations(String query) throws IOException {
-        String urlQuery;
-        List<String> ids = new ArrayList<>();
-        urlQuery = ScienceDirectFetcher.SEARCH_URL + URLEncoder.encode(query, StandardCharsets.UTF_8.name());
-        int count = 1;
-        String nextPage;
-        while (((nextPage = getCitationsFromUrl(urlQuery, ids)) != null)
-                && (count < ScienceDirectFetcher.MAX_PAGES_TO_LOAD)) {
-            urlQuery = nextPage;
-            count++;
-        }
-        return ids;
-    }
-
-    private static String getCitationsFromUrl(String urlQuery, List<String> ids) throws IOException {
-        URL url = new URL(urlQuery);
-        String cont = new URLDownload(url).downloadToString();
-        Matcher m = ScienceDirectFetcher.LINK_PATTERN.matcher(cont);
-        if (m.find()) {
-            while (m.find()) {
-                ids.add(ScienceDirectFetcher.LINK_PREFIX + m.group(1));
-                cont = cont.substring(m.end());
-                m = ScienceDirectFetcher.LINK_PATTERN.matcher(cont);
-            }
-        }
-
-        else {
-            return null;
-        }
-        return null;
     }
 
 }

@@ -15,28 +15,24 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableRemoveString;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibtexString;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+
 class StringRemoveChange extends Change {
+    private static final Log LOGGER = LogFactory.getLog(StringRemoveChange.class);
     private final BibtexString string;
     private final BibtexString inMem;
-
     private final InfoPane tp = new InfoPane();
     private final JScrollPane sp = new JScrollPane(tp);
     private final BibtexString tmpString;
-
-    private static final Log LOGGER = LogFactory.getLog(StringRemoveChange.class);
 
 
     public StringRemoveChange(BibtexString string, BibtexString tmpString, BibtexString inMem) {

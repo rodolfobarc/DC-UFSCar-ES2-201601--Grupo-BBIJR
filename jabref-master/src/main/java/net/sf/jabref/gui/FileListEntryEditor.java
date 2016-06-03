@@ -15,37 +15,9 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -57,27 +29,37 @@ import net.sf.jabref.gui.desktop.JabRefDesktop;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileUtil;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 /**
  * This class produces a dialog box for editing a single file link from a Bibtex entry.
- *
+ * <p>
  * The information to be edited includes the file description, the link itself and the
  * file type. The dialog also includes convenience buttons for quick linking.
- *
+ * <p>
  * For use when downloading files, this class also offers a progress bar and a "Downloading..."
  * label that can be hidden when the download is complete.
  */
 public class FileListEntryEditor {
 
     private static final Log LOGGER = LogFactory.getLog(FileListEntryEditor.class);
-
-    private JDialog diag;
+    private static final Pattern REMOTE_LINK_PATTERN = Pattern.compile("[a-z]+://.*");
     private final JTextField link = new JTextField();
     private final JTextField description = new JTextField();
     private final JButton ok = new JButton(Localization.lang("OK"));
@@ -85,20 +67,18 @@ public class FileListEntryEditor {
     private final JComboBox<ExternalFileType> types;
     private final JProgressBar prog = new JProgressBar(SwingConstants.HORIZONTAL);
     private final JLabel downloadLabel = new JLabel(Localization.lang("Downloading..."));
-    private ConfirmCloseFileListEntryEditor externalConfirm;
-
-    private FileListEntry entry;
     private final BibDatabaseContext databaseContext;
+    private JDialog diag;
+    private ConfirmCloseFileListEntryEditor externalConfirm;
+    private FileListEntry entry;
     private boolean okPressed;
     private boolean okDisabledExternally;
     private boolean openBrowseWhenShown;
     private boolean dontOpenBrowseUntilDisposed;
 
-    private static final Pattern REMOTE_LINK_PATTERN = Pattern.compile("[a-z]+://.*");
-
 
     public FileListEntryEditor(JabRefFrame frame, FileListEntry entry, boolean showProgressBar,
-            boolean showOpenButton, BibDatabaseContext databaseContext) {
+                               boolean showOpenButton, BibDatabaseContext databaseContext) {
         this.entry = entry;
         this.databaseContext = databaseContext;
 
@@ -139,14 +119,14 @@ public class FileListEntryEditor {
             builder.add(open).xy(7, 1);
         }
         builder.add(Localization.lang("Description")).xy(1, 3);
-        builder.add(description).xyw(3,3,3);
+        builder.add(description).xyw(3, 3, 3);
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         builder.add(Localization.lang("File type")).xy(1, 5);
         builder.add(types).xyw(3, 5, 3);
         if (showProgressBar) {
             builder.appendRows("2dlu, p");
-            builder.add(downloadLabel).xy(1,7);
-            builder.add(prog).xyw(3,7,3);
+            builder.add(downloadLabel).xy(1, 7);
+            builder.add(prog).xyw(3, 7, 3);
         }
 
         ButtonBarBuilder bb = new ButtonBarBuilder();

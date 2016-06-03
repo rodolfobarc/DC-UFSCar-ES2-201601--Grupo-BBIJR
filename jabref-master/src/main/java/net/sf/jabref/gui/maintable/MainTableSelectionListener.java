@@ -15,34 +15,15 @@
 */
 package net.sf.jabref.gui.maintable;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.external.ExternalFileMenuItem;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.BasePanelMode;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.GUIGlobals;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.PreviewPanel;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.desktop.JabRefDesktop;
 import net.sf.jabref.gui.entryeditor.EntryEditor;
 import net.sf.jabref.gui.menus.RightClickMenu;
@@ -53,12 +34,14 @@ import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.specialfields.SpecialField;
 import net.sf.jabref.specialfields.SpecialFieldValue;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * List event, mouse, key and focus listener for the main table that makes up the
@@ -67,32 +50,28 @@ import org.apache.commons.logging.LogFactory;
 public class MainTableSelectionListener implements ListEventListener<BibEntry>, MouseListener,
         KeyListener, FocusListener {
 
+    private static final Log LOGGER = LogFactory.getLog(MainTableSelectionListener.class);
     private final PreviewPanel[] previewPanel;
     private final MainTable table;
     private final BasePanel panel;
     private final EventList<BibEntry> tableRows;
-
-    private int activePreview = Globals.prefs.getInt(JabRefPreferences.ACTIVE_PREVIEW);
-    private PreviewPanel preview;
-    private boolean previewActive = Globals.prefs.getBoolean(JabRefPreferences.PREVIEW_ENABLED);
-    private boolean workingOnPreview;
-
-    private boolean enabled = true;
-
     // Register the last character pressed to quick jump in the table. Together
     // with storing the last row number jumped to, this is used to let multiple
     // key strokes cycle between all entries starting with the same letter:
     private final int[] lastPressed = new int[20];
+    private int activePreview = Globals.prefs.getInt(JabRefPreferences.ACTIVE_PREVIEW);
+    private PreviewPanel preview;
+    private boolean previewActive = Globals.prefs.getBoolean(JabRefPreferences.PREVIEW_ENABLED);
+    private boolean workingOnPreview;
+    private boolean enabled = true;
     private int lastPressedCount;
     private long lastPressedTime;
-
-    private static final Log LOGGER = LogFactory.getLog(MainTableSelectionListener.class);
 
     public MainTableSelectionListener(BasePanel panel, MainTable table) {
         this.table = table;
         this.panel = panel;
         this.tableRows = table.getTableModel().getTableRows();
-        previewPanel = new PreviewPanel[] {
+        previewPanel = new PreviewPanel[]{
                 new PreviewPanel(panel.getBibDatabaseContext(), null, panel,
                         Globals.prefs.get(JabRefPreferences.PREVIEW_0)),
                 new PreviewPanel(panel.getBibDatabaseContext(), null, panel,
@@ -344,7 +323,7 @@ public class MainTableSelectionListener implements ListEventListener<BibEntry>, 
      * Method to handle a single left click on one the special fields (e.g., ranking, quality, ...)
      * Shows either a popup to select/clear a value or simply toggles the functionality to set/unset the special field
      *
-     * @param e MouseEvent used to determine the position of the popups
+     * @param e          MouseEvent used to determine the position of the popups
      * @param columnName the name of the specialfield column
      */
     private void handleSpecialFieldLeftClick(MouseEvent e, String columnName) {
@@ -367,7 +346,8 @@ public class MainTableSelectionListener implements ListEventListener<BibEntry>, 
     /**
      * Process general right-click events on the table. Show the table context menu at
      * the position where the user right-clicked.
-     * @param e The mouse event defining the popup trigger.
+     *
+     * @param e   The mouse event defining the popup trigger.
      * @param row The row where the event occurred.
      */
     private void processPopupTrigger(MouseEvent e, int row) {
@@ -384,8 +364,8 @@ public class MainTableSelectionListener implements ListEventListener<BibEntry>, 
      * external resource to open for the entry. If no relevant external resources exist, let the normal popup trigger
      * handler do its thing instead.
      *
-     * @param e The mouse event defining this popup trigger.
-     * @param row The row where the event occurred.
+     * @param e      The mouse event defining this popup trigger.
+     * @param row    The row where the event occurred.
      * @param column the MainTableColumn associated with this table cell.
      */
     private void showIconRightClickMenu(MouseEvent e, int row, MainTableColumn column) {
@@ -395,8 +375,8 @@ public class MainTableSelectionListener implements ListEventListener<BibEntry>, 
 
         // See if this is a simple file link field, or if it is a file-list
         // field that can specify a list of links:
-        if(!column.getBibtexFields().isEmpty()) {
-            for(String field : column.getBibtexFields()) {
+        if (!column.getBibtexFields().isEmpty()) {
+            for (String field : column.getBibtexFields()) {
                 if (Globals.FILE_FIELD.equals(field)) {
                     // We use a FileListTableModel to parse the field content:
                     String fileFieldContent = entry.getField(field);
@@ -498,6 +478,7 @@ public class MainTableSelectionListener implements ListEventListener<BibEntry>, 
      * Receive key event on the main table. If the key is a letter or a digit,
      * we should select the first entry in the table which starts with the given
      * letter in the column by which the table is sorted.
+     *
      * @param e The KeyEvent
      */
     @Override

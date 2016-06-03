@@ -19,18 +19,11 @@ import net.sf.jabref.model.entry.BibEntry;
 
 public class DatabaseChangeEvent {
 
-    public enum ChangeType {
-        ADDED_ENTRY, REMOVED_ENTRY, CHANGED_ENTRY, CHANGING_ENTRY
-    }
-
-
     private final BibEntry entry;
     private final ChangeType type;
     private final BibDatabase source;
-
-
     public DatabaseChangeEvent(BibDatabase source, ChangeType type,
-            BibEntry entry) {
+                               BibEntry entry) {
         this.source = source;
         this.type = type;
         this.entry = entry;
@@ -46,5 +39,9 @@ public class DatabaseChangeEvent {
 
     public ChangeType getType() {
         return type;
+    }
+
+    public enum ChangeType {
+        ADDED_ENTRY, REMOVED_ENTRY, CHANGED_ENTRY, CHANGING_ENTRY
     }
 }

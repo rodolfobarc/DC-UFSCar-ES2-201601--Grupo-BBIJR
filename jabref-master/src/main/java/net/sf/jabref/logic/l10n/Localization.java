@@ -1,28 +1,22 @@
 package net.sf.jabref.logic.l10n;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class Localization {
-    private static final Log LOGGER = LogFactory.getLog(Localization.class);
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
+public class Localization {
     public static final String RESOURCE_PREFIX = "l10n/JabRef";
     public static final String MENU_RESOURCE_PREFIX = "l10n/Menu";
-
+    private static final Log LOGGER = LogFactory.getLog(Localization.class);
     private static ResourceBundle messages;
     private static ResourceBundle menuTitles;
 
     public static void setLanguage(String language) {
         Optional<String> knownLanguage = Languages.convertToKnownLocale(language);
-        if(!knownLanguage.isPresent()) {
-            LOGGER.warn("Language " + language + " is not supported by JabRef (Default:" + Locale.getDefault()+ ")");
+        if (!knownLanguage.isPresent()) {
+            LOGGER.warn("Language " + language + " is not supported by JabRef (Default:" + Locale.getDefault() + ")");
             setLanguage("en");
             return;
         }
@@ -86,14 +80,14 @@ public class Localization {
     }
 
     public static String lang(String key, String... params) {
-        if(messages == null) {
+        if (messages == null) {
             setLanguage("en");
         }
         return translate(messages, "message", key, params);
     }
 
     public static String menuTitle(String key, String... params) {
-        if(menuTitles == null) {
+        if (menuTitles == null) {
             setLanguage("en");
         }
         return translate(menuTitles, "menu item", key, params);

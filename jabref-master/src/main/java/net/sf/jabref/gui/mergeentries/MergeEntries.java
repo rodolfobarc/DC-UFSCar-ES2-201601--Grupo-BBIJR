@@ -15,34 +15,12 @@
  */
 package net.sf.jabref.gui.mergeentries;
 
-import java.awt.Font;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
-
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+import difflib.Delta;
+import difflib.DiffUtils;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibEntryWriter;
@@ -52,19 +30,21 @@ import net.sf.jabref.logic.formatter.CaseChangers;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.BibEntry;
-
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
-import difflib.Delta;
-import difflib.DiffUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
+import java.awt.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.List;
+
 /**
  * @author Oscar Gustafsson
- *
+ *         <p>
  *         Class for dealing with merging entries
  */
 
@@ -87,14 +67,6 @@ public class MergeEntries {
             Localization.lang("Show diff") + " - " + Localization.lang("character"),
             Localization.lang("Show symmetric diff") + " - " + Localization.lang("word"),
             Localization.lang("Show symmetric diff") + " - " + Localization.lang("character")};
-
-
-    enum DiffStyle {
-        LATEXDIFF,
-        SYMMETRIC
-    }
-
-
     private static final String ADDITION_START = "<span class=add>";
     private static final String REMOVAL_START = "<span class=del>";
     private static final String CHANGE_ADDITION_START = "<span class=cadd>";
@@ -107,36 +79,32 @@ public class MergeEntries {
     private static final String REMOVAL_STYLE = ".del{color:red;text-decoration:line-through;}";
     private static final String CHANGE_ADDITION_STYLE = ".cadd{color:green;text-decoration:underline}";
     private static final String CHANGE_REMOVAL_STYLE = ".cdel{color:green;text-decoration:line-through;}";
-
+    private static final String MARGIN = "10px";
     private final Set<String> identicalFields = new HashSet<>();
     private final Set<String> differentFields = new HashSet<>();
     private final BibEntry mergedEntry = new BibEntry();
     private final BibEntry leftEntry;
     private final BibEntry rightEntry;
     private final BibDatabaseMode databaseType;
+    private final Set<String> allFields = new TreeSet<>();
+    private final JComboBox<String> diffMode = new JComboBox<>();
+    private final Map<String, JTextPane> leftTextPanes = new HashMap<>();
+    private final Map<String, JTextPane> rightTextPanes = new HashMap<>();
+    private final Map<String, List<JRadioButton>> radioButtons = new HashMap<>();
+    private final JPanel mainPanel = new JPanel();
     private JScrollPane scrollPane;
     private JTextArea sourceView;
     private PreviewPanel entryPreview;
     private Boolean doneBuilding;
     private Boolean identicalTypes;
     private List<JRadioButton> typeRadioButtons;
-    private final Set<String> allFields = new TreeSet<>();
-    private final JComboBox<String> diffMode = new JComboBox<>();
-    private final Map<String, JTextPane> leftTextPanes = new HashMap<>();
-    private final Map<String, JTextPane> rightTextPanes = new HashMap<>();
-    private final Map<String, List<JRadioButton>> radioButtons = new HashMap<>();
-
-    private final JPanel mainPanel = new JPanel();
-
-    private static final String MARGIN = "10px";
-
 
     /**
      * Constructor taking two entries
      *
-     * @param entryLeft Left entry
+     * @param entryLeft  Left entry
      * @param entryRight Right entry
-     * @param type Bib database mode
+     * @param type       Bib database mode
      */
     public MergeEntries(BibEntry entryLeft, BibEntry entryRight, BibDatabaseMode type) {
         leftEntry = entryLeft;
@@ -145,14 +113,15 @@ public class MergeEntries {
         initialize();
     }
 
+
     /**
      * Constructor with optional column captions for the two entries
      *
-     * @param entryLeft Left entry
-     * @param entryRight Right entry
-     * @param headingLeft Heading for left entry
+     * @param entryLeft    Left entry
+     * @param entryRight   Right entry
+     * @param headingLeft  Heading for left entry
      * @param headingRight Heading for right entry
-     * @param type Bib database mode
+     * @param type         Bib database mode
      */
     public MergeEntries(BibEntry entryLeft, BibEntry entryRight, String headingLeft, String headingRight, BibDatabaseMode type) {
         COLUMN_HEADINGS[1] = headingLeft;
@@ -163,6 +132,48 @@ public class MergeEntries {
         this.databaseType = type;
 
         initialize();
+    }
+
+    public static String generateDiffHighlighting(String baseString, String modifiedString, String separator) {
+        Objects.requireNonNull(separator);
+        if ((baseString != null) && (modifiedString != null)) {
+            List<String> stringList = new ArrayList<>(Arrays.asList(baseString.split(separator)));
+            List<Delta<String>> deltaList = new ArrayList<>(
+                    DiffUtils.diff(stringList, Arrays.asList(modifiedString.split(separator))).getDeltas());
+            Collections.reverse(deltaList);
+            for (Delta<String> delta : deltaList) {
+                int startPos = delta.getOriginal().getPosition();
+                List<String> lines = delta.getOriginal().getLines();
+                int offset = 0;
+                switch (delta.getType()) {
+                    case CHANGE:
+                        for (String line : lines) {
+                            stringList.set(startPos + offset, (offset == 0 ? REMOVAL_START : "") + line);
+                            offset++;
+                        }
+                        stringList.set((startPos + offset) - 1,
+                                stringList.get((startPos + offset) - 1) + TAG_END + separator + ADDITION_START
+                                        + String.join(separator, delta.getRevised().getLines()) + TAG_END);
+                        break;
+                    case DELETE:
+                        for (String line : lines) {
+                            stringList.set(startPos + offset, (offset == 0 ? REMOVAL_START : "") + line);
+                            offset++;
+                        }
+                        stringList.set((startPos + offset) - 1,
+                                stringList.get((startPos + offset) - 1) + TAG_END);
+                        break;
+                    case INSERT:
+                        stringList.add(delta.getOriginal().getPosition(),
+                                ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return String.join(separator, stringList);
+        }
+        return modifiedString;
     }
 
     /**
@@ -376,26 +387,26 @@ public class MergeEntries {
             String leftString = leftEntry.getField(field);
             String rightString = rightEntry.getField(field);
             switch (diffMode.getSelectedIndex()) {
-            case 0: // Plain text
-                break;
-            case 1: // Latexdiff style - word
-                rightString = generateDiffHighlighting(leftString, rightString, " ");
-                break;
-            case 2: // Latexdiff style - character
-                rightString = generateDiffHighlighting(leftString, rightString, "");
-                break;
-            case 3: // Symmetric style - word
-                String tmpLeftString = generateSymmetricHighlighting(rightString, leftString, " ");
-                rightString = generateSymmetricHighlighting(leftString, rightString, " ");
-                leftString = tmpLeftString;
-                break;
-            case 4: // Symmetric style - word
-                tmpLeftString = generateSymmetricHighlighting(rightString, leftString, "");
-                rightString = generateSymmetricHighlighting(leftString, rightString, "");
-                leftString = tmpLeftString;
-                break;
-            default: // Shouldn't happen
-                break;
+                case 0: // Plain text
+                    break;
+                case 1: // Latexdiff style - word
+                    rightString = generateDiffHighlighting(leftString, rightString, " ");
+                    break;
+                case 2: // Latexdiff style - character
+                    rightString = generateDiffHighlighting(leftString, rightString, "");
+                    break;
+                case 3: // Symmetric style - word
+                    String tmpLeftString = generateSymmetricHighlighting(rightString, leftString, " ");
+                    rightString = generateSymmetricHighlighting(leftString, rightString, " ");
+                    leftString = tmpLeftString;
+                    break;
+                case 4: // Symmetric style - word
+                    tmpLeftString = generateSymmetricHighlighting(rightString, leftString, "");
+                    rightString = generateSymmetricHighlighting(leftString, rightString, "");
+                    leftString = tmpLeftString;
+                    break;
+                default: // Shouldn't happen
+                    break;
             }
             if ((leftString != null) && leftTextPanes.containsKey(field)) {
                 leftTextPanes.get(field).setText(HTML_START + leftString + HTML_END);
@@ -421,48 +432,6 @@ public class MergeEntries {
         return pane;
     }
 
-    public static String generateDiffHighlighting(String baseString, String modifiedString, String separator) {
-        Objects.requireNonNull(separator);
-        if ((baseString != null) && (modifiedString != null)) {
-            List<String> stringList = new ArrayList<>(Arrays.asList(baseString.split(separator)));
-            List<Delta<String>> deltaList = new ArrayList<>(
-                    DiffUtils.diff(stringList, Arrays.asList(modifiedString.split(separator))).getDeltas());
-            Collections.reverse(deltaList);
-            for (Delta<String> delta : deltaList) {
-                int startPos = delta.getOriginal().getPosition();
-                List<String> lines = delta.getOriginal().getLines();
-                int offset = 0;
-                switch (delta.getType()) {
-                case CHANGE:
-                    for (String line : lines) {
-                        stringList.set(startPos + offset, (offset == 0 ? REMOVAL_START : "") + line);
-                        offset++;
-                    }
-                    stringList.set((startPos + offset) - 1,
-                            stringList.get((startPos + offset) - 1) + TAG_END + separator + ADDITION_START
-                                    + String.join(separator, delta.getRevised().getLines()) + TAG_END);
-                    break;
-                case DELETE:
-                    for (String line : lines) {
-                        stringList.set(startPos + offset, (offset == 0 ? REMOVAL_START : "") + line);
-                        offset++;
-                    }
-                    stringList.set((startPos + offset) - 1,
-                            stringList.get((startPos + offset) - 1) + TAG_END);
-                    break;
-                case INSERT:
-                    stringList.add(delta.getOriginal().getPosition(),
-                            ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
-                    break;
-                default:
-                    break;
-                }
-            }
-            return String.join(separator, stringList);
-        }
-        return modifiedString;
-    }
-
     private String generateSymmetricHighlighting(String baseString, String modifiedString, String separator) {
         if ((baseString != null) && (modifiedString != null)) {
             List<String> stringList = new ArrayList<>(Arrays.asList(baseString.split(separator)));
@@ -474,25 +443,25 @@ public class MergeEntries {
                 List<String> lines = delta.getOriginal().getLines();
                 int offset = 0;
                 switch (delta.getType()) {
-                case CHANGE:
-                    for (String line : lines) {
-                        stringList.set(startPos + offset, (offset == 0 ? CHANGE_REMOVAL_START : "") + line);
-                        offset++;
-                    }
-                    stringList.set((startPos + offset) - 1, stringList.get((startPos + offset) - 1) + TAG_END
-                            + CHANGE_ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
-                    break;
-                case DELETE:
-                    for (offset = 0; offset <= (lines.size() - 1); offset++) {
-                        stringList.set(startPos + offset, "");
-                    }
-                    break;
-                case INSERT:
-                    stringList.add(delta.getOriginal().getPosition(),
-                            ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
-                    break;
-                default:
-                    break;
+                    case CHANGE:
+                        for (String line : lines) {
+                            stringList.set(startPos + offset, (offset == 0 ? CHANGE_REMOVAL_START : "") + line);
+                            offset++;
+                        }
+                        stringList.set((startPos + offset) - 1, stringList.get((startPos + offset) - 1) + TAG_END
+                                + CHANGE_ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
+                        break;
+                    case DELETE:
+                        for (offset = 0; offset <= (lines.size() - 1); offset++) {
+                            stringList.set(startPos + offset, "");
+                        }
+                        break;
+                    case INSERT:
+                        stringList.add(delta.getOriginal().getPosition(),
+                                ADDITION_START + String.join(separator, delta.getRevised().getLines()) + TAG_END);
+                        break;
+                    default:
+                        break;
                 }
             }
             return HTML_START + String.join("", stringList) + HTML_END;
@@ -552,5 +521,10 @@ public class MergeEntries {
         }
         sourceView.setText(writer.getBuffer().toString());
         sourceView.setCaretPosition(0);
+    }
+
+    enum DiffStyle {
+        LATEXDIFF,
+        SYMMETRIC
     }
 }

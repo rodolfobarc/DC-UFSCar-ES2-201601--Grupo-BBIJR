@@ -15,26 +15,8 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.layout.Sizes;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.entryeditor.EntryEditorTabList;
@@ -44,8 +26,9 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class GenFieldsCustomizer extends JDialog {
 
@@ -132,7 +115,7 @@ public class GenFieldsCustomizer extends JDialog {
                 // Report error and exit.
                 String field = Localization.lang("field");
                 JOptionPane.showMessageDialog(this, Localization.lang("Each line must be on the following form") + " '" +
-                        Localization.lang("Tabname") + ':' + field + "1;" + field + "2;...;" + field + "N'",
+                                Localization.lang("Tabname") + ':' + field + "1;" + field + "2;...;" + field + "N'",
                         Localization.lang("Error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }

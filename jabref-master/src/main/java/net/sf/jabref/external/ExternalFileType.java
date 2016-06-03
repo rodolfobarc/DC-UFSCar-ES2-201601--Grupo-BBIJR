@@ -15,12 +15,10 @@
 */
 package net.sf.jabref.external;
 
-import java.util.Objects;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-
 import net.sf.jabref.gui.IconTheme;
+
+import javax.swing.*;
+import java.util.Objects;
 
 /**
  * This class defines a type of external files that can be linked to from JabRef.
@@ -29,13 +27,13 @@ import net.sf.jabref.gui.IconTheme;
  */
 public class ExternalFileType implements Comparable<ExternalFileType> {
 
+    private final JLabel label = new JLabel();
     private String name;
     private String extension;
     private String openWith;
     private String iconName;
     private String mimeType;
     private Icon icon;
-    private final JLabel label = new JLabel();
 
     public ExternalFileType(String name, String extension, String mimeType,
                             String openWith, String iconName, Icon icon) {
@@ -85,8 +83,8 @@ public class ExternalFileType implements Comparable<ExternalFileType> {
         icon = IconTheme.JabRefIcon.FILE.getSmallIcon();
 
         // check whether there is another icon defined for this file type
-        for(ExternalFileType fileType : ExternalFileTypes.getDefaultExternalFileTypes()) {
-            if(fileType.getName().equals(name)) {
+        for (ExternalFileType fileType : ExternalFileTypes.getDefaultExternalFileTypes()) {
+            if (fileType.getName().equals(name)) {
                 icon = fileType.icon;
                 break;
             }
@@ -159,15 +157,6 @@ public class ExternalFileType implements Comparable<ExternalFileType> {
     }
 
     /**
-     * Set the string associated with this file type's icon.
-     *
-     * @param name The icon name to use.
-     */
-    public void setIconName(String name) {
-        this.iconName = name;
-    }
-
-    /**
      * Obtain a JLabel instance set with this file type's icon. The same JLabel
      * is returned from each call of this method.
      *
@@ -184,6 +173,15 @@ public class ExternalFileType implements Comparable<ExternalFileType> {
      */
     public String getIconName() {
         return iconName;
+    }
+
+    /**
+     * Set the string associated with this file type's icon.
+     *
+     * @param name The icon name to use.
+     */
+    public void setIconName(String name) {
+        this.iconName = name;
     }
 
     public Icon getIcon() {
@@ -230,7 +228,7 @@ public class ExternalFileType implements Comparable<ExternalFileType> {
         if (object instanceof ExternalFileType) {
             ExternalFileType other = (ExternalFileType) object;
             return Objects.equals(name, other.name) && Objects.equals(extension, other.extension) &&
-                    Objects.equals(mimeType, other.mimeType) && Objects.equals(openWith, other.openWith) && Objects.equals(iconName,  other.iconName);
+                    Objects.equals(mimeType, other.mimeType) && Objects.equals(openWith, other.openWith) && Objects.equals(iconName, other.iconName);
         }
         return false;
     }

@@ -15,12 +15,12 @@
 */
 package net.sf.jabref.logic.openoffice;
 
-import java.util.Map;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.util.strings.HTMLUnicodeConversionMaps;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.Map;
 
 /**
  * This formatter preprocesses JabRef fields before they are run through the layout of the
@@ -38,7 +38,6 @@ public class OOPreFormatter implements LayoutFormatter {
         String finalResult = field.replaceAll("&|\\\\&", "&") // Replace & and \& with &
                 .replace("\\$", "&dollar;") // Replace \$ with &dollar;
                 .replaceAll("\\$([^\\$]*)\\$", "\\{$1\\}"); // Replace $...$ with {...} to simplify conversion
-
 
 
         StringBuilder sb = new StringBuilder();
@@ -78,7 +77,8 @@ public class OOPreFormatter implements LayoutFormatter {
                     sb.append(c);
                 } else {
                     currentCommand.append(c);
-                    testCharCom: if ((currentCommand.length() == 1)
+                    testCharCom:
+                    if ((currentCommand.length() == 1)
                             && Globals.SPECIAL_COMMAND_CHARS.contains(currentCommand.toString())) {
                         // This indicates that we are in a command of the type
                         // \^o or \~{n}
@@ -177,7 +177,7 @@ public class OOPreFormatter implements LayoutFormatter {
                     System.out.printf("com term by }: '%s'\n", currentCommand.toString());
 
                     argument = "";
-                 }*/else {
+                 }*/ else {
                     /*
                      * TODO: this point is reached, apparently, if a command is
                      * terminated in a strange way, such as with "$\omega$".
@@ -200,44 +200,44 @@ public class OOPreFormatter implements LayoutFormatter {
     private String getHTMLTag(String latexCommand) {
         String result = "";
         switch (latexCommand) {
-        // Italic
-        case "textit":
-        case "it":
-        case "emph": // Should really separate between emphasized and italic but since in later stages both are converted to italic...
-        case "em":
-            result = "i";
-            break;
-        // Bold font
-        case "textbf":
-        case "bf":
-            result = "b";
-            break;
-        // Small capitals
-        case "textsc":
-            result = "smallcaps"; // Not a proper HTML tag, but used here for convenience
-            break;
-        // Underline
-        case "underline":
-            result = "u";
-            break;
-        // Strikeout, sout is the "standard" command, although it is actually based on the package ulem
-        case "sout":
-            result = "s";
-            break;
-        // Monospace font
-        case "texttt":
-            result = "tt";
-            break;
-        // Superscript
-        case "textsuperscript":
-            result = "sup";
-            break;
-        // Subscript
-        case "textsubscript":
-            result = "sub";
-            break;
-        default:
-            break;
+            // Italic
+            case "textit":
+            case "it":
+            case "emph": // Should really separate between emphasized and italic but since in later stages both are converted to italic...
+            case "em":
+                result = "i";
+                break;
+            // Bold font
+            case "textbf":
+            case "bf":
+                result = "b";
+                break;
+            // Small capitals
+            case "textsc":
+                result = "smallcaps"; // Not a proper HTML tag, but used here for convenience
+                break;
+            // Underline
+            case "underline":
+                result = "u";
+                break;
+            // Strikeout, sout is the "standard" command, although it is actually based on the package ulem
+            case "sout":
+                result = "s";
+                break;
+            // Monospace font
+            case "texttt":
+                result = "tt";
+                break;
+            // Superscript
+            case "textsuperscript":
+                result = "sup";
+                break;
+            // Subscript
+            case "textsubscript":
+                result = "sub";
+                break;
+            default:
+                break;
         }
         return result;
     }

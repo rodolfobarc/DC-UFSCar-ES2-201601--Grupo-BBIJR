@@ -22,6 +22,11 @@ public class PdfFileFilter implements FileFilter {
 
     public static final PdfFileFilter INSTANCE = new PdfFileFilter();
 
+    private static boolean isMatchingFileFilter(String path) {
+        String extension = path.substring(path.lastIndexOf('.') + 1);
+        return "pdf".equalsIgnoreCase(extension);
+    }
+
     @Override
     public boolean accept(File file) {
         String path = file.getPath();
@@ -35,11 +40,6 @@ public class PdfFileFilter implements FileFilter {
         }
 
         return isMatchingFileFilter(path);
-    }
-
-    private static boolean isMatchingFileFilter(String path) {
-        String extension = path.substring(path.lastIndexOf('.') + 1);
-        return "pdf".equalsIgnoreCase(extension);
     }
 
 }

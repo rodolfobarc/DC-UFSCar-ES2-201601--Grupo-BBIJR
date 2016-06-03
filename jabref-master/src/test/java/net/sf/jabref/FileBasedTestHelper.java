@@ -33,7 +33,7 @@ public class FileBasedTestHelper {
     public static File createTempDir(String prefix, File directory) {
         try {
             File tempFile = File.createTempFile(prefix, "", directory);
-            if(tempFile == null) {
+            if (tempFile == null) {
                 return null;
             }
 

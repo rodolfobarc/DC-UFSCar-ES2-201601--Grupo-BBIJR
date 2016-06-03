@@ -16,58 +16,34 @@
 
 package net.sf.jabref.sql;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author ifsteinm
  */
 public class DBImportExportDialog implements MouseListener, KeyListener {
 
-    private final JDialog diag;
-    private final JTable table;
-
     // IMPORT
     public final List<String> listOfDBs = new ArrayList<>();
+    private final JDialog diag;
+    private final JTable table;
+    private final DialogType dialogType;
     public boolean moreThanOne;
     // EXPORT
     public String selectedDB = "";
     public boolean hasDBSelected;
     public boolean removeAction;
     public int selectedInt = -1;
-    private final DialogType dialogType;
-
-    public enum DialogType {
-        IMPORTER, EXPORTER
-    }
-
 
     public DBImportExportDialog(JabRefFrame frame, Vector<Vector<String>> rows, DialogType dialogType) {
         this.dialogType = dialogType;
@@ -257,5 +233,9 @@ public class DBImportExportDialog implements MouseListener, KeyListener {
     public void keyTyped(KeyEvent arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    public enum DialogType {
+        IMPORTER, EXPORTER
     }
 }

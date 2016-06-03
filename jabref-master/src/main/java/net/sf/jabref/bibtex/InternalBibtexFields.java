@@ -30,22 +30,12 @@
 
 package net.sf.jabref.bibtex;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
+
+import java.util.*;
 
 public class InternalBibtexFields {
 
@@ -55,16 +45,7 @@ public class InternalBibtexFields {
     public static final String MARKED = "__markedentry";
     public static final String OWNER = "owner";
     public static final String TIMESTAMP = "timestamp";
-    private static final String ENTRYTYPE = "entrytype";
     public static final String NUMBER_COL = "#";
-
-
-    // contains all bibtex-field objects (BibtexSingleField)
-    private final Map<String, BibtexSingleField> fieldSet;
-
-    // contains all known (and public) bibtex fieldnames
-    private final List<String> PUBLIC_FIELDS = new ArrayList<>();
-
     // Lists of fields with special properties
     public static final List<String> IEEETRANBSTCTL_NUMERIC_FIELDS = Arrays.asList("ctlmax_names_forced_etal",
             "ctlnames_show_etal", "ctlalt_stretch_factor");
@@ -77,9 +58,13 @@ public class InternalBibtexFields {
     public static final List<String> BIBLATEX_EDITOR_TYPE_FIELDS = Arrays.asList("editortype", "editoratype",
             "editorbtype", "editorctype");
     public static final List<String> BIBLATEX_PAGINATION_FIELDS = Arrays.asList("pagination", "bookpagination");
-
+    private static final String ENTRYTYPE = "entrytype";
     // singleton instance
     private static final InternalBibtexFields RUNTIME = new InternalBibtexFields();
+    // contains all bibtex-field objects (BibtexSingleField)
+    private final Map<String, BibtexSingleField> fieldSet;
+    // contains all known (and public) bibtex fieldnames
+    private final List<String> PUBLIC_FIELDS = new ArrayList<>();
 
     private InternalBibtexFields() {
         fieldSet = new HashMap<>();
@@ -345,15 +330,6 @@ public class InternalBibtexFields {
 
     }
 
-    /**
-     * insert a field into the internal list
-     */
-    private void add(BibtexSingleField field) {
-        // field == null check
-        String key = field.getFieldName();
-        fieldSet.put(key, field);
-    }
-
     // --------------------------------------------------------------------------
     //  the "static area"
     // --------------------------------------------------------------------------
@@ -455,6 +431,15 @@ public class InternalBibtexFields {
      */
     public static int numberOfPublicFields() {
         return InternalBibtexFields.RUNTIME.PUBLIC_FIELDS.size();
+    }
+
+    /**
+     * insert a field into the internal list
+     */
+    private void add(BibtexSingleField field) {
+        // field == null check
+        String key = field.getFieldName();
+        fieldSet.put(key, field);
     }
 
 

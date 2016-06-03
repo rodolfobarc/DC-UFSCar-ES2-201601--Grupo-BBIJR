@@ -34,12 +34,11 @@
 
 package net.sf.jabref.gui.plaintextimport;
 
+import javax.swing.text.StyledDocument;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.text.StyledDocument;
 
 public class TagToMarkedTextStore {
 
@@ -49,7 +48,9 @@ public class TagToMarkedTextStore {
         tagMap = new HashMap<>();
     }
 
-    /** appends a selection property for tag */
+    /**
+     * appends a selection property for tag
+     */
     public void appendPosition(String tag, int start, int end) {
         List<TMarkedStoreItem> ll = tagMap.get(tag);
         if (ll == null) {
@@ -60,7 +61,9 @@ public class TagToMarkedTextStore {
         ll.add(new TMarkedStoreItem(start, end));
     }
 
-    /** insert selection properties for tag, old entries were deleted */
+    /**
+     * insert selection properties for tag, old entries were deleted
+     */
     public void insertPosition(String tag, int start, int end) {
         List<TMarkedStoreItem> ll = tagMap.get(tag);
 
@@ -74,7 +77,9 @@ public class TagToMarkedTextStore {
         ll.add(new TMarkedStoreItem(start, end));
     }
 
-    /** set the Style for the tag if an entry is available */
+    /**
+     * set the Style for the tag if an entry is available
+     */
     public void setStyleForTag(String tag, String style, StyledDocument doc) {
         List<TMarkedStoreItem> ll = tagMap.get(tag);
 

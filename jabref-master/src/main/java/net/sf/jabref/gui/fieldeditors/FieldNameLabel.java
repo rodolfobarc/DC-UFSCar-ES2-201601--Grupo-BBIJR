@@ -15,15 +15,10 @@
 */
 package net.sf.jabref.gui.fieldeditors;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-
 import net.sf.jabref.gui.GUIGlobals;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class FieldNameLabel extends JLabel {
 

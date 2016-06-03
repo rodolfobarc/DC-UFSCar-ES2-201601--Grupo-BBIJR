@@ -15,24 +15,20 @@
 */
 package net.sf.jabref.external;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.Optional;
-
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.desktop.JabRefDesktop;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * The menu item used in the popup menu for opening external resources associated
@@ -46,13 +42,13 @@ public class ExternalFileMenuItem extends JMenuItem implements ActionListener {
     private final BibEntry entry;
     private final String link;
     private final BibDatabaseContext databaseContext;
-    private Optional<ExternalFileType> fileType;
     private final JabRefFrame frame;
+    private Optional<ExternalFileType> fileType;
     private String fieldName;
 
 
     public ExternalFileMenuItem(JabRefFrame frame, BibEntry entry, String name, String link, Icon icon,
-            BibDatabaseContext databaseContext, Optional<ExternalFileType> fileType) {
+                                BibDatabaseContext databaseContext, Optional<ExternalFileType> fileType) {
         super(name, icon);
         this.frame = frame;
         this.entry = entry;
@@ -63,7 +59,7 @@ public class ExternalFileMenuItem extends JMenuItem implements ActionListener {
     }
 
     public ExternalFileMenuItem(JabRefFrame frame, BibEntry entry, String name, String link, Icon icon,
-            BibDatabaseContext databaseContext, String fieldName) {
+                                BibDatabaseContext databaseContext, String fieldName) {
         this(frame, entry, name, link, icon, databaseContext, Optional.empty());
         this.fieldName = fieldName;
     }
@@ -114,7 +110,7 @@ public class ExternalFileMenuItem extends JMenuItem implements ActionListener {
                     && e1.getMessage().contains(fileType.get().getOpenWithApplication())) {
 
                 JOptionPane.showMessageDialog(frame, Localization.lang("Unable to open link. "
-                                        + "The application '%0' associated with the file type '%1' could not be called.",
+                                + "The application '%0' associated with the file type '%1' could not be called.",
                         fileType.get().getOpenWithApplication(), fileType.get().getName()),
                         Localization.lang("Could not open link"), JOptionPane.ERROR_MESSAGE);
                 return false;

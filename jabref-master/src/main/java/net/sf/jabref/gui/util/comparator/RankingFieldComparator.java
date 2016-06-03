@@ -15,14 +15,14 @@
 */
 package net.sf.jabref.gui.util.comparator;
 
-import java.util.Comparator;
-
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
 
+import java.util.Comparator;
+
 /**
  * Comparator that handles the ranking icon column
- *
+ * <p>
  * Based on IconComparator
  * Only comparing ranking field
  * inverse comparison of ranking as rank5 is higher than rank1

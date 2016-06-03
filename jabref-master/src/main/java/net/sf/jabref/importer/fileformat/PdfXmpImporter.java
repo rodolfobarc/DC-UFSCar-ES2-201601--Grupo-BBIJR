@@ -15,14 +15,14 @@
 */
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import net.sf.jabref.importer.OutputPrinter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.xmp.XMPUtil;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Wraps the XMPUtility function to be used as an ImportFormat.
@@ -53,7 +53,7 @@ public class PdfXmpImporter extends ImportFormat {
 
     /**
      * String used to identify this import filter on the command line.
-     * 
+     *
      * @return "xmp"
      */
     public String getCommandLineId() {

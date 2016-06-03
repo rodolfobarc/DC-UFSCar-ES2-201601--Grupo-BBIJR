@@ -15,6 +15,13 @@
 */
 package net.sf.jabref.gui;
 
+import net.sf.jabref.bibtex.BibEntryWriter;
+import net.sf.jabref.exporter.LatexFieldFormatter;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.database.BibDatabaseMode;
+import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -22,22 +29,14 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
-import net.sf.jabref.bibtex.BibEntryWriter;
-import net.sf.jabref.exporter.LatexFieldFormatter;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.database.BibDatabaseMode;
-import net.sf.jabref.model.entry.BibEntry;
-
 /*
  * A transferable object containing an array of BibEntry objects. Used
  * for copy-paste operations.
  */
 public class TransferableBibtexEntry implements Transferable {
 
-    private final List<BibEntry> data;
     public static final DataFlavor entryFlavor = new DataFlavor(BibEntry.class, "JabRef entry");
+    private final List<BibEntry> data;
 
 
     public TransferableBibtexEntry(List<BibEntry> bes) {
@@ -46,7 +45,7 @@ public class TransferableBibtexEntry implements Transferable {
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[] {TransferableBibtexEntry.entryFlavor,
+        return new DataFlavor[]{TransferableBibtexEntry.entryFlavor,
                 DataFlavor.stringFlavor};
     }
 

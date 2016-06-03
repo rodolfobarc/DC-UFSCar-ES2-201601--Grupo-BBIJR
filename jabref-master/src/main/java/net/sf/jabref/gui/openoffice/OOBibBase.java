@@ -15,37 +15,24 @@
 */
 package net.sf.jabref.gui.openoffice;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
+import com.sun.star.awt.Point;
+import com.sun.star.beans.*;
+import com.sun.star.comp.helper.Bootstrap;
+import com.sun.star.container.NoSuchElementException;
+import com.sun.star.container.*;
+import com.sun.star.document.XDocumentPropertiesSupplier;
+import com.sun.star.frame.XComponentLoader;
+import com.sun.star.frame.XController;
+import com.sun.star.frame.XDesktop;
+import com.sun.star.frame.XModel;
+import com.sun.star.lang.*;
+import com.sun.star.lang.IllegalArgumentException;
+import com.sun.star.lang.Locale;
+import com.sun.star.text.*;
+import com.sun.star.uno.Any;
+import com.sun.star.uno.Type;
+import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import net.sf.jabref.bibtex.comparator.FieldComparator;
 import net.sf.jabref.bibtex.comparator.FieldComparatorStack;
 import net.sf.jabref.logic.l10n.Localization;
@@ -56,53 +43,23 @@ import net.sf.jabref.logic.openoffice.OOUtil;
 import net.sf.jabref.logic.openoffice.UndefinedParagraphFormatException;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
-import com.sun.star.awt.Point;
-import com.sun.star.beans.IllegalTypeException;
-import com.sun.star.beans.NotRemoveableException;
-import com.sun.star.beans.PropertyExistException;
-import com.sun.star.beans.PropertyVetoException;
-import com.sun.star.beans.UnknownPropertyException;
-import com.sun.star.beans.XPropertyContainer;
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.comp.helper.Bootstrap;
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.container.XEnumeration;
-import com.sun.star.container.XEnumerationAccess;
-import com.sun.star.container.XNameAccess;
-import com.sun.star.container.XNamed;
-import com.sun.star.document.XDocumentPropertiesSupplier;
-import com.sun.star.frame.XComponentLoader;
-import com.sun.star.frame.XController;
-import com.sun.star.frame.XDesktop;
-import com.sun.star.frame.XModel;
-import com.sun.star.lang.DisposedException;
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.lang.Locale;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiComponentFactory;
-import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.text.XBookmarksSupplier;
-import com.sun.star.text.XDocumentIndexesSupplier;
-import com.sun.star.text.XFootnote;
-import com.sun.star.text.XReferenceMarksSupplier;
-import com.sun.star.text.XText;
-import com.sun.star.text.XTextContent;
-import com.sun.star.text.XTextCursor;
-import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextRange;
-import com.sun.star.text.XTextRangeCompare;
-import com.sun.star.text.XTextSection;
-import com.sun.star.text.XTextSectionsSupplier;
-import com.sun.star.text.XTextViewCursor;
-import com.sun.star.text.XTextViewCursorSupplier;
-import com.sun.star.uno.Any;
-import com.sun.star.uno.Type;
-import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XComponentContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.lang.IndexOutOfBoundsException;
+import java.lang.NoSuchMethodException;
 
 /**
  * Class for manipulating the Bibliography of the currently start document in OpenOffice.
@@ -121,31 +78,25 @@ class OOBibBase {
     private static final int AUTHORYEAR_PAR = 1;
     private static final int AUTHORYEAR_INTEXT = 2;
     private static final int INVISIBLE_CIT = 3;
-
-    private XMultiServiceFactory mxDocFactory;
-    private XTextDocument mxDoc;
-    private XText text;
+    private static final Log LOGGER = LogFactory.getLog(OOBibBase.class);
     private final XDesktop xDesktop;
-    private XTextViewCursorSupplier xViewCursorSupplier;
-    private XComponent xCurrentComponent;
-    private XPropertySet propertySet;
-    private XPropertyContainer userProperties;
-
     private final boolean atEnd;
     private final Comparator<BibEntry> entryComparator;
     private final Comparator<BibEntry> yearAuthorTitleComparator;
     private final FieldComparator authComp = new FieldComparator("author");
     private final FieldComparator yearComp = new FieldComparator("year");
     private final FieldComparator titleComp = new FieldComparator("title");
-
     private final List<Comparator<BibEntry>> authorYearTitleList = new ArrayList<>(3);
     private final List<Comparator<BibEntry>> yearAuthorTitleList = new ArrayList<>(3);
-
     private final Map<String, String> uniquefiers = new HashMap<>();
-
+    private XMultiServiceFactory mxDocFactory;
+    private XTextDocument mxDoc;
+    private XText text;
+    private XTextViewCursorSupplier xViewCursorSupplier;
+    private XComponent xCurrentComponent;
+    private XPropertySet propertySet;
+    private XPropertyContainer userProperties;
     private List<String> sortedReferenceMarks;
-
-    private static final Log LOGGER = LogFactory.getLog(OOBibBase.class);
 
 
     public OOBibBase(String pathToOO, boolean atEnd) throws Exception {
@@ -163,6 +114,26 @@ class OOBibBase {
         this.atEnd = atEnd;
         xDesktop = simpleBootstrap(pathToOO);
         selectDocument();
+    }
+
+    public static XTextDocument selectComponent(List<XTextDocument> list)
+            throws UnknownPropertyException, WrappedTargetException, IndexOutOfBoundsException {
+        String[] values = new String[list.size()];
+        int ii = 0;
+        for (XTextDocument doc : list) {
+            values[ii] = String.valueOf(OOUtil.getProperty(doc.getCurrentController().getFrame(), "Title"));
+            ii++;
+        }
+        JList<String> sel = new JList<>(values);
+        sel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        sel.setSelectedIndex(0);
+        int ans = JOptionPane.showConfirmDialog(null, new JScrollPane(sel), Localization.lang("Select document"),
+                JOptionPane.OK_CANCEL_OPTION);
+        if (ans == JOptionPane.OK_OPTION) {
+            return list.get(sel.getSelectedIndex());
+        } else {
+            return null;
+        }
     }
 
     public boolean isConnectedToDocument() {
@@ -302,19 +273,20 @@ class OOBibBase {
     /**
      * This method inserts a cite marker in the text for the given BibEntry,
      * and may refresh the bibliography.
-     * @param entries The entries to cite.
-     * @param database The database the entry belongs to.
-     * @param style The bibliography style we are using.
+     *
+     * @param entries       The entries to cite.
+     * @param database      The database the entry belongs to.
+     * @param style         The bibliography style we are using.
      * @param inParenthesis Indicates whether it is an in-text citation or a citation in parenthesis.
-     *   This is not relevant if numbered citations are used.
-     * @param withText Indicates whether this should be a normal citation (true) or an empty
-     *   (invisible) citation (false).
-     * @param sync Indicates whether the reference list should be refreshed.
+     *                      This is not relevant if numbered citations are used.
+     * @param withText      Indicates whether this should be a normal citation (true) or an empty
+     *                      (invisible) citation (false).
+     * @param sync          Indicates whether the reference list should be refreshed.
      * @throws Exception
      */
     public void insertEntry(List<BibEntry> entries, BibDatabase database,
-            List<BibDatabase> allBases, OOBibStyle style,
-            boolean inParenthesis, boolean withText, String pageInfo, boolean sync) throws Exception {
+                            List<BibDatabase> allBases, OOBibStyle style,
+                            boolean inParenthesis, boolean withText, String pageInfo, boolean sync) throws Exception {
 
         try {
 
@@ -391,8 +363,9 @@ class OOBibBase {
 
     /**
      * Refresh all cite markers in the document.
+     *
      * @param databases The databases to get entries from.
-     * @param style The bibliography style to use.
+     * @param style     The bibliography style to use.
      * @return A list of those referenced BibTeX keys that could not be resolved.
      * @throws Exception
      */
@@ -570,7 +543,7 @@ class OOBibBase {
                     // We need "normalized" (in parenthesis) markers for uniqueness checking purposes:
                     for (int j = 0; j < cEntries.length; j++) {
                         normCitMarker[j] = style.getCitationMarker(Collections.singletonList(cEntries[j]), entries,
-                                true, null, new int[] {-1});
+                                true, null, new int[]{-1});
                     }
                 }
                 citMarkers[i] = citationMarker;
@@ -793,7 +766,7 @@ class OOBibBase {
     }
 
     private Map<BibEntry, BibDatabase> findCitedEntries(List<BibDatabase> databases, List<String> keys,
-            Map<String, BibDatabase> linkSourceBase) {
+                                                        Map<String, BibDatabase> linkSourceBase) {
         Map<BibEntry, BibDatabase> entries = new LinkedHashMap<>();
         for (String key : keys) {
             boolean found = false;
@@ -836,7 +809,7 @@ class OOBibBase {
     }
 
     private Map<BibEntry, BibDatabase> getSortedEntriesFromSortedRefMarks(List<String> names,
-            Map<String, BibDatabase> linkSourceBase) {
+                                                                          Map<String, BibDatabase> linkSourceBase) {
 
         Map<BibEntry, BibDatabase> newList = new LinkedHashMap<>();
         for (String name : names) {
@@ -872,6 +845,7 @@ class OOBibBase {
 
     /**
      * Extract the list of bibtex keys from a reference mark name.
+     *
      * @param name The reference mark name.
      * @return The list of bibtex keys encoded in the name.
      */
@@ -892,10 +866,11 @@ class OOBibBase {
     /**
      * Resolve the bibtex key from a citation reference marker name, and look up
      * the index of the key in a list of keys.
+     *
      * @param citRefName The name of the ReferenceMark representing the citation.
-     * @param keys A List of bibtex keys representing the entries in the bibliography.
+     * @param keys       A List of bibtex keys representing the entries in the bibliography.
      * @return the indices of the cited keys, -1 if a key is not found. Returns null if the ref name
-     *   could not be resolved as a citation.
+     * could not be resolved as a citation.
      */
 
     private List<Integer> findCitedEntryIndex(String citRefName, List<String> keys) {
@@ -914,7 +889,7 @@ class OOBibBase {
     }
 
     public String getCitationContext(XNameAccess nameAccess, String refMarkName, int charBefore, int charAfter,
-            boolean htmlMarkup) throws NoSuchElementException, WrappedTargetException {
+                                     boolean htmlMarkup) throws NoSuchElementException, WrappedTargetException {
         Object o = nameAccess.getByName(refMarkName);
         XTextContent bm = UnoRuntime.queryInterface(XTextContent.class, o);
 
@@ -956,8 +931,8 @@ class OOBibBase {
     }
 
     private void insertFullReferenceAtCursor(XTextCursor cursor, Map<BibEntry, BibDatabase> entries, OOBibStyle style,
-            String parFormat) throws UndefinedParagraphFormatException, IllegalArgumentException,
-                    UnknownPropertyException, PropertyVetoException, WrappedTargetException {
+                                             String parFormat) throws UndefinedParagraphFormatException, IllegalArgumentException,
+            UnknownPropertyException, PropertyVetoException, WrappedTargetException {
         Map<BibEntry, BibDatabase> correctEntries;
         // If we don't have numbered entries, we need to sort the entries before adding them:
         if (style.isSortByPosition()) {
@@ -1050,7 +1025,7 @@ class OOBibBase {
     }
 
     private void insertReferenceMark(String name, String citationText, XTextCursor position, boolean withText,
-            OOBibStyle style) throws Exception {
+                                     OOBibStyle style) throws Exception {
 
         // Check if there is "page info" stored for this citation. If so, insert it into
         // the citation text before inserting the citation:
@@ -1129,6 +1104,7 @@ class OOBibBase {
 
     /**
      * Get the XTextRange corresponding to the named bookmark.
+     *
      * @param name The name of the bookmark to find.
      * @return The XTextRange for the bookmark.
      * @throws WrappedTargetException
@@ -1226,28 +1202,6 @@ class OOBibBase {
         }
 
     }
-
-
-    public static XTextDocument selectComponent(List<XTextDocument> list)
-            throws UnknownPropertyException, WrappedTargetException, IndexOutOfBoundsException {
-        String[] values = new String[list.size()];
-        int ii = 0;
-        for (XTextDocument doc : list) {
-            values[ii] = String.valueOf(OOUtil.getProperty(doc.getCurrentController().getFrame(), "Title"));
-            ii++;
-        }
-        JList<String> sel = new JList<>(values);
-        sel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sel.setSelectedIndex(0);
-        int ans = JOptionPane.showConfirmDialog(null, new JScrollPane(sel), Localization.lang("Select document"),
-                JOptionPane.OK_CANCEL_OPTION);
-        if (ans == JOptionPane.OK_OPTION) {
-            return list.get(sel.getSelectedIndex());
-        } else {
-            return null;
-        }
-    }
-
 
     private static class ComparableMark implements Comparable<ComparableMark> {
 

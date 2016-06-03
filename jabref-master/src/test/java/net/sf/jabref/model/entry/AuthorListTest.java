@@ -10,8 +10,12 @@ import org.junit.Test;
  */
 public class AuthorListTest {
 
+    public static int size(String bibtex) {
+        return AuthorList.parse(bibtex).getNumberOfAuthors();
+    }
+
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorNatbib() {
         Assert.assertEquals("", AuthorList.fixAuthorNatbib(""));
         Assert.assertEquals("Smith", AuthorList.fixAuthorNatbib("John Smith"));
@@ -36,7 +40,7 @@ public class AuthorListTest {
     }
 
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorFirstNameFirstCommas() {
 
         // No Commas
@@ -105,7 +109,7 @@ public class AuthorListTest {
     }
 
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorFirstNameFirst() {
         Assert.assertEquals("John Smith", AuthorList.fixAuthorFirstNameFirst("John Smith"));
 
@@ -127,7 +131,7 @@ public class AuthorListTest {
     }
 
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorLastNameFirstCommasNoComma() {
         // No commas before and
         Assert.assertEquals("", AuthorList.fixAuthorLastNameFirstCommas("", true, false));
@@ -197,7 +201,7 @@ public class AuthorListTest {
     }
 
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorLastNameFirst() {
 
         // Test helper method
@@ -257,7 +261,7 @@ public class AuthorListTest {
     }
 
     @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testFixAuthorLastNameOnlyCommas() {
 
         // No comma before and
@@ -297,10 +301,6 @@ public class AuthorListTest {
                 "Neumann, J. and Smith, J. and Black Brown, Jr., P.",
                 AuthorList
                         .fixAuthorForAlphabetization("John von Neumann and John Smith and de Black Brown, Jr., Peter"));
-    }
-
-    public static int size(String bibtex) {
-        return AuthorList.parse(bibtex).getNumberOfAuthors();
     }
 
     @Test

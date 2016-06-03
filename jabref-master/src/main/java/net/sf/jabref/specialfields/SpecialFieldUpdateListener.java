@@ -15,25 +15,30 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-
-import javax.swing.SwingUtilities;
-
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.model.entry.BibEntry;
 
+import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+
 /**
  * Listener triggering
- *  * an update of keywords if special field has been updated
- *  * an update of special fields if keywords have been updated
+ * * an update of keywords if special field has been updated
+ * * an update of special fields if keywords have been updated
  */
 public class SpecialFieldUpdateListener implements VetoableChangeListener {
 
     private static SpecialFieldUpdateListener INSTANCE;
 
+    public static SpecialFieldUpdateListener getInstance() {
+        if (SpecialFieldUpdateListener.INSTANCE == null) {
+            SpecialFieldUpdateListener.INSTANCE = new SpecialFieldUpdateListener();
+        }
+        return SpecialFieldUpdateListener.INSTANCE;
+    }
 
     @Override
     public void vetoableChange(PropertyChangeEvent e) throws PropertyVetoException {
@@ -58,13 +63,6 @@ public class SpecialFieldUpdateListener implements VetoableChangeListener {
             // if the user undoes the change in the keyword field, this method is also called and
             // the special fields are updated accordingly
         });
-    }
-
-    public static SpecialFieldUpdateListener getInstance() {
-        if (SpecialFieldUpdateListener.INSTANCE == null) {
-            SpecialFieldUpdateListener.INSTANCE = new SpecialFieldUpdateListener();
-        }
-        return SpecialFieldUpdateListener.INSTANCE;
     }
 
 }

@@ -15,12 +15,12 @@
  */
 package net.sf.jabref.logic.formatter.bibtexfields;
 
+import net.sf.jabref.logic.formatter.Formatter;
+import net.sf.jabref.logic.l10n.Localization;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.logic.formatter.Formatter;
-import net.sf.jabref.logic.l10n.Localization;
 
 /**
  * This class transforms ordinal numbers into LaTex superscripts.
@@ -46,7 +46,7 @@ public class OrdinalsToSuperscriptFormatter implements Formatter {
     /**
      * Converts ordinal numbers to superscripts, e.g. 1st, 2nd or 3rd.
      * Will replace ordinal numbers even if they are semantically wrong, e.g. 21rd
-     *
+     * <p>
      * <example>
      * 1st Conf. Cloud Computing -> 1\textsuperscript{st} Conf. Cloud Computing
      * </example>

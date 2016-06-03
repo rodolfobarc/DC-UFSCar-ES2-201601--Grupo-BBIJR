@@ -15,17 +15,6 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 import net.sf.jabref.model.EntryTypes;
@@ -33,9 +22,19 @@ import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.CustomEntryType;
 import net.sf.jabref.model.entry.EntryType;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * This class extends FieldSetComponent to provide some required functionality for the
  * list of entry types in EntryCustomizationDialog.
+ *
  * @author alver
  */
 public class EntryTypeList extends FieldSetComponent implements ListSelectionListener {
@@ -43,7 +42,9 @@ public class EntryTypeList extends FieldSetComponent implements ListSelectionLis
     private final JButton def = new JButton(Localization.lang("Default"));
     private final BibDatabaseMode mode;
 
-    /** Creates a new instance of EntryTypeList */
+    /**
+     * Creates a new instance of EntryTypeList
+     */
     public EntryTypeList(List<String> fields, BibDatabaseMode mode) {
         super(Localization.lang("Entry types"), fields, false, true);
         this.mode = mode;
@@ -77,8 +78,7 @@ public class EntryTypeList extends FieldSetComponent implements ListSelectionLis
                             + "characters") + ": # { } ~ , ^ &",
                     Localization.lang("Error"), JOptionPane.ERROR_MESSAGE);
             return;
-        }
-        else if ("comment".equalsIgnoreCase(s)) {
+        } else if ("comment".equalsIgnoreCase(s)) {
             // Report error and exit.
             JOptionPane.showMessageDialog(this, Localization.lang("The name 'comment' cannot be used as an entry type name."),
                     Localization.lang("Error"), JOptionPane.ERROR_MESSAGE);

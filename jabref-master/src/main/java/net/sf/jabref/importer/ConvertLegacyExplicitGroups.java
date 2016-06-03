@@ -1,13 +1,13 @@
 package net.sf.jabref.importer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.logic.groups.ExplicitGroup;
 import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Converts legacy explicit groups, where the group contained a list of assigned entries, to the new format,
@@ -17,7 +17,7 @@ public class ConvertLegacyExplicitGroups implements PostOpenAction {
 
     @Override
     public boolean isActionNecessary(ParserResult pr) {
-        if(pr.getMetaData().getGroups() == null) {
+        if (pr.getMetaData().getGroups() == null) {
             return false;
         }
         return !getExplicitGroupsWithLegacyKeys(pr.getMetaData().getGroups()).isEmpty();
@@ -26,7 +26,7 @@ public class ConvertLegacyExplicitGroups implements PostOpenAction {
     @Override
     public void performAction(BasePanel panel, ParserResult pr) {
         Objects.requireNonNull(pr);
-        if(pr.getMetaData().getGroups() == null) {
+        if (pr.getMetaData().getGroups() == null) {
             return;
         }
 

@@ -1,14 +1,5 @@
 package net.sf.jabref.gui.menus;
 
-import java.awt.Font;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.actions.ChangeTypeAction;
@@ -21,10 +12,15 @@ import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.IEEETranEntryTypes;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ChangeEntryTypeMenu {
     public final Map<String, KeyStroke> entryShortCuts = new HashMap<>();
 
-    public ChangeEntryTypeMenu () {
+    public ChangeEntryTypeMenu() {
         entryShortCuts.put(BibtexEntryTypes.ARTICLE.getName(), Globals.getKeyPrefs().getKey(KeyBinding.NEW_ARTICLE));
         entryShortCuts.put(BibtexEntryTypes.BOOK.getName(), Globals.getKeyPrefs().getKey(KeyBinding.NEW_BOOK));
         entryShortCuts.put(BibtexEntryTypes.PHDTHESIS.getName(), Globals.getKeyPrefs().getKey(KeyBinding.NEW_PHDTHESIS));
@@ -44,6 +40,7 @@ public class ChangeEntryTypeMenu {
         JMenu menu = getChangeEntryTypeMenu(panel);
         return menu.getPopupMenu();
     }
+
     /**
      * Remove all types from the menu. Then cycle through all available
      * types, and add them.
@@ -52,7 +49,7 @@ public class ChangeEntryTypeMenu {
         menu.removeAll();
 
         // biblatex?
-        if(panel.getBibDatabaseContext().isBiblatexMode()) {
+        if (panel.getBibDatabaseContext().isBiblatexMode()) {
             for (EntryType type : EntryTypes.getAllValues(BibDatabaseMode.BIBLATEX)) {
                 menu.add(new ChangeTypeAction(type, panel));
             }
@@ -74,7 +71,7 @@ public class ChangeEntryTypeMenu {
         Font font = new Font(menu.getFont().getName(), Font.ITALIC, menu.getFont().getSize());
         header.setFont(font);
         header.setEnabled(false);
-        if(!types.isEmpty()) {
+        if (!types.isEmpty()) {
             menu.add(header);
         }
 

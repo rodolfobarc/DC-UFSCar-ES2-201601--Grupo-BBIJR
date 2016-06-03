@@ -21,26 +21,20 @@
 
 package net.sf.jabref.gui;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.importer.fetcher.DOItoBibTeXFetcher;
 import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.logic.util.DOI;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClipBoardManager implements ClipboardOwner {
     private static final Log LOGGER = LogFactory.getLog(ClipBoardManager.class);
@@ -53,15 +47,6 @@ public class ClipBoardManager implements ClipboardOwner {
     @Override
     public void lostOwnership(Clipboard aClipboard, Transferable aContents) {
         //do nothing
-    }
-
-    /**
-     * Place a String on the clipboard, and make this class the
-     * owner of the Clipboard's contents.
-     */
-    public void setClipboardContents(String aString) {
-        StringSelection stringSelection = new StringSelection(aString);
-        CLIPBOARD.setContents(stringSelection, this);
     }
 
     /**
@@ -83,6 +68,15 @@ public class ClipBoardManager implements ClipboardOwner {
             }
         }
         return result;
+    }
+
+    /**
+     * Place a String on the clipboard, and make this class the
+     * owner of the Clipboard's contents.
+     */
+    public void setClipboardContents(String aString) {
+        StringSelection stringSelection = new StringSelection(aString);
+        CLIPBOARD.setContents(stringSelection, this);
     }
 
     public List<BibEntry> extractBibEntriesFromClipboard() {

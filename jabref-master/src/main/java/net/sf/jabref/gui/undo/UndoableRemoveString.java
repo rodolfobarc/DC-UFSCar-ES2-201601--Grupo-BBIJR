@@ -15,27 +15,25 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibtexString;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.undo.AbstractUndoableEdit;
+
 public class UndoableRemoveString extends AbstractUndoableEdit {
 
+    private static final Log LOGGER = LogFactory.getLog(UndoableRemoveString.class);
     private final BibDatabase base;
     private final BibtexString string;
     private final BasePanel panel;
 
-    private static final Log LOGGER = LogFactory.getLog(UndoableRemoveString.class);
-
     public UndoableRemoveString(BasePanel panel,
-            BibDatabase base, BibtexString string) {
+                                BibDatabase base, BibtexString string) {
         this.base = base;
         this.string = string;
         this.panel = panel;

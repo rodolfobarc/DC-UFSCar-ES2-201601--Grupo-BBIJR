@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.LayoutFormatter;
+
+import java.util.List;
 
 public class RisKeywords implements LayoutFormatter {
 

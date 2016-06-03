@@ -15,16 +15,11 @@
 */
 package net.sf.jabref.gui.util;
 
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Window;
+import net.sf.jabref.Globals;
+
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
-import net.sf.jabref.Globals;
 
 public class PositionWindow {
 

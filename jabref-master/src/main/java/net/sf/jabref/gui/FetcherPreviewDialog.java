@@ -15,34 +15,6 @@
  */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.gui.keyboard.KeyBinding;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.l10n.Localization;
-
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.gui.TableFormat;
@@ -51,6 +23,18 @@ import ca.odell.glazedlists.swing.DefaultEventTableModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.ButtonStackBuilder;
+import net.sf.jabref.Globals;
+import net.sf.jabref.gui.keyboard.KeyBinding;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -59,9 +43,9 @@ public class FetcherPreviewDialog extends JDialog implements OutputPrinter {
 
     private final EventList<TableEntry> entries = new BasicEventList<>();
     private final JTable glTable;
-    private boolean okPressed;
     private final JabRefFrame frame;
     private final int warningLimit;
+    private boolean okPressed;
 
 
     public FetcherPreviewDialog(JabRefFrame frame, int warningLimit, int tableRowHeight) {
@@ -136,6 +120,7 @@ public class FetcherPreviewDialog extends JDialog implements OutputPrinter {
     /**
      * Check whether a large number of entries are selected, and if so, ask the user whether
      * to go on.
+     *
      * @return true if we should go on
      */
     private boolean verifySelection() {
@@ -183,6 +168,24 @@ public class FetcherPreviewDialog extends JDialog implements OutputPrinter {
         glTable.repaint();
     }
 
+    public boolean isOkPressed() {
+        return okPressed;
+    }
+
+    @Override
+    public void setStatus(String s) {
+        frame.setStatus(s);
+    }
+
+    @Override
+    public void showMessage(Object message, String title, int msgType) {
+        JOptionPane.showMessageDialog(this, message, title, msgType);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 
     static class TableEntry {
 
@@ -217,12 +220,39 @@ public class FetcherPreviewDialog extends JDialog implements OutputPrinter {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus,
-                int row, int column) {
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
             JLabel valueLabel = (JLabel) value;
             label.setText(valueLabel.getText());
             return label;
         }
+    }
+
+    private static class EntryTableFormat implements TableFormat<TableEntry> {
+
+        @Override
+        public int getColumnCount() {
+            return 2;
+        }
+
+        @Override
+        public String getColumnName(int i) {
+            if (i == 0) {
+                return Localization.lang("Keep");
+            } else {
+                return Localization.lang("Preview");
+            }
+        }
+
+        @Override
+        public Object getColumnValue(TableEntry entry, int i) {
+            if (i == 0) {
+                return entry.isWanted() ? Boolean.TRUE : Boolean.FALSE;
+            } else {
+                return entry.getPreview();
+            }
+        }
+
     }
 
     class EntryTable extends JTable {
@@ -268,52 +298,5 @@ public class FetcherPreviewDialog extends JDialog implements OutputPrinter {
             entry.setWanted((Boolean) value);
             entries.getReadWriteLock().writeLock().unlock();
         }
-    }
-
-    private static class EntryTableFormat implements TableFormat<TableEntry> {
-
-        @Override
-        public int getColumnCount() {
-            return 2;
-        }
-
-        @Override
-        public String getColumnName(int i) {
-            if (i == 0) {
-                return Localization.lang("Keep");
-            } else {
-                return Localization.lang("Preview");
-            }
-        }
-
-        @Override
-        public Object getColumnValue(TableEntry entry, int i) {
-            if (i == 0) {
-                return entry.isWanted() ? Boolean.TRUE : Boolean.FALSE;
-            } else {
-                return entry.getPreview();
-            }
-        }
-
-    }
-
-
-    public boolean isOkPressed() {
-        return okPressed;
-    }
-
-    @Override
-    public void setStatus(String s) {
-        frame.setStatus(s);
-    }
-
-    @Override
-    public void showMessage(Object message, String title, int msgType) {
-        JOptionPane.showMessageDialog(this, message, title, msgType);
-    }
-
-    @Override
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
     }
 }

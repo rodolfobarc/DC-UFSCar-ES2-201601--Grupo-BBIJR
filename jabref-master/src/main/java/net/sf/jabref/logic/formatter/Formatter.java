@@ -3,11 +3,10 @@ package net.sf.jabref.logic.formatter;
 /**
  * The Formatter is used for a Filter design-pattern. Implementing classes have to accept a String and returned a
  * formatted version of it.
- *
+ * <p>
  * Example:
- *
+ * <p>
  * "John von Neumann" => "von Neumann, John"
- *
  */
 public interface Formatter {
     /**
@@ -20,13 +19,14 @@ public interface Formatter {
 
     /**
      * Returns a unique key for the formatter that can be used for its identification
+     *
      * @return the key of the formatter, always not null
      */
     String getKey();
 
     /**
      * Formats a field value by with a particular formatter transformation.
-     *
+     * <p>
      * Calling this method with a null argument results in a NullPointerException.
      *
      * @param value the input String
@@ -65,8 +65,8 @@ public interface Formatter {
      * @return true if the object is a formatter with the same key
      */
     default boolean defaultEquals(Object obj) {
-        if(obj instanceof Formatter) {
-            return getKey().equals(((Formatter)obj).getKey());
+        if (obj instanceof Formatter) {
+            return getKey().equals(((Formatter) obj).getKey());
         } else {
             return false;
         }

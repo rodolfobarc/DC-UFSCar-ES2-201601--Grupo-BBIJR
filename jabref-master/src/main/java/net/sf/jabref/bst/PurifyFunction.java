@@ -15,20 +15,18 @@
 */
 package net.sf.jabref.bst;
 
-import java.util.Stack;
-
 import net.sf.jabref.bst.VM.BstEntry;
 import net.sf.jabref.bst.VM.BstFunction;
 
+import java.util.Stack;
+
 /**
- *
  * The |built_in| function {\.{purify\$}} pops the top (string) literal, removes
  * nonalphanumeric characters except for |white_space| and |sep_char| characters
  * (these get converted to a |space|) and removes certain alphabetic characters
  * contained in the control sequences associated with a special character, and
  * pushes the resulting string. If the literal isn't a string, it complains and
  * pushes the null string.
- *
  */
 public class PurifyFunction implements BstFunction {
 

@@ -15,32 +15,9 @@
  */
 package net.sf.jabref.gui.actions;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.gui.BasePanel;
@@ -52,43 +29,39 @@ import net.sf.jabref.gui.undo.UndoableFieldChange;
 import net.sf.jabref.logic.autocompleter.AutoCompleter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.specialfields.Printed;
-import net.sf.jabref.specialfields.Priority;
-import net.sf.jabref.specialfields.Quality;
-import net.sf.jabref.specialfields.Rank;
-import net.sf.jabref.specialfields.ReadStatus;
-import net.sf.jabref.specialfields.Relevance;
-import net.sf.jabref.specialfields.SpecialFieldsUtils;
+import net.sf.jabref.specialfields.*;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.*;
+import java.util.List;
 
 /**
  * An Action for launching keyword managing dialog
- *
  */
 public class ManageKeywordsAction extends MnemonicAwareAction {
     private static final String KEYWORDS_FIELD = "keywords";
 
     private final JabRefFrame frame;
-
+    private final Set<String> sortedKeywordsOfAllEntriesBeforeUpdateByUser = new TreeSet<>();
     private JDialog diag;
-
-
     private DefaultListModel<String> keywordListModel;
-
     private JRadioButton intersectKeywords;
     private JRadioButton mergeKeywords;
-
     private boolean canceled;
-
-    private final Set<String> sortedKeywordsOfAllEntriesBeforeUpdateByUser = new TreeSet<>();
 
 
     public ManageKeywordsAction(JabRefFrame frame) {
         putValue(Action.NAME, Localization.menuTitle("Manage keywords"));
         this.frame = frame;
+    }
+
+    private static Set<String> createClone(Set<String> keywordsToAdd) {
+        return new HashSet<>(keywordsToAdd);
     }
 
     private void createDialog() {
@@ -278,7 +251,7 @@ public class ManageKeywordsAction extends MnemonicAwareAction {
         Set<String> keywordsToAdd = new HashSet<>();
         Set<String> userSelectedKeywords = new HashSet<>();
         // build keywordsToAdd and userSelectedKeywords in parallel
-        for (Enumeration<String> keywords = keywordListModel.elements(); keywords.hasMoreElements();) {
+        for (Enumeration<String> keywords = keywordListModel.elements(); keywords.hasMoreElements(); ) {
             String kword = keywords.nextElement();
             userSelectedKeywords.add(kword);
             if (!sortedKeywordsOfAllEntriesBeforeUpdateByUser.contains(kword)) {
@@ -308,7 +281,7 @@ public class ManageKeywordsAction extends MnemonicAwareAction {
     }
 
     private NamedCompound updateKeywords(List<BibEntry> entries, Set<String> keywordsToAdd,
-            Set<String> keywordsToRemove) {
+                                         Set<String> keywordsToRemove) {
         NamedCompound ce = new NamedCompound(Localization.lang("Update keywords"));
         for (BibEntry entry : entries) {
             List<String> separatedKeywords = entry.getSeparatedKeywords();
@@ -330,7 +303,7 @@ public class ManageKeywordsAction extends MnemonicAwareAction {
             entry.putKeywords(separatedKeywords);
             String updatedValue = entry.getField(KEYWORDS_FIELD);
             if ((oldValue == null) || !oldValue.equals(updatedValue)) {
-                    ce.addEdit(new UndoableFieldChange(entry, KEYWORDS_FIELD, oldValue, updatedValue));
+                ce.addEdit(new UndoableFieldChange(entry, KEYWORDS_FIELD, oldValue, updatedValue));
             }
 
             if (SpecialFieldsUtils.keywordSyncEnabled()) {
@@ -390,10 +363,6 @@ public class ManageKeywordsAction extends MnemonicAwareAction {
         if (!clone.isEmpty()) {
             keywordsToRemove.addAll(Printed.getInstance().getKeyWords());
         }
-    }
-
-    private static Set<String> createClone(Set<String> keywordsToAdd) {
-        return new HashSet<>(keywordsToAdd);
     }
 
     private void fillKeyWordList() {

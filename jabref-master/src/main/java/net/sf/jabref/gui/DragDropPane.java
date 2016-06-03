@@ -16,20 +16,11 @@
 
 package net.sf.jabref.gui;
 
-import java.awt.AlphaComposite;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
 
 /**
  * Extends the JTabbedPane class to support Drag&Drop of Tabs.
@@ -38,9 +29,9 @@ import javax.swing.SwingUtilities;
  */
 class DragDropPane extends JTabbedPane {
 
+    private final MarkerPane markerPane; // The glass panel for painting the position marker
     private boolean draggingState; // State var if we are at dragging or not
     private int indexDraggedTab; // The index of the tab we drag at the moment
-    private final MarkerPane markerPane; // The glass panel for painting the position marker
 
 
     DragDropPane() {
@@ -68,8 +59,7 @@ class DragDropPane extends JTabbedPane {
                         if (toTheLeft) {
                             markerPane.setPicLocation(new Point(actTabRect.x, actTabRect.y
                                     + actTabRect.height)); //Set pic to the left of the tab at the mouse position
-                        }
-                        else {
+                        } else {
                             markerPane.setPicLocation(new Point(actTabRect.x + actTabRect.width, actTabRect.y
                                     + actTabRect.height)); //Set pic to the right of the tab at the mouse position
                         }
@@ -135,12 +125,11 @@ class DragDropPane extends JTabbedPane {
 
     /**
      * A glass panel which sets the marker for Dragging of Tabs.
-     *
      */
     static class MarkerPane extends JPanel {
 
-        private Point locationP;
         private final IconTheme.JabRefIcon moveTabArrow;
+        private Point locationP;
 
 
         public MarkerPane() {

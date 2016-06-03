@@ -15,16 +15,11 @@
 */
 package net.sf.jabref.gui.groups;
 
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
-
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.*;
 
 /**
  * Renders a GroupTreeNode using its group's getName() method, rather that its toString() method.
@@ -33,7 +28,9 @@ import net.sf.jabref.logic.util.strings.StringUtil;
  */
 public class GroupTreeCellRenderer extends DefaultTreeCellRenderer {
 
-    /** The cell over which the user is currently dragging */
+    /**
+     * The cell over which the user is currently dragging
+     */
     private Object highlight1Cell;
     private Object[] highlight2Cells;
     private Object[] highlight3Cells;
@@ -42,7 +39,7 @@ public class GroupTreeCellRenderer extends DefaultTreeCellRenderer {
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
-            int row, boolean tmpHasFocus) {
+                                                  int row, boolean tmpHasFocus) {
         // show as selected
         selected = ((highlight1Cell != null) && highlight1Cell.equals(value)) || sel;
         Component c = super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, tmpHasFocus);

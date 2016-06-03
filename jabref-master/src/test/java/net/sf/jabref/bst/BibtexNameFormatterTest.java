@@ -1,7 +1,6 @@
 package net.sf.jabref.bst;
 
 import net.sf.jabref.model.entry.AuthorList;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,7 +37,7 @@ public class BibtexNameFormatterTest {
 
         Assert.assertEquals("dlVP", BibtexNameFormatter.formatName(al.getAuthor(0), "{v{}}{l{}}",
                 Assert::fail
-                ));
+        ));
 
         assertNameFormatA("Meyer, J?", "Jonathan Meyer and Charles Louis Xavier Joseph de la Vall{\\'e}e Poussin");
         assertNameFormatB("J.~Meyer", "Jonathan Meyer and Charles Louis Xavier Joseph de la Vall{\\'e}e Poussin");
@@ -59,7 +58,7 @@ public class BibtexNameFormatterTest {
     private void assertNameFormat(String string, String string2, int which, String format) {
         Assert.assertEquals(string, BibtexNameFormatter.formatName(string2, which, format,
                 Assert::fail
-                ));
+        ));
     }
 
     private void assertNameFormatC(String string, String string2) {

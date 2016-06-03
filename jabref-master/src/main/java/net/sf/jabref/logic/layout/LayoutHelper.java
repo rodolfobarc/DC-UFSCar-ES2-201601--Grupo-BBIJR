@@ -15,6 +15,8 @@
 */
 package net.sf.jabref.logic.layout;
 
+import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
+
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -22,16 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
-
 /**
  * Helper class to get a Layout object.
- *
+ * <p>
  * <code>
  * LayoutHelper helper = new LayoutHelper(...a reader...);
  * Layout layout = helper.getLayoutFromText();
  * </code>
- *
  */
 public class LayoutHelper {
 
@@ -59,6 +58,14 @@ public class LayoutHelper {
         this.repository = Objects.requireNonNull(repository);
     }
 
+    public static String getCurrentGroup() {
+        return LayoutHelper.currentGroup;
+    }
+
+    public static void setCurrentGroup(String newGroup) {
+        LayoutHelper.currentGroup = newGroup;
+    }
+
     public Layout getLayoutFromText() throws IOException {
         parse();
 
@@ -71,14 +78,6 @@ public class LayoutHelper {
         }
 
         return new Layout(parsedEntries, repository);
-    }
-
-    public static String getCurrentGroup() {
-        return LayoutHelper.currentGroup;
-    }
-
-    public static void setCurrentGroup(String newGroup) {
-        LayoutHelper.currentGroup = newGroup;
     }
 
     private void doBracketedField(final int field) throws IOException {

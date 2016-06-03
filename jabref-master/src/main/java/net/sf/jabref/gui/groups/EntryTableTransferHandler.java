@@ -15,6 +15,24 @@
 */
 package net.sf.jabref.gui.groups;
 
+import net.sf.jabref.JabRefExecutorService;
+import net.sf.jabref.external.DroppedFileHandler;
+import net.sf.jabref.external.ExternalFileType;
+import net.sf.jabref.external.ExternalFileTypes;
+import net.sf.jabref.external.TransferableFileLinkSelection;
+import net.sf.jabref.gui.BasePanel;
+import net.sf.jabref.gui.JabRefFrame;
+import net.sf.jabref.gui.maintable.MainTable;
+import net.sf.jabref.gui.net.MonitoredURLDownload;
+import net.sf.jabref.importer.ImportMenuItem;
+import net.sf.jabref.importer.OpenDatabaseAction;
+import net.sf.jabref.logic.util.io.FileUtil;
+import net.sf.jabref.pdfimport.PdfImporter;
+import net.sf.jabref.pdfimport.PdfImporter.ImportPdfFilesResult;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -33,44 +51,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.JComponent;
-import javax.swing.JTable;
-import javax.swing.TransferHandler;
-
-import net.sf.jabref.JabRefExecutorService;
-import net.sf.jabref.external.DroppedFileHandler;
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypes;
-import net.sf.jabref.external.TransferableFileLinkSelection;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.maintable.MainTable;
-import net.sf.jabref.gui.net.MonitoredURLDownload;
-import net.sf.jabref.importer.ImportMenuItem;
-import net.sf.jabref.importer.OpenDatabaseAction;
-import net.sf.jabref.logic.util.io.FileUtil;
-import net.sf.jabref.pdfimport.PdfImporter;
-import net.sf.jabref.pdfimport.PdfImporter.ImportPdfFilesResult;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class EntryTableTransferHandler extends TransferHandler {
 
-    private final MainTable entryTable;
-
-    private final JabRefFrame frame;
-
-    private final BasePanel panel;
-
-    private DataFlavor urlFlavor;
-
-    private final DataFlavor stringFlavor;
-
     private static final boolean DROP_ALLOWED = true;
-
     private static final Log LOGGER = LogFactory.getLog(EntryTableTransferHandler.class);
-
+    private final MainTable entryTable;
+    private final JabRefFrame frame;
+    private final BasePanel panel;
+    private final DataFlavor stringFlavor;
+    private DataFlavor urlFlavor;
     private boolean draggingFile;
 
 
@@ -78,10 +67,10 @@ public class EntryTableTransferHandler extends TransferHandler {
      * Construct the transfer handler.
      *
      * @param entryTable The table this transfer handler should operate on. This argument is allowed to equal null, in
-     *            which case the transfer handler can assume that it works for a JabRef instance with no databases open,
-     *            attached to the empty tabbed pane.
-     * @param frame The JabRefFrame instance.
-     * @param panel The BasePanel this transferhandler works for.
+     *                   which case the transfer handler can assume that it works for a JabRef instance with no databases open,
+     *                   attached to the empty tabbed pane.
+     * @param frame      The JabRefFrame instance.
+     * @param panel      The BasePanel this transferhandler works for.
      */
     public EntryTableTransferHandler(MainTable entryTable, JabRefFrame frame, BasePanel panel) {
         this.entryTable = entryTable;
@@ -93,6 +82,52 @@ public class EntryTableTransferHandler extends TransferHandler {
         } catch (ClassNotFoundException e) {
             LOGGER.info("Unable to configure drag and drop for main table", e);
         }
+    }
+
+    /**
+     * Translate a String describing a set of files or URLs dragged into JabRef into a List of File objects, taking care
+     * of URL special characters.
+     *
+     * @param s String describing a set of files or URLs dragged into JabRef
+     * @return a List<File> containing the individual file objects.
+     */
+    public static List<File> getFilesFromDraggedFilesString(String s) {
+        // Split into lines:
+        String[] lines = s.replace("\r", "").split("\n");
+        List<File> files = new ArrayList<>();
+        for (String line1 : lines) {
+            String line = line1;
+
+            // Try to use url.toURI() to translate URL specific sequences like %20 into
+            // standard characters:
+            File fl = null;
+            try {
+                URL url = new URL(line);
+                fl = new File(url.toURI());
+            } catch (MalformedURLException | URISyntaxException e) {
+                LOGGER.warn("Could not get file", e);
+            }
+
+            // Unless an exception was thrown, we should have the sanitized path:
+            if (fl != null) {
+                line = fl.getPath();
+            } else if (line.startsWith("file:")) {
+                line = line.substring(5);
+            } else {
+                continue;
+            }
+            // Under Gnome, the link is given as file:///...., so we
+            // need to strip the extra slashes:
+            if (line.startsWith("//")) {
+                line = line.substring(2);
+            }
+
+            File f = new File(line);
+            if (f.exists()) {
+                files.add(f);
+            }
+        }
+        return files;
     }
 
     /**
@@ -119,9 +154,8 @@ public class EntryTableTransferHandler extends TransferHandler {
 
     /**
      * This method is called when stuff is drag to the component.
-     *
+     * <p>
      * Imports the dropped URL or plain text as a new entry in the current database.
-     *
      */
     @Override
     public boolean importData(JComponent comp, Transferable t) {
@@ -167,7 +201,7 @@ public class EntryTableTransferHandler extends TransferHandler {
 
     /**
      * This method is called to query whether the transfer can be imported.
-     *
+     * <p>
      * Will return true for urls, strings, javaFileLists
      */
     @Override
@@ -188,14 +222,12 @@ public class EntryTableTransferHandler extends TransferHandler {
         return false;
     }
 
-
-
     @Override
     public void exportAsDrag(JComponent comp, InputEvent e, int action) {
         if (e instanceof MouseEvent) {
             int columnIndex = entryTable.columnAtPoint(((MouseEvent) e).getPoint());
             int modelIndex = entryTable.getColumnModel().getColumn(columnIndex).getModelIndex();
-            if(entryTable.isFileColumn(modelIndex)) {
+            if (entryTable.isFileColumn(modelIndex)) {
                 LOGGER.info("Dragging file");
                 draggingFile = true;
             }
@@ -209,13 +241,13 @@ public class EntryTableTransferHandler extends TransferHandler {
         super.exportDone(source, data, action);
     }
 
+    // add-ons -----------------------
+
     @Override
     public void exportToClipboard(JComponent comp, Clipboard clip, int action) {
         // default implementation is OK
         super.exportToClipboard(comp, clip, action);
     }
-
-    // add-ons -----------------------
 
     private boolean handleDropTransfer(String dropStr, final int dropRow) throws IOException {
         if (dropStr.startsWith("file:")) {
@@ -247,59 +279,11 @@ public class EntryTableTransferHandler extends TransferHandler {
     }
 
     /**
-     * Translate a String describing a set of files or URLs dragged into JabRef into a List of File objects, taking care
-     * of URL special characters.
-     *
-     * @param s String describing a set of files or URLs dragged into JabRef
-     * @return a List<File> containing the individual file objects.
-     *
-     */
-    public static List<File> getFilesFromDraggedFilesString(String s) {
-        // Split into lines:
-        String[] lines = s.replace("\r", "").split("\n");
-        List<File> files = new ArrayList<>();
-        for (String line1 : lines) {
-            String line = line1;
-
-            // Try to use url.toURI() to translate URL specific sequences like %20 into
-            // standard characters:
-            File fl = null;
-            try {
-                URL url = new URL(line);
-                fl = new File(url.toURI());
-            } catch (MalformedURLException | URISyntaxException e) {
-                LOGGER.warn("Could not get file", e);
-            }
-
-            // Unless an exception was thrown, we should have the sanitized path:
-            if (fl != null) {
-                line = fl.getPath();
-            } else if (line.startsWith("file:")) {
-                line = line.substring(5);
-            } else {
-                continue;
-            }
-            // Under Gnome, the link is given as file:///...., so we
-            // need to strip the extra slashes:
-            if (line.startsWith("//")) {
-                line = line.substring(2);
-            }
-
-            File f = new File(line);
-            if (f.exists()) {
-                files.add(f);
-            }
-        }
-        return files;
-    }
-
-    /**
      * Handle a String describing a set of files or URLs dragged into JabRef.
      *
-     * @param s String describing a set of files or URLs dragged into JabRef
+     * @param s       String describing a set of files or URLs dragged into JabRef
      * @param dropRow The row in the table where the files were dragged.
      * @return success status for the operation
-     *
      */
     private boolean handleDraggedFilenames(String s, final int dropRow) {
 
@@ -310,7 +294,7 @@ public class EntryTableTransferHandler extends TransferHandler {
     /**
      * Handle a List containing File objects for a set of files to import.
      *
-     * @param files A List containing File instances pointing to files.
+     * @param files   A List containing File instances pointing to files.
      * @param dropRow @param dropRow The row in the table where the files were dragged.
      * @return success status for the operation
      */
@@ -344,7 +328,7 @@ public class EntryTableTransferHandler extends TransferHandler {
      * will attempt to import into the current database.
      *
      * @param fileNames The names of the files to open.
-     * @param dropRow success status for the operation
+     * @param dropRow   success status for the operation
      */
     private void loadOrImportFiles(List<String> fileNames, int dropRow) {
 

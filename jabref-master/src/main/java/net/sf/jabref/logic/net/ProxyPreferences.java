@@ -1,8 +1,8 @@
 package net.sf.jabref.logic.net;
 
-import java.util.Objects;
-
 import net.sf.jabref.JabRefPreferences;
+
+import java.util.Objects;
 
 public class ProxyPreferences {
 
@@ -14,13 +14,23 @@ public class ProxyPreferences {
     private final String password;
 
     public ProxyPreferences(Boolean useProxy, String hostname, String port, Boolean useAuthentication, String username,
-            String password) {
+                            String password) {
         this.useProxy = useProxy;
         this.hostname = hostname;
         this.port = port;
         this.useAuthentication = useAuthentication;
         this.username = username;
         this.password = password;
+    }
+
+    public static ProxyPreferences loadFromPreferences(JabRefPreferences preferences) {
+        Boolean useProxy = preferences.getBoolean(JabRefPreferences.PROXY_USE);
+        String hostname = preferences.get(JabRefPreferences.PROXY_HOSTNAME);
+        String port = preferences.get(JabRefPreferences.PROXY_PORT);
+        Boolean useAuthentication = preferences.getBoolean(JabRefPreferences.PROXY_USE_AUTHENTICATION);
+        String username = preferences.get(JabRefPreferences.PROXY_USERNAME);
+        String password = preferences.get(JabRefPreferences.PROXY_PASSWORD);
+        return new ProxyPreferences(useProxy, hostname, port, useAuthentication, username, password);
     }
 
     public final Boolean isUseProxy() {
@@ -54,16 +64,6 @@ public class ProxyPreferences {
         preferences.putBoolean(JabRefPreferences.PROXY_USE_AUTHENTICATION, isUseAuthentication());
         preferences.put(JabRefPreferences.PROXY_USERNAME, getUsername());
         preferences.put(JabRefPreferences.PROXY_PASSWORD, getPassword());
-    }
-
-    public static ProxyPreferences loadFromPreferences(JabRefPreferences preferences) {
-        Boolean useProxy = preferences.getBoolean(JabRefPreferences.PROXY_USE);
-        String hostname = preferences.get(JabRefPreferences.PROXY_HOSTNAME);
-        String port = preferences.get(JabRefPreferences.PROXY_PORT);
-        Boolean useAuthentication = preferences.getBoolean(JabRefPreferences.PROXY_USE_AUTHENTICATION);
-        String username = preferences.get(JabRefPreferences.PROXY_USERNAME);
-        String password = preferences.get(JabRefPreferences.PROXY_PASSWORD);
-        return new ProxyPreferences(useProxy, hostname, port, useAuthentication, username, password);
     }
 
     @Override

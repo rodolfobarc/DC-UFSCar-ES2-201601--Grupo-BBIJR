@@ -15,13 +15,13 @@
 */
 package net.sf.jabref.importer.fileformat;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * This class provides the reformatting needed when reading BibTeX fields formatted
@@ -29,10 +29,9 @@ import net.sf.jabref.logic.util.strings.StringUtil;
  * writing the same fields.
  */
 public class FieldContentParser {
-    private final HashSet<String> multiLineFields;
-
     // 's' matches a space, tab, new line, carriage return.
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    private final HashSet<String> multiLineFields;
 
     public FieldContentParser() {
         multiLineFields = new HashSet<>();
@@ -48,7 +47,7 @@ public class FieldContentParser {
      * Performs the reformatting
      *
      * @param fieldContent the content to format
-     * @param bibtexField the name of the bibtex field
+     * @param bibtexField  the name of the bibtex field
      * @return the formatted field content.
      */
     public String format(String fieldContent, String bibtexField) {

@@ -15,37 +15,18 @@
  */
 package net.sf.jabref.gui.openoffice;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableColumnModel;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
+import ca.odell.glazedlists.swing.DefaultEventTableModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -65,21 +46,19 @@ import net.sf.jabref.logic.openoffice.OpenOfficePreferences;
 import net.sf.jabref.logic.openoffice.StyleLoader;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
-
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
-import ca.odell.glazedlists.swing.DefaultEventTableModel;
-import ca.odell.glazedlists.swing.GlazedListsSwing;
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This class produces a dialog box for choosing a style file.
@@ -89,11 +68,6 @@ class StyleSelectDialog {
     private static final Log LOGGER = LogFactory.getLog(StyleSelectDialog.class);
 
     private final JabRefFrame frame;
-    private EventList<OOBibStyle> styles;
-    private JDialog diag;
-    private JTable table;
-    private DefaultEventTableModel<OOBibStyle> tableModel;
-    private DefaultEventSelectionModel<OOBibStyle> selectionModel;
     private final JPopupMenu popup = new JPopupMenu();
     private final JMenuItem edit = new JMenuItem(Localization.lang("Edit"));
     private final JMenuItem show = new JMenuItem(Localization.lang("View"));
@@ -101,19 +75,20 @@ class StyleSelectDialog {
     private final JMenuItem reload = new JMenuItem(Localization.lang("Reload"));
     private final JButton addButton = new JButton(IconTheme.JabRefIcon.ADD_NOBOX.getIcon());
     private final JButton removeButton = new JButton(IconTheme.JabRefIcon.REMOVE_NOBOX.getIcon());
-    private PreviewPanel preview;
-    private ActionListener removeAction;
-
     private final Rectangle toRect = new Rectangle(0, 0, 1, 1);
     private final JButton ok = new JButton(Localization.lang("OK"));
     private final JButton cancel = new JButton(Localization.lang("Cancel"));
     private final BibEntry prevEntry = new BibEntry(IdGenerator.next());
-
-    private boolean okPressed;
-
     private final StyleLoader loader;
-
     private final OpenOfficePreferences preferences;
+    private EventList<OOBibStyle> styles;
+    private JDialog diag;
+    private JTable table;
+    private DefaultEventTableModel<OOBibStyle> tableModel;
+    private DefaultEventSelectionModel<OOBibStyle> selectionModel;
+    private PreviewPanel preview;
+    private ActionListener removeAction;
+    private boolean okPressed;
 
 
     public StyleSelectDialog(JabRefFrame frame, OpenOfficePreferences preferences, StyleLoader loader) {
@@ -172,13 +147,13 @@ class StyleSelectDialog {
 
             @Override
             public void actionPerformed(ActionEvent event) {
-                        if ((table.getRowCount() == 0) || (table.getSelectedRowCount() == 0)) {
-                            JOptionPane.showMessageDialog(diag,
-                                    Localization
-                                            .lang("You must select a valid style file."),
-                                    Localization.lang("Style selection"), JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+                if ((table.getRowCount() == 0) || (table.getSelectedRowCount() == 0)) {
+                    JOptionPane.showMessageDialog(diag,
+                            Localization
+                                    .lang("You must select a valid style file."),
+                            Localization.lang("Style selection"), JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 okPressed = true;
                 storeSettings();
                 diag.dispose();
@@ -359,8 +334,10 @@ class StyleSelectDialog {
         }
         return Optional.empty();
     }
+
     /**
      * Get the currently selected style.
+     *
      * @return the selected style, or empty if no style is selected.
      */
     private Optional<OOBibStyle> getSelectedStyle() {
@@ -382,50 +359,12 @@ class StyleSelectDialog {
         prevEntry.setField("www", "https://github.com/JabRef");
     }
 
-
-    static class StyleTableFormat implements TableFormat<OOBibStyle> {
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public String getColumnName(int i) {
-            switch (i) {
-            case 0:
-                return Localization.lang("Name");
-            case 1:
-                return Localization.lang("Journals");
-            case 2:
-                return Localization.lang("File");
-            default:
-                return "";
-            }
-        }
-
-        @Override
-        public Object getColumnValue(OOBibStyle style, int i) {
-            switch (i) {
-            case 0:
-                return style.getName();
-            case 1:
-                return String.join(", ", style.getJournals());
-            case 2:
-                return style.isFromResource() ? Localization.lang("Internal style") : style.getFile().getName();
-            default:
-                return "";
-            }
-        }
-    }
-
-
     public boolean isOkPressed() {
         return okPressed;
     }
 
     private void tablePopup(MouseEvent e) {
-            popup.show(e.getComponent(), e.getX(), e.getY());
+        popup.show(e.getComponent(), e.getX(), e.getY());
     }
 
     private void displayStyle(OOBibStyle style) {
@@ -450,6 +389,41 @@ class StyleSelectDialog {
         dd.setVisible(true);
     }
 
+    static class StyleTableFormat implements TableFormat<OOBibStyle> {
+
+        @Override
+        public int getColumnCount() {
+            return 3;
+        }
+
+        @Override
+        public String getColumnName(int i) {
+            switch (i) {
+                case 0:
+                    return Localization.lang("Name");
+                case 1:
+                    return Localization.lang("Journals");
+                case 2:
+                    return Localization.lang("File");
+                default:
+                    return "";
+            }
+        }
+
+        @Override
+        public Object getColumnValue(OOBibStyle style, int i) {
+            switch (i) {
+                case 0:
+                    return style.getName();
+                case 1:
+                    return String.join(", ", style.getJournals());
+                case 2:
+                    return style.isFromResource() ? Localization.lang("Internal style") : style.getFile().getName();
+                default:
+                    return "";
+            }
+        }
+    }
 
     /**
      * The listener for the Glazed list monitoring the current selection.

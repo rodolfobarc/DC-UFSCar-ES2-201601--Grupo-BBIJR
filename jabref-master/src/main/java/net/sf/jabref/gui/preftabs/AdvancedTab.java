@@ -15,16 +15,8 @@
  */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.util.Optional;
-
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.help.HelpAction;
@@ -34,8 +26,9 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.remote.RemotePreferences;
 import net.sf.jabref.logic.remote.RemoteUtil;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Optional;
 
 class AdvancedTab extends JPanel implements PrefsTab {
 
@@ -72,9 +65,9 @@ class AdvancedTab extends JPanel implements PrefsTab {
         builder.append(new JPanel());
         builder.append(new JLabel("<html>"
                 + Localization.lang("This feature lets new files be opened or imported into an "
-                        + "already running instance of JabRef<BR>instead of opening a new instance. For instance, this "
-                        + "is useful when you open a file in JabRef<br>from your web browser."
-                        + "<BR>Note that this will prevent you from running more than one instance of JabRef at a time.")
+                + "already running instance of JabRef<BR>instead of opening a new instance. For instance, this "
+                + "is useful when you open a file in JabRef<br>from your web browser."
+                + "<BR>Note that this will prevent you from running more than one instance of JabRef at a time.")
                 + "</html>"));
         builder.nextLine();
         builder.append(new JPanel());

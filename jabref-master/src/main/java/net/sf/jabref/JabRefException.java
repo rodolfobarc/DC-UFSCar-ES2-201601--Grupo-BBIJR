@@ -5,9 +5,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class JabRefException extends Exception {
 
-    private String localizedMessage;
-
     private static final Log LOGGER = LogFactory.getLog(JabRefException.class);
+    private String localizedMessage;
 
     public JabRefException(String message) {
         super(message);

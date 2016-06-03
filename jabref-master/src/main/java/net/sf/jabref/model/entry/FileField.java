@@ -67,9 +67,9 @@ public class FileField {
         }
         ParsedFileField field = new ParsedFileField(entry.get(0), entry.get(1), entry.get(2));
         // link is only mandatory field
-        if(field.getDescription().isEmpty() && field.getLink().isEmpty() && !field.getFileType().isEmpty()) {
+        if (field.getDescription().isEmpty() && field.getLink().isEmpty() && !field.getFileType().isEmpty()) {
             field = new ParsedFileField("", field.getFileType(), "");
-        } else if(!field.getDescription().isEmpty() && field.getLink().isEmpty() && field.getFileType().isEmpty()) {
+        } else if (!field.getDescription().isEmpty() && field.getLink().isEmpty() && field.getFileType().isEmpty()) {
             field = new ParsedFileField("", field.getDescription(), "");
         }
         entry.clear();
@@ -80,7 +80,7 @@ public class FileField {
         String[][] array = new String[fields.size()][];
         int i = 0;
         for (ParsedFileField entry : fields) {
-            array[i] = new String[] {entry.getDescription(), entry.getLink(), entry.getFileType()};
+            array[i] = new String[]{entry.getDescription(), entry.getLink(), entry.getFileType()};
             i++;
         }
         return encodeStringArray(array);
@@ -93,6 +93,7 @@ public class FileField {
     /**
      * Encodes a two-dimensional String array into a single string, using ':' and
      * ';' as separators. The characters ':' and ';' are escaped with '\'.
+     *
      * @param values The String array.
      * @return The encoded String.
      */
@@ -103,6 +104,7 @@ public class FileField {
     /**
      * Encodes a String array into a single string, using ':' as separator.
      * The characters ':' and ';' are escaped with '\'.
+     *
      * @param entry The String array.
      * @return The encoded String.
      */

@@ -15,12 +15,6 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.external.ExternalFileType;
@@ -29,6 +23,12 @@ import net.sf.jabref.gui.FileListEntry;
 import net.sf.jabref.gui.FileListTableModel;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.List;
+import java.util.Optional;
+import java.util.StringTokenizer;
 
 /**
  * The interface EntryFromFileCreator does twice: <br>
@@ -39,13 +39,11 @@ import net.sf.jabref.model.entry.BibEntry;
  *
  * @author Dan&Nosh
  * @version 25.11.2008 | 23:39:03
- *
  */
 public abstract class EntryFromFileCreator implements FileFilter {
 
-    protected final ExternalFileType externalFileType;
-
     private static final int MIN_PATH_TOKEN_LENGTH = 4;
+    protected final ExternalFileType externalFileType;
 
     /**
      * Constructor. <br>
@@ -56,6 +54,33 @@ public abstract class EntryFromFileCreator implements FileFilter {
      */
     EntryFromFileCreator(ExternalFileType externalFileType) {
         this.externalFileType = externalFileType;
+    }
+
+    /**
+     * Splits the path to the file and builds a keywords String in the format
+     * that is used by Jabref.
+     *
+     * @param absolutePath
+     * @return
+     */
+    private static String extractPathesToKeyWordsfield(String absolutePath) {
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(absolutePath, String.valueOf(File.separatorChar));
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (!st.hasMoreTokens()) {
+                // ignore last token. The filename ist not wanted as keyword.
+                break;
+            }
+            if (token.length() >= MIN_PATH_TOKEN_LENGTH) {
+                if (sb.length() > 0) {
+                    // TODO: find Jabref constant for delimter
+                    sb.append(',');
+                }
+                sb.append(token);
+            }
+        }
+        return sb.toString();
     }
 
     protected abstract Optional<BibEntry> createBibtexEntry(File f);
@@ -81,7 +106,7 @@ public abstract class EntryFromFileCreator implements FileFilter {
 
     /**
      * Name of this import format.
-     *
+     * <p>
      * <p>
      * The name must be unique.
      * </p>
@@ -119,36 +144,11 @@ public abstract class EntryFromFileCreator implements FileFilter {
         return newEntry;
     }
 
-    /** Returns the ExternalFileType that is imported here */
+    /**
+     * Returns the ExternalFileType that is imported here
+     */
     public ExternalFileType getExternalFileType() {
         return externalFileType;
-    }
-
-    /**
-     * Splits the path to the file and builds a keywords String in the format
-     * that is used by Jabref.
-     *
-     * @param absolutePath
-     * @return
-     */
-    private static String extractPathesToKeyWordsfield(String absolutePath) {
-        StringBuilder sb = new StringBuilder();
-        StringTokenizer st = new StringTokenizer(absolutePath, String.valueOf(File.separatorChar));
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            if (!st.hasMoreTokens()) {
-                // ignore last token. The filename ist not wanted as keyword.
-                break;
-            }
-            if (token.length() >= MIN_PATH_TOKEN_LENGTH) {
-                if (sb.length() > 0) {
-                    // TODO: find Jabref constant for delimter
-                    sb.append(',');
-                }
-                sb.append(token);
-            }
-        }
-        return sb.toString();
     }
 
     private void addFileInfo(BibEntry entry, File file) {

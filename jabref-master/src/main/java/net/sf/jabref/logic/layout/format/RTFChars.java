@@ -19,24 +19,23 @@ import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.layout.StringInt;
 import net.sf.jabref.logic.util.strings.RtfCharMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Transform a LaTeX-String to RTF.
- *
+ * <p>
  * This method will:
- *
- *   1.) Remove LaTeX-Command sequences.
- *
- *   2.) Replace LaTeX-Special chars with RTF aquivalents.
- *
- *   3.) Replace emph and textit and textbf with their RTF replacements.
- *
- *   4.) Take special care to save all unicode characters correctly.
- *
- *   5.) Replace --- by \emdash and -- by \endash.
+ * <p>
+ * 1.) Remove LaTeX-Command sequences.
+ * <p>
+ * 2.) Replace LaTeX-Special chars with RTF aquivalents.
+ * <p>
+ * 3.) Replace emph and textit and textbf with their RTF replacements.
+ * <p>
+ * 4.) Take special care to save all unicode characters correctly.
+ * <p>
+ * 5.) Replace --- by \emdash and -- by \endash.
  */
 public class RTFChars implements LayoutFormatter {
 
@@ -60,9 +59,7 @@ public class RTFChars implements LayoutFormatter {
             if (escaped && (c == '\\')) {
                 sb.append('\\');
                 escaped = false;
-            }
-
-            else if (c == '\\') {
+            } else if (c == '\\') {
                 escaped = true;
                 incommand = true;
                 currentCommand = new StringBuilder();
@@ -74,7 +71,8 @@ public class RTFChars implements LayoutFormatter {
                 if (incommand) {
                     // Else we are in a command, and should not keep the letter.
                     currentCommand.append(c);
-                    testCharCom: if ((currentCommand.length() == 1)
+                    testCharCom:
+                    if ((currentCommand.length() == 1)
                             && Globals.SPECIAL_COMMAND_CHARS.contains(currentCommand.toString())) {
                         // This indicates that we are in a command of the type
                         // \^o or \~{n}
@@ -109,7 +107,8 @@ public class RTFChars implements LayoutFormatter {
                 }
 
             } else {
-                testContent: if (!incommand || (!Character.isWhitespace(c) && (c != '{') && (c != '}'))) {
+                testContent:
+                if (!incommand || (!Character.isWhitespace(c) && (c != '{') && (c != '}'))) {
                     sb.append(c);
                 } else {
                     assert incommand;
@@ -183,8 +182,8 @@ public class RTFChars implements LayoutFormatter {
     }
 
     /**
-     * @param text the text to extract the part from
-     * @param i the position to start
+     * @param text                  the text to extract the part from
+     * @param i                     the position to start
      * @param commandNestedInBraces true if the command is nested in braces (\emph{xy}), false if spaces are sued (\emph xy)
      * @return a tuple of number of added characters and the extracted part
      */
@@ -193,24 +192,25 @@ public class RTFChars implements LayoutFormatter {
         int count = 0;
         int icount = i;
         StringBuilder part = new StringBuilder();
-        loop: while ((count >= 0) && (icount < text.length())) {
+        loop:
+        while ((count >= 0) && (icount < text.length())) {
             icount++;
             c = text.charAt(icount);
             switch (c) {
-            case '}':
-                count--;
-                break;
-            case '{':
-                count++;
-                break;
-            case ' ':
-                if (commandNestedInBraces) {
-                    // in any case, a space terminates the loop
-                    break loop;
-                }
-                break;
-            default:
-                break;
+                case '}':
+                    count--;
+                    break;
+                case '{':
+                    count++;
+                    break;
+                case ' ':
+                    if (commandNestedInBraces) {
+                        // in any case, a space terminates the loop
+                        break loop;
+                    }
+                    break;
+                default:
+                    break;
             }
             part.append(c);
         }

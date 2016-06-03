@@ -15,9 +15,6 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableInsertString;
@@ -26,18 +23,17 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+
 class StringAddChange extends Change {
 
+    private static final Log LOGGER = LogFactory.getLog(StringAddChange.class);
     private final BibtexString string;
-
     private final InfoPane tp = new InfoPane();
     private final JScrollPane sp = new JScrollPane(tp);
-
-    private static final Log LOGGER = LogFactory.getLog(StringAddChange.class);
 
 
     public StringAddChange(BibtexString string) {

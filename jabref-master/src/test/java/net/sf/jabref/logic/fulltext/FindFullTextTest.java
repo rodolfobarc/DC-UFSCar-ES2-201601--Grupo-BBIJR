@@ -1,16 +1,15 @@
 package net.sf.jabref.logic.fulltext;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Optional;
-
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 

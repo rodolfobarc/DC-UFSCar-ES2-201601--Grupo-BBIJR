@@ -1,34 +1,23 @@
 package net.sf.jabref.model.entry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class AuthorListParser {
 
-    /** the raw bibtex author/editor field */
-    private String original;
-
-    /** index of the start in original, for example to point to 'abc' in 'abc xyz', tokenStart=2 */
-    private int tokenStart;
-
-    /** index of the end in original, for example to point to 'abc' in 'abc xyz', tokenEnd=5 */
-    private int tokenEnd;
-
-    /** end of token abbreviation (always: tokenStart < tokenAbbr <= tokenEnd), only valid if getToken returns TOKEN_WORD */
-    private int tokenAbbr;
-
-    /** either space of dash */
-    private char tokenTerm;
-
-    /** true if upper-case token, false if lower-case */
-    private boolean tokenCase;
-
-    
     // Constant HashSet containing names of TeX special characters
     private static final Set<String> TEX_NAMES = new HashSet<>();
+    private static final int TOKEN_GROUP_LENGTH = 4; // number of entries for
+    // the following are offsets of an entry in a group of entries for one token
+    private static final int OFFSET_TOKEN = 0; // String -- token itself;
+    private static final int OFFSET_TOKEN_ABBR = 1; // String -- token abbreviation;
+    private static final int OFFSET_TOKEN_TERM = 2; // Character -- token terminator (either " " or
+    // Token types (returned by getToken procedure)
+    private static final int TOKEN_EOF = 0;
+    private static final int TOKEN_AND = 1;
+    private static final int TOKEN_COMMA = 2;
+    private static final int TOKEN_WORD = 3;
+
+    // a token
 
     // and static constructor to initialize it
     static {
@@ -46,27 +35,31 @@ public class AuthorListParser {
         TEX_NAMES.add("j");
     }
 
-
-    private static final int TOKEN_GROUP_LENGTH = 4; // number of entries for
-
-    // a token
-
-    // the following are offsets of an entry in a group of entries for one token
-    private static final int OFFSET_TOKEN = 0; // String -- token itself;
-
-    private static final int OFFSET_TOKEN_ABBR = 1; // String -- token abbreviation;
-
-    private static final int OFFSET_TOKEN_TERM = 2; // Character -- token terminator (either " " or
+    /**
+     * the raw bibtex author/editor field
+     */
+    private String original;
+    /**
+     * index of the start in original, for example to point to 'abc' in 'abc xyz', tokenStart=2
+     */
+    private int tokenStart;
     // "-") comma)
-
-    // Token types (returned by getToken procedure)
-    private static final int TOKEN_EOF = 0;
-
-    private static final int TOKEN_AND = 1;
-
-    private static final int TOKEN_COMMA = 2;
-
-    private static final int TOKEN_WORD = 3;
+    /**
+     * index of the end in original, for example to point to 'abc' in 'abc xyz', tokenEnd=5
+     */
+    private int tokenEnd;
+    /**
+     * end of token abbreviation (always: tokenStart < tokenAbbr <= tokenEnd), only valid if getToken returns TOKEN_WORD
+     */
+    private int tokenAbbr;
+    /**
+     * either space of dash
+     */
+    private char tokenTerm;
+    /**
+     * true if upper-case token, false if lower-case
+     */
+    private boolean tokenCase;
 
     /**
      * Parses the String containing person names and returns a list of person information.
@@ -113,40 +106,40 @@ public class AuthorListParser {
         while (continueLoop) {
             int token = getToken();
             switch (token) {
-            case TOKEN_EOF:
-            case TOKEN_AND:
-                continueLoop = false;
-                break;
-            case TOKEN_COMMA:
-                if (commaFirst < 0) {
-                    commaFirst = tokens.size();
-                } else if (commaSecond < 0) {
-                    commaSecond = tokens.size();
-                }
-                break;
-            case TOKEN_WORD:
-                tokens.add(original.substring(tokenStart, tokenEnd));
-                tokens.add(original.substring(tokenStart, tokenAbbr));
-                tokens.add(tokenTerm);
-                tokens.add(tokenCase);
-                if (commaFirst >= 0) {
+                case TOKEN_EOF:
+                case TOKEN_AND:
+                    continueLoop = false;
                     break;
-                }
-                if (lastStart >= 0) {
+                case TOKEN_COMMA:
+                    if (commaFirst < 0) {
+                        commaFirst = tokens.size();
+                    } else if (commaSecond < 0) {
+                        commaSecond = tokens.size();
+                    }
                     break;
-                }
-                if (vonStart < 0) {
-                    if (!tokenCase) {
-                        vonStart = tokens.size() - TOKEN_GROUP_LENGTH;
+                case TOKEN_WORD:
+                    tokens.add(original.substring(tokenStart, tokenEnd));
+                    tokens.add(original.substring(tokenStart, tokenAbbr));
+                    tokens.add(tokenTerm);
+                    tokens.add(tokenCase);
+                    if (commaFirst >= 0) {
                         break;
                     }
-                } else if ((lastStart < 0) && tokenCase) {
-                    lastStart = tokens.size() - TOKEN_GROUP_LENGTH;
+                    if (lastStart >= 0) {
+                        break;
+                    }
+                    if (vonStart < 0) {
+                        if (!tokenCase) {
+                            vonStart = tokens.size() - TOKEN_GROUP_LENGTH;
+                            break;
+                        }
+                    } else if ((lastStart < 0) && tokenCase) {
+                        lastStart = tokens.size() - TOKEN_GROUP_LENGTH;
+                        break;
+                    }
                     break;
-                }
-                break;
-            default:
-                break;
+                default:
+                    break;
             }
         }
 
@@ -248,7 +241,7 @@ public class AuthorListParser {
                 false);
         String jrPart = jrPartStart < 0 ? null : concatTokens(tokens, jrPartStart, jrPartEnd, OFFSET_TOKEN, false);
 
-        if(firstPart != null && lastPart != null && lastPart.equals(lastPart.toUpperCase()) && lastPart.length() < 5) {
+        if (firstPart != null && lastPart != null && lastPart.equals(lastPart.toUpperCase()) && lastPart.length() < 5) {
             // The last part is a small string in complete upper case, so interpret it as initial of the first name
             // This is the case for example in "Smith SH" which we think of as lastname=Smith and firstname=SH
             // The length < 5 constraint should allow for "Smith S.H." as input
@@ -264,14 +257,14 @@ public class AuthorListParser {
      * that start < end; thus, there exists at least one token to be
      * concatenated.
      *
-     * @param start     index of the first token to be concatenated in 'tokens' Vector
-     *                  (always divisible by TOKEN_GROUP_LENGTH).
-     * @param end       index of the first token not to be concatenated in 'tokens'
-     *                  Vector (always divisible by TOKEN_GROUP_LENGTH).
-     * @param offset    offset within token group (used to request concatenation of
-     *                  either full tokens or abbreviation).
+     * @param start    index of the first token to be concatenated in 'tokens' Vector
+     *                 (always divisible by TOKEN_GROUP_LENGTH).
+     * @param end      index of the first token not to be concatenated in 'tokens'
+     *                 Vector (always divisible by TOKEN_GROUP_LENGTH).
+     * @param offset   offset within token group (used to request concatenation of
+     *                 either full tokens or abbreviation).
      * @param dotAfter <CODE>true</CODE> -- add period after each token, <CODE>false</CODE> --
-     *                  do not add.
+     *                 do not add.
      * @return the result of concatenation.
      */
     private String concatTokens(List<Object> tokens, int start, int end, int offset, boolean dotAfter) {

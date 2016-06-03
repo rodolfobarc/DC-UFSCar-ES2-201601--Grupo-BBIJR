@@ -15,27 +15,19 @@
  */
 package net.sf.jabref.gui.util.component;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicLabelUI;
+import java.awt.*;
 
 /**
  * A UI delegate for JLabel that rotates the label 90°
- * <P>
+ * <p>
  * Extends {@link BasicLabelUI}.
- * <P>
+ * <p>
  * The only difference between the appearance of labels in the Basic and Metal L&Fs is the manner in which diabled text
  * is painted. As VerticalLabelUI does not override the method paintDisabledText, this class can be adapted for Metal
  * L&F by extending MetalLabelUI instead of BasicLabelUI.
- * <P>
+ * <p>
  * No other changes are required.
  *
  * @author Darryl
@@ -50,11 +42,38 @@ public class VerticalLabelUI extends BasicLabelUI {
 
     /**
      * Constructs a <code>VerticalLabelUI</code> with the desired rotation.
-     * <P>
+     * <p>
+     *
      * @param clockwise true to rotate clockwise, false for anticlockwise
      */
     public VerticalLabelUI(boolean clockwise) {
         this.clockwise = clockwise;
+    }
+
+    private static Dimension transposeDimension(Dimension from) {
+        return new Dimension(from.height, from.width + 2);
+    }
+
+    private static Rectangle transposeRectangle(Rectangle from, Rectangle to) {
+        Rectangle destination = to;
+        if (destination == null) {
+            destination = new Rectangle();
+        }
+        destination.x = from.y;
+        destination.y = from.x;
+        destination.width = from.height;
+        destination.height = from.width;
+        return destination;
+    }
+
+    private static void copyRectangle(Rectangle from, Rectangle to) {
+        if (to == null) {
+            return;
+        }
+        to.x = from.x;
+        to.y = from.y;
+        to.width = from.width;
+        to.height = from.height;
     }
 
     /**
@@ -90,8 +109,8 @@ public class VerticalLabelUI extends BasicLabelUI {
      */
     @Override
     protected String layoutCL(JLabel label, FontMetrics fontMetrics,
-            String text, Icon icon, Rectangle viewR, Rectangle iconR,
-            Rectangle textR) {
+                              String text, Icon icon, Rectangle viewR, Rectangle iconR,
+                              Rectangle textR) {
 
         String result = text;
         verticalViewR = transposeRectangle(viewR, verticalViewR);
@@ -150,31 +169,5 @@ public class VerticalLabelUI extends BasicLabelUI {
     @Override
     public Dimension getMinimumSize(JComponent c) {
         return transposeDimension(super.getMinimumSize(c));
-    }
-
-    private static Dimension transposeDimension(Dimension from) {
-        return new Dimension(from.height, from.width + 2);
-    }
-
-    private static Rectangle transposeRectangle(Rectangle from, Rectangle to) {
-        Rectangle destination = to;
-        if (destination == null) {
-            destination = new Rectangle();
-        }
-        destination.x = from.y;
-        destination.y = from.x;
-        destination.width = from.height;
-        destination.height = from.width;
-        return destination;
-    }
-
-    private static void copyRectangle(Rectangle from, Rectangle to) {
-        if (to == null) {
-            return;
-        }
-        to.x = from.x;
-        to.y = from.y;
-        to.width = from.width;
-        to.height = from.height;
     }
 }

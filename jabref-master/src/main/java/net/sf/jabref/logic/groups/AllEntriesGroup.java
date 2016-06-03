@@ -15,11 +15,11 @@
 */
 package net.sf.jabref.logic.groups;
 
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This group contains all entries. Always. At any time!
@@ -37,16 +37,16 @@ public class AllEntriesGroup extends AbstractGroup {
             throw new Exception(
                     "Internal error: AllEntriesGroup cannot be created from \""
                             + s + "\". "
-                    + "Please report this on https://github.com/JabRef/jabref/issues");
+                            + "Please report this on https://github.com/JabRef/jabref/issues");
         }
         switch (version) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-            return new AllEntriesGroup();
-        default:
-            throw new UnsupportedVersionException("AllEntriesGroup", version);
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                return new AllEntriesGroup();
+            default:
+                throw new UnsupportedVersionException("AllEntriesGroup", version);
         }
     }
 

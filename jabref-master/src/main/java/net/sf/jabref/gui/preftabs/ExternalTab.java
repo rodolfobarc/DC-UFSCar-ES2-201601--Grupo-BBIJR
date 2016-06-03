@@ -15,16 +15,8 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.external.ExternalFileTypeEditor;
 import net.sf.jabref.external.push.PushToApplication;
@@ -33,8 +25,8 @@ import net.sf.jabref.external.push.PushToApplications;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
 
 class ExternalTab extends JPanel implements PrefsTab {
     private final JabRefPreferences prefs;
@@ -76,7 +68,7 @@ class ExternalTab extends JPanel implements PrefsTab {
 
         JPanel butpan = new JPanel();
         butpan.setLayout(new GridLayout(3, 3));
-        for(PushToApplication pushToApplication : PushToApplications.getApplications()) {
+        for (PushToApplication pushToApplication : PushToApplications.getApplications()) {
             addSettingsButton(pushToApplication, butpan);
         }
         builder.append(new JPanel());

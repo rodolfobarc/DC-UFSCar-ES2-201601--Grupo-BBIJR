@@ -15,11 +15,6 @@
  */
 package net.sf.jabref.gui.actions;
 
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -36,19 +31,21 @@ import net.sf.jabref.logic.cleanup.CleanupWorker;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
+import javax.swing.*;
+import java.util.List;
+import java.util.Objects;
+
 public class CleanupAction extends AbstractWorker {
 
     private final BasePanel panel;
     private final JabRefFrame frame;
-
+    private final JabRefPreferences preferences;
     /**
      * Global variable to count unsuccessful renames
      */
     private int unsuccessfulRenames;
-
     private boolean canceled;
     private int modifiedEntriesCount;
-    private final JabRefPreferences preferences;
 
 
     public CleanupAction(BasePanel panel, JabRefPreferences preferences) {
@@ -133,15 +130,15 @@ public class CleanupAction extends AbstractWorker {
         }
         String message;
         switch (modifiedEntriesCount) {
-        case 0:
-            message = Localization.lang("No entry needed a clean up");
-            break;
-        case 1:
-            message = Localization.lang("One entry needed a clean up");
-            break;
-        default:
-            message = Localization.lang("%0 entries needed a clean up", Integer.toString(modifiedEntriesCount));
-            break;
+            case 0:
+                message = Localization.lang("No entry needed a clean up");
+                break;
+            case 1:
+                message = Localization.lang("One entry needed a clean up");
+                break;
+            default:
+                message = Localization.lang("%0 entries needed a clean up", Integer.toString(modifiedEntriesCount));
+                break;
         }
         panel.output(message);
         frame.unblock();

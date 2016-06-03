@@ -16,29 +16,8 @@
 
 package net.sf.jabref.sql.importer;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import net.sf.jabref.MetaData;
-import net.sf.jabref.logic.groups.AbstractGroup;
-import net.sf.jabref.logic.groups.AllEntriesGroup;
-import net.sf.jabref.logic.groups.ExplicitGroup;
-import net.sf.jabref.logic.groups.GroupHierarchyType;
-import net.sf.jabref.logic.groups.GroupTreeNode;
-import net.sf.jabref.logic.groups.KeywordGroup;
-import net.sf.jabref.logic.groups.SearchGroup;
+import net.sf.jabref.logic.groups.*;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.database.BibDatabase;
@@ -50,9 +29,15 @@ import net.sf.jabref.model.entry.IdGenerator;
 import net.sf.jabref.sql.DBStrings;
 import net.sf.jabref.sql.Database;
 import net.sf.jabref.sql.SQLUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author ifsteinm.
@@ -113,8 +98,7 @@ public class DatabaseImporter {
      * @throws Exception
      */
     public List<DBImporterResult> performImport(DBStrings dbs, List<String> listOfDBs, BibDatabaseMode mode)
-            throws IllegalAccessException, InstantiationException, ClassNotFoundException, SQLException
-    {
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, SQLException {
         List<DBImporterResult> result = new ArrayList<>();
         try (Connection conn = this.connectToDB(dbs)) {
 
@@ -134,7 +118,7 @@ public class DatabaseImporter {
                     // Find entry type IDs and their mappings to type names:
                     HashMap<String, EntryType> types = new HashMap<>();
                     try (Statement entryTypes = conn.createStatement();
-                            ResultSet rsEntryType = entryTypes.executeQuery(SQLUtil.queryAllFromTable("entry_types"))) {
+                         ResultSet rsEntryType = entryTypes.executeQuery(SQLUtil.queryAllFromTable("entry_types"))) {
                         while (rsEntryType.next()) {
                             Optional<EntryType> entryType = EntryTypes.getType(rsEntryType.getString("label"), mode);
                             if (entryType.isPresent()) {
@@ -149,8 +133,8 @@ public class DatabaseImporter {
                     // Read the entries and create BibEntry instances:
                     HashMap<String, BibEntry> entries = new HashMap<>();
                     try (Statement entryStatement = conn.createStatement();
-                            ResultSet rsEntries = entryStatement.executeQuery(SQLUtil.queryAllFromTable(
-                                    "entries WHERE database_id= '" + database_id + "';"))) {
+                         ResultSet rsEntries = entryStatement.executeQuery(SQLUtil.queryAllFromTable(
+                                 "entries WHERE database_id= '" + database_id + "';"))) {
                         while (rsEntries.next()) {
                             String id = rsEntries.getString("entries_id");
                             BibEntry entry = new BibEntry(IdGenerator.next(), types.get(rsEntries.getString("entry_types_id")).getName());
@@ -169,8 +153,8 @@ public class DatabaseImporter {
                     }
                     // Import strings and preamble:
                     try (Statement stringStatement = conn.createStatement();
-                            ResultSet rsStrings = stringStatement.executeQuery(SQLUtil.queryAllFromTable(
-                                    "strings WHERE database_id='" + database_id + '\''))) {
+                         ResultSet rsStrings = stringStatement.executeQuery(SQLUtil.queryAllFromTable(
+                                 "strings WHERE database_id='" + database_id + '\''))) {
                         while (rsStrings.next()) {
                             String label = rsStrings.getString("label");
                             String content = rsStrings.getString("content");
@@ -208,7 +192,7 @@ public class DatabaseImporter {
     }
 
     private void importGroupsTree(MetaData metaData, Map<String, BibEntry> entries, Connection conn,
-            final String database_id) throws SQLException {
+                                  final String database_id) throws SQLException {
         Map<String, GroupTreeNode> groups = new HashMap<>();
         LinkedHashMap<GroupTreeNode, String> parentIds = new LinkedHashMap<>();
         GroupTreeNode rootNode = new GroupTreeNode(new AllEntriesGroup());
@@ -265,7 +249,7 @@ public class DatabaseImporter {
                 }
 
                 try (Statement entryGroup = conn.createStatement();
-                        ResultSet rsEntryGroup = entryGroup.executeQuery(SQLUtil.queryAllFromTable("entry_group"))) {
+                     ResultSet rsEntryGroup = entryGroup.executeQuery(SQLUtil.queryAllFromTable("entry_group"))) {
                     while (rsEntryGroup.next()) {
                         String entryId = rsEntryGroup.getString("entries_id");
                         String groupId = rsEntryGroup.getString("groups_id");

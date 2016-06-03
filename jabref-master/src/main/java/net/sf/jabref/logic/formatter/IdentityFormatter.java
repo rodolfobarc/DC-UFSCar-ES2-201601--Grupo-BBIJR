@@ -1,8 +1,8 @@
 package net.sf.jabref.logic.formatter;
 
-import java.util.Objects;
-
 import net.sf.jabref.logic.l10n.Localization;
+
+import java.util.Objects;
 
 /**
  * It may seem useless, but is needed as a fallback option

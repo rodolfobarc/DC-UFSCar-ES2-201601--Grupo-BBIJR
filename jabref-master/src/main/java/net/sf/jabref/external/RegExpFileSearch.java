@@ -15,26 +15,18 @@
  */
 package net.sf.jabref.external;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,14 +49,15 @@ public class RegExpFileSearch {
     /**
      * Search for file links for a set of entries using regexp. Lists of extensions and directories
      * are given.
-     * @param entries The entries to search for.
-     * @param extensions The extensions that are acceptable.
+     *
+     * @param entries     The entries to search for.
+     * @param extensions  The extensions that are acceptable.
      * @param directories The root directories to search.
-     * @param regExp The expression deciding which names are acceptable.
+     * @param regExp      The expression deciding which names are acceptable.
      * @return A map linking each given entry to a list of files matching the given criteria.
      */
     public static Map<BibEntry, List<File>> findFilesForSet(Collection<BibEntry> entries,
-            Collection<String> extensions, List<File> directories, String regExp) {
+                                                            Collection<String> extensions, List<File> directories, String regExp) {
 
         Map<BibEntry, List<File>> res = new HashMap<>();
         for (BibEntry entry : entries) {
@@ -76,14 +69,15 @@ public class RegExpFileSearch {
     /**
      * Method for searching for files using regexp. A list of extensions and directories can be
      * given.
-     * @param entry The entry to search for.
-     * @param extensions The extensions that are acceptable.
-     * @param directories The root directories to search.
+     *
+     * @param entry             The entry to search for.
+     * @param extensions        The extensions that are acceptable.
+     * @param directories       The root directories to search.
      * @param regularExpression The expression deciding which names are acceptable.
      * @return A list of files paths matching the given criteria.
      */
     private static List<File> findFiles(BibEntry entry, Collection<String> extensions,
-            Collection<File> directories, String regularExpression) {
+                                        Collection<File> directories, String regularExpression) {
 
         String extensionRegExp = '(' + String.join("|", extensions) + ')';
 
@@ -93,17 +87,17 @@ public class RegExpFileSearch {
     /**
      * Searches the given directory and filename pattern for a file for the
      * BibTeX entry.
-     *
+     * <p>
      * Used to fix:
-     *
+     * <p>
      * http://sourceforge.net/tracker/index.php?func=detail&aid=1503410&group_id=92314&atid=600309
-     *
+     * <p>
      * Requirements:
-     *  - Be able to find the associated PDF in a set of given directories.
-     *  - Be able to return a relative path or absolute path.
-     *  - Be fast.
-     *  - Allow for flexible naming schemes in the PDFs.
-     *
+     * - Be able to find the associated PDF in a set of given directories.
+     * - Be able to return a relative path or absolute path.
+     * - Be fast.
+     * - Allow for flexible naming schemes in the PDFs.
+     * <p>
      * Syntax scheme for file:
      * <ul>
      * <li>* Any subDir</li>
@@ -112,24 +106,18 @@ public class RegExpFileSearch {
      * <li>.* Anything else is taken to be a Regular expression.</li>
      * </ul>
      *
-     * @param entry
-     *            non-null
-     * @param dirs
-     *            A set of root directories to start the search from. Paths are
-     *            returned relative to these directories if relative is set to
-     *            true. These directories will not be expanded or anything. Use
-     *            the file attribute for this.
-     * @param file
-     *            non-null
-     *
-     * @param relative
-     *            whether to return relative file paths or absolute ones
-     *
+     * @param entry    non-null
+     * @param dirs     A set of root directories to start the search from. Paths are
+     *                 returned relative to these directories if relative is set to
+     *                 true. These directories will not be expanded or anything. Use
+     *                 the file attribute for this.
+     * @param file     non-null
+     * @param relative whether to return relative file paths or absolute ones
      * @return Will return the first file found to match the given criteria or
-     *         null if none was found.
+     * null if none was found.
      */
     private static List<File> findFile(BibEntry entry, Collection<File> dirs, String file,
-            String extensionRegExp) {
+                                       String extensionRegExp) {
         List<File> res = new ArrayList<>();
         for (File directory : dirs) {
             res.addAll(findFile(entry, directory.getPath(), file, extensionRegExp));
@@ -140,7 +128,6 @@ public class RegExpFileSearch {
     /**
      * Internal Version of findFile, which also accepts a current directory to
      * base the search on.
-     *
      */
     private static List<File> findFile(BibEntry entry, String directory, String file, String extensionRegExp) {
 

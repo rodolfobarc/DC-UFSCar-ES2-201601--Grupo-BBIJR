@@ -15,36 +15,20 @@
 */
 package net.sf.jabref.pdfimport;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringUtil;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 
 public class ImportDialog extends JDialog {
 
@@ -149,22 +133,22 @@ public class ImportDialog extends JDialog {
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         switch (Globals.prefs.getInt(JabRefPreferences.PREF_IMPORT_DEFAULT_PDF_IMPORT_STYLE)) {
-        case NOMETA:
-            radioButtonNoMeta.setSelected(true);
-            break;
-        case XMP:
-            radioButtonXmp.setSelected(true);
-            break;
-        case CONTENT:
-            radioButtonPDFcontent.setSelected(true);
-            break;
-        case ONLYATTACH:
-            radioButtononlyAttachPDF.setSelected(true);
-            break;
-        default:
-            // fallback
-            radioButtonPDFcontent.setSelected(true);
-            break;
+            case NOMETA:
+                radioButtonNoMeta.setSelected(true);
+                break;
+            case XMP:
+                radioButtonXmp.setSelected(true);
+                break;
+            case CONTENT:
+                radioButtonPDFcontent.setSelected(true);
+                break;
+            case ONLYATTACH:
+                radioButtononlyAttachPDF.setSelected(true);
+                break;
+            default:
+                // fallback
+                radioButtonPDFcontent.setSelected(true);
+                break;
         }
 
         this.setSize(555, 371);

@@ -15,30 +15,20 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-
+import com.jgoodies.forms.layout.Sizes;
+import com.jgoodies.looks.Options;
 import net.sf.jabref.MetaData;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.layout.Sizes;
-import com.jgoodies.looks.Options;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * A combo-box and a manage button that will add selected strings to an
  * associated entry editor.
- *
+ * <p>
  * Used to manage keywords and authors for instance.
  */
 public class FieldContentSelector extends JComponent {
@@ -54,33 +44,25 @@ public class FieldContentSelector extends JComponent {
 
 
     /**
-     *
      * Create a new FieldContentSelector.
      *
-     * @param frame
-     *            The one JabRef-Frame.
-     * @param panel
-     *            The basepanel the entry-editor is on.
-     * @param owner
-     *            The window/frame/dialog which should be the owner of the
-     *            content selector dialog.
-     * @param editor
-     *            The entry editor which will be appended by the text selected
-     *            by the user from the combobox.
-     * @param metaData
-     *            The metadata that contains the list of items to display in the
-     *            combobox under the key Globals.SELECTOR_META_PREFIX +
-     *            editor.getFieldName().
-     * @param action
-     *            The action that will be performed to after an item from the
-     *            combobox has been appended to the text in the entryeditor.
-     * @param horizontalLayout
-     *            Whether to put a 2 pixel horizontal strut between combobox and
-     *            button.
+     * @param frame            The one JabRef-Frame.
+     * @param panel            The basepanel the entry-editor is on.
+     * @param owner            The window/frame/dialog which should be the owner of the
+     *                         content selector dialog.
+     * @param editor           The entry editor which will be appended by the text selected
+     *                         by the user from the combobox.
+     * @param metaData         The metadata that contains the list of items to display in the
+     *                         combobox under the key Globals.SELECTOR_META_PREFIX +
+     *                         editor.getFieldName().
+     * @param action           The action that will be performed to after an item from the
+     *                         combobox has been appended to the text in the entryeditor.
+     * @param horizontalLayout Whether to put a 2 pixel horizontal strut between combobox and
+     *                         button.
      */
     public FieldContentSelector(JabRefFrame frame, final BasePanel panel,
-            Window owner, final FieldEditor editor, final MetaData metaData,
-            final AbstractAction action, boolean horizontalLayout, String delimiter) {
+                                Window owner, final FieldEditor editor, final MetaData metaData,
+                                final AbstractAction action, boolean horizontalLayout, String delimiter) {
 
 
         this.editor = editor;

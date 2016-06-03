@@ -16,7 +16,6 @@
 package net.sf.jabref.importer;
 
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -57,7 +56,7 @@ public class OAI2Handler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qualifiedName,
-            Attributes attributes) throws SAXException {
+                             Attributes attributes) throws SAXException {
 
         characters = new StringBuffer();
     }
@@ -102,8 +101,8 @@ public class OAI2Handler extends DefaultHandler {
             entry.setField("comments", content);
         } else if ("report-no".equals(qualifiedName)) {
             entry.setField("reportno", content);
-        } else if("doi".equals(qualifiedName)) {
-          entry.setField("doi", content);
+        } else if ("doi".equals(qualifiedName)) {
+            entry.setField("doi", content);
         } else if ("author".equals(qualifiedName)) {
             String author = forenames + " " + keyname;
             if (authors.length() > 0) {

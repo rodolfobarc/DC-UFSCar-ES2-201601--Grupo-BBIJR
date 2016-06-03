@@ -15,16 +15,6 @@
 */
 package net.sf.jabref.external.push;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
@@ -34,9 +24,15 @@ import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 
 public class PushToLyx extends AbstractPushToApplication implements PushToApplication {
 
@@ -60,11 +56,11 @@ public class PushToLyx extends AbstractPushToApplication implements PushToApplic
 
     @Override
     public void operationCompleted(BasePanel panel) {
-        if(couldNotConnect) {
+        if (couldNotConnect) {
             panel.output(Localization.lang("Error") + ": " +
                     Localization.lang("verify that LyX is running and that the lyxpipe is valid")
                     + ". [" + commandPath + "]");
-        } else if(couldNotCall) {
+        } else if (couldNotCall) {
             panel.output(Localization.lang("Error") + ": " +
                     Localization.lang("unable to write to") + " " + commandPath +
                     ".in");
@@ -82,7 +78,7 @@ public class PushToLyx extends AbstractPushToApplication implements PushToApplic
 
     @Override
     public void pushEntries(BibDatabase database, final List<BibEntry> entries, final String keyString,
-            MetaData metaData) {
+                            MetaData metaData) {
 
         couldNotConnect = false;
         couldNotCall = false;

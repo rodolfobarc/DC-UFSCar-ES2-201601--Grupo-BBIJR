@@ -1,13 +1,12 @@
 package net.sf.jabref.sql;
 
+import net.sf.jabref.BibDatabaseContext;
+
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import javax.swing.JOptionPane;
-
-import net.sf.jabref.BibDatabaseContext;
 
 public class DatabaseUtil {
 
@@ -42,7 +41,7 @@ public class DatabaseUtil {
             throws SQLException {
         String query = "SELECT database_id FROM jabref_database WHERE database_name='" + dbName + "';";
         try (Statement statement = (Statement) ((Connection) out).createStatement();
-                ResultSet rs = statement.executeQuery(query)) {
+             ResultSet rs = statement.executeQuery(query)) {
             if (rs.next()) {
                 return rs.getInt("database_id");
             } else {

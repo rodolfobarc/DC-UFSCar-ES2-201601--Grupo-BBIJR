@@ -15,18 +15,14 @@
  */
 package net.sf.jabref.importer.fileformat;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jabref.importer.ImportFormatReader;
 import net.sf.jabref.importer.OutputPrinter;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * Imports a Biblioscape Tag File. The format is described on
@@ -125,7 +121,7 @@ public class BiblioscapeImporter extends ImportFormat {
                                 + entry.getValue());
                     } else if ("SA".equals(entry.getKey())) {
                         comments
-                        .add("Secondary Authors: " + entry.getValue());
+                                .add("Secondary Authors: " + entry.getValue());
                     } else if ("NT".equals(entry.getKey())) {
                         hm.put("note", entry
                                 .getValue().toString());
@@ -134,10 +130,10 @@ public class BiblioscapeImporter extends ImportFormat {
                                 .getValue().toString());
                     } else if ("TA".equals(entry.getKey())) {
                         comments
-                        .add("Tertiary Authors: " + entry.getValue());
+                                .add("Tertiary Authors: " + entry.getValue());
                     } else if ("TT".equals(entry.getKey())) {
                         comments
-                        .add("Tertiary Title: " + entry.getValue());
+                                .add("Tertiary Title: " + entry.getValue());
                     } else if ("ED".equals(entry.getKey())) {
                         hm.put("edition", entry
                                 .getValue().toString());
@@ -146,10 +142,10 @@ public class BiblioscapeImporter extends ImportFormat {
                                 .toString();
                     } else if ("QA".equals(entry.getKey())) {
                         comments
-                        .add("Quaternary Authors: " + entry.getValue());
+                                .add("Quaternary Authors: " + entry.getValue());
                     } else if ("QT".equals(entry.getKey())) {
                         comments
-                        .add("Quaternary Title: " + entry.getValue());
+                                .add("Quaternary Title: " + entry.getValue());
                     } else if ("IS".equals(entry.getKey())) {
                         hm.put("isbn", entry
                                 .getValue().toString());
@@ -196,8 +192,7 @@ public class BiblioscapeImporter extends ImportFormat {
                     } else if ("TH".equals(entry.getKey())) {
                         comments.add("Short Title: "
                                 + entry.getValue());
-                    } else if ("SE".equals(entry.getKey()))
-                    {
+                    } else if ("SE".equals(entry.getKey())) {
                         hm.put("chapter", entry
                                 .getValue().toString());
                         //else if (entry.getKey().equals("AC"))

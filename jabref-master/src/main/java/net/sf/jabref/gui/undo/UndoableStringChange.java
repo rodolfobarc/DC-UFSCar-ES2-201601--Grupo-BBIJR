@@ -15,11 +15,11 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibtexString;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 public class UndoableStringChange extends AbstractUndoableEdit {
 
@@ -31,8 +31,8 @@ public class UndoableStringChange extends AbstractUndoableEdit {
 
 
     public UndoableStringChange(BasePanel panel,
-            BibtexString string, boolean nameChange,
-            String oldValue, String newValue) {
+                                BibtexString string, boolean nameChange,
+                                String oldValue, String newValue) {
         this.string = string;
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -43,15 +43,15 @@ public class UndoableStringChange extends AbstractUndoableEdit {
     @Override
     public String getUndoPresentationName() {
         return Localization.lang("Undo") + ": " + (nameChange ?
-           Localization.lang("change string name") :
-           Localization.lang("change string content"));
+                Localization.lang("change string name") :
+                Localization.lang("change string content"));
     }
 
     @Override
     public String getRedoPresentationName() {
         return Localization.lang("Redo") + ": " + (nameChange ?
-           Localization.lang("change string name") :
-           Localization.lang("change string content"));
+                Localization.lang("change string name") :
+                Localization.lang("change string content"));
     }
 
     @Override

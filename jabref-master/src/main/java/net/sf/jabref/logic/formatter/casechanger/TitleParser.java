@@ -12,6 +12,24 @@ public final class TitleParser {
     private StringBuffer buffer;
     private int wordStart;
 
+    private static boolean[] determineProtectedChars(String title) {
+        boolean[] isProtected = new boolean[title.length()];
+        char[] chars = title.toCharArray();
+
+        int brackets = 0;
+        for (int i = 0; i < title.length(); i++) {
+            if (chars[i] == '{') {
+                brackets++;
+            } else if (chars[i] == '}') {
+                brackets--;
+            } else {
+                isProtected[i] = brackets > 0;
+            }
+        }
+
+        return isProtected;
+    }
+
     public List<Word> parse(String title) {
         List<Word> words = new LinkedList<>();
 
@@ -56,24 +74,6 @@ public final class TitleParser {
     private void reset() {
         wordStart = -1;
         buffer = new StringBuffer();
-    }
-
-    private static boolean[] determineProtectedChars(String title) {
-        boolean[] isProtected = new boolean[title.length()];
-        char[] chars = title.toCharArray();
-
-        int brackets = 0;
-        for (int i = 0; i < title.length(); i++) {
-            if (chars[i] == '{') {
-                brackets++;
-            } else if (chars[i] == '}') {
-                brackets--;
-            } else {
-                isProtected[i] = brackets > 0;
-            }
-        }
-
-        return isProtected;
     }
 
 }

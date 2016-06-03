@@ -31,8 +31,8 @@ import java.util.TreeSet;
 public class VerifyingWriter extends OutputStreamWriter {
 
     private final CharsetEncoder encoder;
-    private boolean couldEncodeAll = true;
     private final Set<Character> problemCharacters = new TreeSet<>();
+    private boolean couldEncodeAll = true;
 
 
     public VerifyingWriter(OutputStream out, Charset encoding) {

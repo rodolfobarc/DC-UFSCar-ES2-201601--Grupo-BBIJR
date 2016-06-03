@@ -1,18 +1,17 @@
 package net.sf.jabref.model.entry;
 
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class BibtexEntryTests {
 
@@ -221,7 +220,7 @@ public class BibtexEntryTests {
 
     @Test
     public void testGetSeparatedKeywordsAreCorrect() {
-        String[] expected = {"Foo",  "Bar"};
+        String[] expected = {"Foo", "Bar"};
         Assert.assertArrayEquals(expected, keywordEntry.getSeparatedKeywords().toArray());
     }
 

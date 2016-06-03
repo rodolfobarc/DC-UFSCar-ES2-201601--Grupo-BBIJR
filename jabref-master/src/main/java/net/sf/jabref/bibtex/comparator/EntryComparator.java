@@ -15,13 +15,13 @@
 */
 package net.sf.jabref.bibtex.comparator;
 
-import java.util.Comparator;
-import java.util.Objects;
-
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * This implementation of Comparator takes care of most of the details of sorting BibTeX entries in JabRef. It is
@@ -54,6 +54,10 @@ public class EntryComparator implements Comparator<BibEntry> {
         this.descending = desc;
         this.next = null;
         this.numeric = InternalBibtexFields.isNumeric(sortField);
+    }
+
+    private static int idCompare(BibEntry b1, BibEntry b2) {
+        return b1.getId().compareTo(b2.getId());
     }
 
     @Override
@@ -136,10 +140,6 @@ public class EntryComparator implements Comparator<BibEntry> {
         } else {
             return next.compare(e1, e2); // Secondary sort if existent.
         }
-    }
-
-    private static int idCompare(BibEntry b1, BibEntry b2) {
-        return b1.getId().compareTo(b2.getId());
     }
 
 }

@@ -15,16 +15,8 @@
 */
 package net.sf.jabref.migrations;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -40,21 +32,22 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class defines the warning that can be offered when opening a pre-2.3
  * JabRef file into a later version. This warning mentions the new external file
  * link system in this version of JabRef, and offers to:
- *
+ * <p>
  * * upgrade old-style PDF/PS links into the "file" field
  * * modify General fields to show "file" instead of "pdf" / "ps"
  * * modify table column settings to show "file" instead of "pdf" / "ps"
  */
 public class FileLinksUpgradeWarning implements PostOpenAction {
 
-    private static final String[] FIELDS_TO_LOOK_FOR = new String[] {"pdf", "ps", "evastar_pdf"};
+    private static final String[] FIELDS_TO_LOOK_FOR = new String[]{"pdf", "ps", "evastar_pdf"};
 
     private boolean offerChangeSettings;
 
@@ -62,10 +55,34 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
 
     private boolean offerSetFileDir;
 
+    /**
+     * Collect file links from the given set of fields, and add them to the list contained in the field
+     * GUIGlobals.FILE_FIELD.
+     *
+     * @param database The database to modify.
+     * @param fields   The fields to find links in.
+     * @return A CompoundEdit specifying the undo operation for the whole operation.
+     */
+    private static NamedCompound upgradePdfPsToFile(BibDatabase database, String[] fields) {
+        NamedCompound ce = new NamedCompound(Localization.lang("Move external links to 'file' field"));
+
+        UpgradePdfPsToFileCleanup cleanupJob = new UpgradePdfPsToFileCleanup(Arrays.asList(fields));
+        for (BibEntry entry : database.getEntries()) {
+            List<FieldChange> changes = cleanupJob.cleanup(entry);
+
+            for (FieldChange change : changes) {
+                ce.addEdit(new UndoableFieldChange(change));
+            }
+        }
+
+        ce.end();
+        return ce;
+    }
 
     /**
      * This method should be performed if the major/minor versions recorded in the ParserResult
      * are less than or equal to 2.2.
+     *
      * @param pr
      * @return true if the file was written by a jabref version <=2.2
      */
@@ -87,6 +104,7 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
     /**
      * This method presents a dialog box explaining and offering to make the
      * changes. If the user confirms, the changes are performed.
+     *
      * @param panel
      * @param parserResult
      */
@@ -94,7 +112,7 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
     public void performAction(BasePanel panel, ParserResult parserResult) {
 
 
-        if (!isThereSomethingToBeDone())         {
+        if (!isThereSomethingToBeDone()) {
             return; // Nothing to do, just return.
         }
 
@@ -143,7 +161,7 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
             formBuilder.add(builderPanel).xy(1, row);
         }
         formBuilder.appendRows("6dlu, p");
-        formBuilder.add(doNotShowDialog).xy(1, row+2);
+        formBuilder.add(doNotShowDialog).xy(1, row + 2);
 
         message.add(formBuilder.build());
 
@@ -160,16 +178,17 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
     }
 
     private boolean isThereSomethingToBeDone() {
-        return  offerChangeSettings || offerChangeDatabase || offerSetFileDir;
+        return offerChangeSettings || offerChangeDatabase || offerSetFileDir;
     }
 
     /**
      * Check the database to find out whether any of a set of fields are used
      * for any of the entries.
+     *
      * @param database The bib database.
-     * @param fields The set of fields to look for.
+     * @param fields   The set of fields to look for.
      * @return true if at least one of the given fields is set in at least one entry,
-     *  false otherwise.
+     * false otherwise.
      */
     private boolean linksFound(BibDatabase database, String[] fields) {
         for (BibEntry entry : database.getEntries()) {
@@ -184,6 +203,7 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
 
     /**
      * This method performs the actual changes.
+     *
      * @param panel
      * @param pr
      * @param fileDir The path to the file directory to set, or null if it should not be set.
@@ -226,7 +246,8 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
     private boolean showsFileInGenFields() {
         boolean found = false;
         EntryEditorTabList tabList = Globals.prefs.getEntryEditorTabList();
-        outer: for (int i = 0; i < tabList.getTabCount(); i++) {
+        outer:
+        for (int i = 0; i < tabList.getTabCount(); i++) {
             List<String> fields = tabList.getTabFields(i);
             for (String field : fields) {
                 if (field.equals(Globals.FILE_FIELD)) {
@@ -236,29 +257,5 @@ public class FileLinksUpgradeWarning implements PostOpenAction {
             }
         }
         return found;
-    }
-
-    /**
-     * Collect file links from the given set of fields, and add them to the list contained in the field
-     * GUIGlobals.FILE_FIELD.
-     *
-     * @param database The database to modify.
-     * @param fields   The fields to find links in.
-     * @return A CompoundEdit specifying the undo operation for the whole operation.
-     */
-    private static NamedCompound upgradePdfPsToFile(BibDatabase database, String[] fields) {
-        NamedCompound ce = new NamedCompound(Localization.lang("Move external links to 'file' field"));
-
-        UpgradePdfPsToFileCleanup cleanupJob = new UpgradePdfPsToFileCleanup(Arrays.asList(fields));
-        for (BibEntry entry : database.getEntries()) {
-            List<FieldChange> changes = cleanupJob.cleanup(entry);
-
-            for (FieldChange change : changes) {
-                ce.addEdit(new UndoableFieldChange(change));
-            }
-        }
-
-        ce.end();
-        return ce;
     }
 }

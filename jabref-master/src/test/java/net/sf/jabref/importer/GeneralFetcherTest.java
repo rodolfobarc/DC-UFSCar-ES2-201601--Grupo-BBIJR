@@ -1,10 +1,5 @@
 package net.sf.jabref.importer;
 
-import java.util.ArrayList;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.JabRefMain;
 import net.sf.jabref.gui.JabRefFrame;
@@ -13,12 +8,10 @@ import net.sf.jabref.importer.fetcher.ACMPortalFetcher;
 import net.sf.jabref.importer.fetcher.EntryFetcher;
 import net.sf.jabref.importer.fetcher.GeneralFetcher;
 import net.sf.jabref.testutils.GuiTestUtils;
+import org.junit.*;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Tests GeneralFetcher
@@ -39,7 +32,8 @@ public class GeneralFetcherTest {
      *
      * @throws Exception
      */
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testResetButton() throws Exception {
         String testString = "test string";
         JTextField tf = (JTextField) GuiTestUtils.getChildNamed(GeneralFetcherTest.gf, "tf");

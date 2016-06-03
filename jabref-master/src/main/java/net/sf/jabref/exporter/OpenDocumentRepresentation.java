@@ -15,13 +15,6 @@
 */
 package net.sf.jabref.exporter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import net.sf.jabref.bibtex.comparator.FieldComparator;
 import net.sf.jabref.bibtex.comparator.FieldComparatorStack;
 import net.sf.jabref.logic.layout.format.GetOpenOfficeType;
@@ -29,24 +22,27 @@ import net.sf.jabref.logic.layout.format.RemoveBrackets;
 import net.sf.jabref.logic.layout.format.RemoveWhitespace;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Morten O. Alver.
- * Based on net.sf.jabref.MODSDatabase by Michael Wrighton
- *
+ *         Based on net.sf.jabref.MODSDatabase by Michael Wrighton
  */
 class OpenDocumentRepresentation {
 
+    private static final Log LOGGER = LogFactory.getLog(OpenDocumentRepresentation.class);
     private final List<BibEntry> entries;
     private final BibDatabase database;
-
-    private static final Log LOGGER = LogFactory.getLog(OpenDocumentRepresentation.class);
 
 
     public OpenDocumentRepresentation(BibDatabase database, List<BibEntry> entries) {

@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 /**
  * This class is based on http://stackoverflow.com/a/5626340/873282
- *
+ * <p>
  * Replaces illegal characters in given file paths.
  */
 public class FileNameCleaner {

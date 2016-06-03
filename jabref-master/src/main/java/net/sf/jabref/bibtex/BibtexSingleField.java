@@ -4,9 +4,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- *
  * Class for keeping properties of a single BibTeX/BibLatex field
- *
  */
 public class BibtexSingleField {
 
@@ -19,39 +17,26 @@ public class BibtexSingleField {
     public static final double LARGE_W = 1.5;
 
     public static final int DEFAULT_FIELD_LENGTH = 100;
-
-
-    private enum Flag {
-        STANDARD,
-        PRIVATE,
-        DISPLAYABLE,
-        WRITEABLE;
-    }
-
-
     // the field name
     private final String name;
-
     // contains the standard, private, displayable, writable infos
     // default is: not standard, public, displayable and writable
     private final Set<Flag> flags = EnumSet.of(Flag.DISPLAYABLE, Flag.WRITEABLE);
-
     private int length = DEFAULT_FIELD_LENGTH;
     private double weight = DEFAULT_FIELD_WEIGHT;
-
     // the extras data
     // fieldExtras contains mappings to tell the EntryEditor to add a specific
     // function to this field, for instance a "browse" button for the "pdf" field.
     private Set<FieldProperties> extras = EnumSet.noneOf(FieldProperties.class);
 
-    // a comma separated list of alternative bibtex-fieldnames, e.g.
-    // "LCCN" is the same like "lib-congress"
-    // private String otherNames = null ;
-
     public BibtexSingleField(String fieldName, boolean pStandard) {
         name = fieldName;
         setFlag(pStandard, Flag.STANDARD);
     }
+
+    // a comma separated list of alternative bibtex-fieldnames, e.g.
+    // "LCCN" is the same like "lib-congress"
+    // private String otherNames = null ;
 
     public BibtexSingleField(String fieldName, boolean pStandard, double pWeight) {
         name = fieldName;
@@ -74,6 +59,7 @@ public class BibtexSingleField {
 
     /**
      * Sets or onsets the given flag
+     *
      * @param setToOn if true, set the flag; if false, unset the flat
      * @param flagID, the id of the flag
      */
@@ -99,24 +85,20 @@ public class BibtexSingleField {
         return flags.contains(Flag.PRIVATE);
     }
 
-    public void setDisplayable(boolean value) {
-        setFlag(value, Flag.DISPLAYABLE);
-    }
-
     public boolean isDisplayable() {
         return flags.contains(Flag.DISPLAYABLE);
     }
 
-    public void setWriteable(boolean value) {
-        setFlag(value, Flag.WRITEABLE);
+    public void setDisplayable(boolean value) {
+        setFlag(value, Flag.DISPLAYABLE);
     }
 
     public boolean isWriteable() {
         return flags.contains(Flag.WRITEABLE);
     }
 
-    public void setExtras(Set<FieldProperties> pExtras) {
-        extras = pExtras;
+    public void setWriteable(boolean value) {
+        setFlag(value, Flag.WRITEABLE);
     }
 
     // fieldExtras contains mappings to tell the EntryEditor to add a specific
@@ -125,12 +107,16 @@ public class BibtexSingleField {
         return extras;
     }
 
-    public void setWeight(double value) {
-        this.weight = value;
+    public void setExtras(Set<FieldProperties> pExtras) {
+        extras = pExtras;
     }
 
     public double getWeight() {
         return this.weight;
+    }
+
+    public void setWeight(double value) {
+        this.weight = value;
     }
 
     /**
@@ -142,6 +128,10 @@ public class BibtexSingleField {
 
     public String getFieldName() {
         return name;
+    }
+
+    public boolean isNumeric() {
+        return extras.contains(FieldProperties.NUMERIC);
     }
 
     /**
@@ -160,8 +150,11 @@ public class BibtexSingleField {
         return this;
     }
 
-    public boolean isNumeric() {
-        return extras.contains(FieldProperties.NUMERIC);
+    private enum Flag {
+        STANDARD,
+        PRIVATE,
+        DISPLAYABLE,
+        WRITEABLE;
     }
 
 }

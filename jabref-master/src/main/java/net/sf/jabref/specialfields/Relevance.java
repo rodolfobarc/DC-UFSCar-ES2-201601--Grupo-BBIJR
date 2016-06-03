@@ -15,13 +15,12 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
-
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Relevance extends SpecialField {
 
@@ -38,16 +37,16 @@ public class Relevance extends SpecialField {
         TEXT_DONE_PATTERN = "Toggled relevance for %0 entries";
     }
 
-    @Override
-    public String getFieldName() {
-        return SpecialFieldsUtils.FIELDNAME_RELEVANCE;
-    }
-
     public static Relevance getInstance() {
         if (Relevance.INSTANCE == null) {
             Relevance.INSTANCE = new Relevance();
         }
         return Relevance.INSTANCE;
+    }
+
+    @Override
+    public String getFieldName() {
+        return SpecialFieldsUtils.FIELDNAME_RELEVANCE;
     }
 
     @Override

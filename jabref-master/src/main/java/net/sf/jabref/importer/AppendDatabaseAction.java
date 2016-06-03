@@ -15,14 +15,6 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
@@ -46,9 +38,15 @@ import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,11 +57,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class AppendDatabaseAction implements BaseAction {
 
+    private static final Log LOGGER = LogFactory.getLog(AppendDatabaseAction.class);
     private final JabRefFrame frame;
     private final BasePanel panel;
     private final List<File> filesToOpen = new ArrayList<>();
-
-    private static final Log LOGGER = LogFactory.getLog(AppendDatabaseAction.class);
 
 
     public AppendDatabaseAction(JabRefFrame frame, BasePanel panel) {
@@ -71,68 +68,10 @@ public class AppendDatabaseAction implements BaseAction {
         this.panel = panel;
     }
 
-    @Override
-    public void action() {
-
-        filesToOpen.clear();
-        final MergeDialog md = new MergeDialog(frame, Localization.lang("Append database"), true);
-        md.setLocationRelativeTo(panel);
-        md.setVisible(true);
-        if (md.isOkPressed()) {
-            List<String> chosen = FileDialogs.getMultipleFiles(frame,
-                    new File(Globals.prefs.get(JabRefPreferences.WORKING_DIRECTORY)),
-                    null, false);
-            //String chosenFile = Globals.getNewFile(frame, new File(Globals.prefs.get("workingDirectory")),
-            //                                       null, JFileChooser.OPEN_DIALOG, false);
-            if (chosen.isEmpty()) {
-                return;
-            }
-            for (String aChosen : chosen) {
-                filesToOpen.add(new File(aChosen));
-            }
-
-            // Run the actual open in a thread to prevent the program
-            // locking until the file is loaded.
-            JabRefExecutorService.INSTANCE.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    openIt(md.importEntries(), md.importStrings(),
-                            md.importGroups(), md.importSelectorWords());
-                }
-
-            });
-            //frame.getFileHistory().newFile(panel.fileToOpen.getPath());
-        }
-
-    }
-
-    private void openIt(boolean importEntries, boolean importStrings,
-            boolean importGroups, boolean importSelectorWords) {
-        if (filesToOpen.isEmpty()) {
-            return;
-        }
-        for (File file : filesToOpen) {
-            try {
-                Globals.prefs.put(JabRefPreferences.WORKING_DIRECTORY, file.getPath());
-                // Should this be done _after_ we know it was successfully opened?
-                Charset encoding = Globals.prefs.getDefaultEncoding();
-                ParserResult pr = OpenDatabaseAction.loadDatabase(file, encoding);
-                AppendDatabaseAction.mergeFromBibtex(frame, panel, pr, importEntries, importStrings,
-                        importGroups, importSelectorWords);
-                panel.output(Localization.lang("Imported from database") + " '" + file.getPath() + "'");
-            } catch (IOException | KeyCollisionException ex) {
-                LOGGER.warn("Could not open database", ex);
-                JOptionPane.showMessageDialog(panel, ex.getMessage(), Localization.lang("Open database"),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
     private static void mergeFromBibtex(JabRefFrame frame, BasePanel panel, ParserResult pr,
-            boolean importEntries, boolean importStrings,
-            boolean importGroups, boolean importSelectorWords)
-                    throws KeyCollisionException {
+                                        boolean importEntries, boolean importStrings,
+                                        boolean importGroups, boolean importSelectorWords)
+            throws KeyCollisionException {
 
         BibDatabase fromDatabase = pr.getDatabase();
         List<BibEntry> appendedEntries = new ArrayList<>();
@@ -196,5 +135,63 @@ public class AppendDatabaseAction implements BaseAction {
         ce.end();
         panel.undoManager.addEdit(ce);
         panel.markBaseChanged();
+    }
+
+    @Override
+    public void action() {
+
+        filesToOpen.clear();
+        final MergeDialog md = new MergeDialog(frame, Localization.lang("Append database"), true);
+        md.setLocationRelativeTo(panel);
+        md.setVisible(true);
+        if (md.isOkPressed()) {
+            List<String> chosen = FileDialogs.getMultipleFiles(frame,
+                    new File(Globals.prefs.get(JabRefPreferences.WORKING_DIRECTORY)),
+                    null, false);
+            //String chosenFile = Globals.getNewFile(frame, new File(Globals.prefs.get("workingDirectory")),
+            //                                       null, JFileChooser.OPEN_DIALOG, false);
+            if (chosen.isEmpty()) {
+                return;
+            }
+            for (String aChosen : chosen) {
+                filesToOpen.add(new File(aChosen));
+            }
+
+            // Run the actual open in a thread to prevent the program
+            // locking until the file is loaded.
+            JabRefExecutorService.INSTANCE.execute(new Runnable() {
+
+                @Override
+                public void run() {
+                    openIt(md.importEntries(), md.importStrings(),
+                            md.importGroups(), md.importSelectorWords());
+                }
+
+            });
+            //frame.getFileHistory().newFile(panel.fileToOpen.getPath());
+        }
+
+    }
+
+    private void openIt(boolean importEntries, boolean importStrings,
+                        boolean importGroups, boolean importSelectorWords) {
+        if (filesToOpen.isEmpty()) {
+            return;
+        }
+        for (File file : filesToOpen) {
+            try {
+                Globals.prefs.put(JabRefPreferences.WORKING_DIRECTORY, file.getPath());
+                // Should this be done _after_ we know it was successfully opened?
+                Charset encoding = Globals.prefs.getDefaultEncoding();
+                ParserResult pr = OpenDatabaseAction.loadDatabase(file, encoding);
+                AppendDatabaseAction.mergeFromBibtex(frame, panel, pr, importEntries, importStrings,
+                        importGroups, importSelectorWords);
+                panel.output(Localization.lang("Imported from database") + " '" + file.getPath() + "'");
+            } catch (IOException | KeyCollisionException ex) {
+                LOGGER.warn("Could not open database", ex);
+                JOptionPane.showMessageDialog(panel, ex.getMessage(), Localization.lang("Open database"),
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

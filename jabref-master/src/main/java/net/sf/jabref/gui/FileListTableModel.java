@@ -15,22 +15,20 @@
 */
 package net.sf.jabref.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
-
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-
 import net.sf.jabref.external.ExternalFileType;
 import net.sf.jabref.external.ExternalFileTypes;
 import net.sf.jabref.external.UnknownExternalFileType;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.StringJoiner;
 
 /**
  * Data structure to contain a list of file links, parseable from a coded string.
@@ -39,6 +37,26 @@ import net.sf.jabref.model.entry.ParsedFileField;
 public class FileListTableModel extends AbstractTableModel {
 
     private final List<FileListEntry> list = new ArrayList<>();
+
+    /**
+     * Convenience method for finding a label corresponding to the type of the
+     * first file link in the given field content. The difference between using
+     * this method and using setContent() on an instance of FileListTableModel
+     * is a slight optimization: with this method, parsing is discontinued after
+     * the first entry has been found.
+     *
+     * @param content The file field content, as fed to this class' setContent() method.
+     * @return A JLabel set up with no text and the icon of the first entry's file type,
+     * or null if no entry was found or the entry had no icon.
+     */
+    public static JLabel getFirstLabel(String content) {
+        FileListTableModel tm = new FileListTableModel();
+        FileListEntry entry = tm.setContent(content, true, true);
+        if ((entry == null) || (!entry.type.isPresent())) {
+            return null;
+        }
+        return entry.type.get().getIconLabel();
+    }
 
     @Override
     public int getRowCount() {
@@ -62,12 +80,12 @@ public class FileListTableModel extends AbstractTableModel {
         synchronized (list) {
             FileListEntry entry = list.get(rowIndex);
             switch (columnIndex) {
-            case 0:
-                return entry.description;
-            case 1:
-                return entry.link;
-            default:
-                return entry.type.isPresent() ? entry.type.get().getName() : "";
+                case 0:
+                    return entry.description;
+                case 1:
+                    return entry.link;
+                default:
+                    return entry.type.isPresent() ? entry.type.get().getName() : "";
             }
         }
     }
@@ -96,6 +114,7 @@ public class FileListTableModel extends AbstractTableModel {
     /**
      * Add an entry to the table model, and fire a change event. The change event
      * is fired on the event dispatch thread.
+     *
      * @param index The row index to insert the entry at.
      * @param entry The entry to insert.
      */
@@ -118,6 +137,7 @@ public class FileListTableModel extends AbstractTableModel {
 
     /**
      * Set up the table contents based on the flat string representation of the file list
+     *
      * @param value The string representation
      */
     public void setContent(String value) {
@@ -137,7 +157,7 @@ public class FileListTableModel extends AbstractTableModel {
         List<ParsedFileField> fields = FileField.parse(value);
         List<FileListEntry> files = new ArrayList<>();
 
-        for(ParsedFileField entry : fields) {
+        for (ParsedFileField entry : fields) {
             if (entry.isEmpty()) {
                 continue;
             }
@@ -155,25 +175,6 @@ public class FileListTableModel extends AbstractTableModel {
         }
         fireTableChanged(new TableModelEvent(this));
         return null;
-    }
-
-    /**
-     * Convenience method for finding a label corresponding to the type of the
-     * first file link in the given field content. The difference between using
-     * this method and using setContent() on an instance of FileListTableModel
-     * is a slight optimization: with this method, parsing is discontinued after
-     * the first entry has been found.
-     * @param content The file field content, as fed to this class' setContent() method.
-     * @return A JLabel set up with no text and the icon of the first entry's file type,
-     *  or null if no entry was found or the entry had no icon.
-     */
-    public static JLabel getFirstLabel(String content) {
-        FileListTableModel tm = new FileListTableModel();
-        FileListEntry entry = tm.setContent(content, true, true);
-        if ((entry == null) || (!entry.type.isPresent())) {
-            return null;
-        }
-        return entry.type.get().getIconLabel();
     }
 
     private FileListEntry decodeEntry(ParsedFileField entry, boolean deduceUnknownType) {
@@ -203,6 +204,7 @@ public class FileListTableModel extends AbstractTableModel {
     /**
      * Transform the file list shown in the table into a flat string representable
      * as a BibTeX field:
+     *
      * @return String representation.
      */
     public String getStringRepresentation() {
@@ -220,6 +222,7 @@ public class FileListTableModel extends AbstractTableModel {
     /**
      * Transform the file list shown in the table into a HTML string representation
      * suitable for displaying the contents in a tooltip.
+     *
      * @return Tooltip representation.
      */
     public String getToolTipHTMLRepresentation() {

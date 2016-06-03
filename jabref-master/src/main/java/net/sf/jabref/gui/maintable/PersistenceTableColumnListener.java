@@ -15,29 +15,27 @@
  */
 package net.sf.jabref.gui.maintable;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.bibtex.InternalBibtexFields;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.bibtex.InternalBibtexFields;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Listens for TableColumnModelEvents to keep track of changes made to the
  * MainTable columns, like reordering or resizing.
- *
+ * <p>
  * Changes to columns without a name and the "#" column are not saved. To have
  * consistent behavior (e.g. as in TableColumnsTab).
  *
  * @author Fabian Bieker
  * @author Daniel Waeber
  * @since 12/2008
- *
  */
 public class PersistenceTableColumnListener implements TableColumnModelListener {
 
@@ -46,12 +44,10 @@ public class PersistenceTableColumnListener implements TableColumnModelListener 
     public static final boolean DEFAULT_ENABLED = true;
 
     private static final String SIMPLE_CLASS_NAME = PersistenceTableColumnListener.class.getSimpleName();
-
+    private static final String RECEIVED_NULL_EVENT = " received null event";
     // needed to get column names / indices mapped from view to model
     // and to access the table model
     private final MainTable mainTable;
-
-    private static final String RECEIVED_NULL_EVENT = " received null event";
 
     /**
      * @param mainTable

@@ -15,17 +15,6 @@
  */
 package net.sf.jabref.sql.importer;
 
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
@@ -33,16 +22,18 @@ import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.actions.MnemonicAwareAction;
 import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.sql.DBConnectDialog;
-import net.sf.jabref.sql.DBExporterAndImporterFactory;
-import net.sf.jabref.sql.DBImportExportDialog;
-import net.sf.jabref.sql.DBStrings;
-import net.sf.jabref.sql.DatabaseUtil;
-import net.sf.jabref.sql.SQLUtil;
+import net.sf.jabref.sql.*;
 import net.sf.jabref.util.Util;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Mar 27, 2008 Time: 6:09:08 PM To change this template use File | Settings
@@ -54,10 +45,9 @@ import org.apache.commons.logging.LogFactory;
 public class DbImportAction extends AbstractWorker {
 
     private static final Log LOGGER = LogFactory.getLog(DbImportAction.class);
-
+    private final JabRefFrame frame;
     private BibDatabaseContext databaseContext;
     private boolean connectedToDB;
-    private final JabRefFrame frame;
     private DBStrings dbs;
     private List<DBImporterResult> databases;
 
@@ -67,24 +57,6 @@ public class DbImportAction extends AbstractWorker {
 
     public AbstractAction getAction() {
         return new DbImpAction();
-    }
-
-    class DbImpAction extends MnemonicAwareAction {
-
-        public DbImpAction() {
-            super();
-            putValue(Action.NAME, Localization.menuTitle("Import from external SQL database"));
-
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                Util.runAbstractWorker(DbImportAction.this);
-            } catch (Throwable throwable) {
-                LOGGER.warn("Problem importing from database", throwable);
-            }
-        }
     }
 
     @Override
@@ -197,6 +169,24 @@ public class DbImportAction extends AbstractWorker {
             }
         }
         frame.output(Localization.lang("Imported %0 databases successfully", Integer.toString(databases.size())));
+    }
+
+    class DbImpAction extends MnemonicAwareAction {
+
+        public DbImpAction() {
+            super();
+            putValue(Action.NAME, Localization.menuTitle("Import from external SQL database"));
+
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                Util.runAbstractWorker(DbImportAction.this);
+            } catch (Throwable throwable) {
+                LOGGER.warn("Problem importing from database", throwable);
+            }
+        }
     }
 
 }

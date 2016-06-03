@@ -15,6 +15,14 @@
 */
 package net.sf.jabref.external;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.gui.BasePanel;
+import net.sf.jabref.gui.FileListTableModel;
+import net.sf.jabref.logic.util.io.FileUtil;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -23,23 +31,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.logic.util.io.FileUtil;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  *
  */
 public class TransferableFileLinkSelection implements Transferable {
 
-    private final List<File> fileList = new ArrayList<>();
-
     private static final Log LOGGER = LogFactory.getLog(TransferableFileLinkSelection.class);
+    private final List<File> fileList = new ArrayList<>();
 
 
     public TransferableFileLinkSelection(BasePanel panel, List<BibEntry> selection) {
@@ -55,7 +53,7 @@ public class TransferableFileLinkSelection implements Transferable {
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[] {DataFlavor.javaFileListFlavor};//, DataFlavor.stringFlavor};
+        return new DataFlavor[]{DataFlavor.javaFileListFlavor};//, DataFlavor.stringFlavor};
     }
 
     @Override

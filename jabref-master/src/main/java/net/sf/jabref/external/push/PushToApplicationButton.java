@@ -15,32 +15,7 @@
  */
 package net.sf.jabref.external.push;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
@@ -50,7 +25,15 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.OS;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Customized UI component for pushing to external applications. Has a selection popup menu to change the selected
@@ -59,24 +42,68 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
  */
 public class PushToApplicationButton implements ActionListener {
 
+    private static final Icon ARROW_ICON = IconTheme.JabRefIcon.DOWN.getSmallIcon();
     private final JabRefFrame frame;
     private final List<PushToApplication> pushActions;
+    private final Map<PushToApplication, PushToApplicationAction> actions = new HashMap<>();
+    private final Dimension buttonDim = new Dimension(23, 23);
+    private final MenuAction mAction = new MenuAction();
+    private final JPopupMenu optPopup = new JPopupMenu();
+    private final JMenuItem settings = new JMenuItem(Localization.lang("Settings"));
     private JPanel comp;
     private JButton pushButton;
     private int selected;
     private JPopupMenu popup;
-    private final Map<PushToApplication, PushToApplicationAction> actions = new HashMap<>();
-    private final Dimension buttonDim = new Dimension(23, 23);
-    private static final Icon ARROW_ICON = IconTheme.JabRefIcon.DOWN.getSmallIcon();
-    private final MenuAction mAction = new MenuAction();
-    private final JPopupMenu optPopup = new JPopupMenu();
-    private final JMenuItem settings = new JMenuItem(Localization.lang("Settings"));
 
 
     public PushToApplicationButton(JabRefFrame frame, List<PushToApplication> pushActions) {
         this.frame = frame;
         this.pushActions = pushActions;
         init();
+    }
+
+    public static void showSettingsDialog(JFrame parent, PushToApplication toApp, JPanel options) {
+
+        final BooleanHolder okPressed = new BooleanHolder(false);
+        final JDialog diag = new JDialog(parent, Localization.lang("Settings"), true);
+        options.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        diag.getContentPane().add(options, BorderLayout.CENTER);
+        ButtonBarBuilder bb = new ButtonBarBuilder();
+        JButton ok = new JButton(Localization.lang("OK"));
+        JButton cancel = new JButton(Localization.lang("Cancel"));
+        bb.addGlue();
+        bb.addButton(ok);
+        bb.addButton(cancel);
+        bb.addGlue();
+        bb.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        diag.getContentPane().add(bb.getPanel(), BorderLayout.SOUTH);
+        ok.addActionListener(e -> {
+            okPressed.value = true;
+            diag.dispose();
+        });
+        cancel.addActionListener(e -> diag.dispose());
+
+        // Key bindings:
+        ActionMap am = bb.getPanel().getActionMap();
+        InputMap im = bb.getPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im.put(Globals.getKeyPrefs().getKey(KeyBinding.CLOSE_DIALOG), "close");
+        am.put("close", new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                diag.dispose();
+            }
+        });
+        diag.pack();
+        diag.setLocationRelativeTo(parent);
+
+        // Show the dialog:
+        diag.setVisible(true);
+        // If the user pressed Ok, ask the PushToApplication implementation
+        // to store its settings:
+        if (okPressed.value) {
+            toApp.storeSettings();
+        }
     }
 
     private void init() {
@@ -193,7 +220,6 @@ public class PushToApplicationButton implements ActionListener {
         action.actionPerformed(new ActionEvent(toApp, 0, "push"));
     }
 
-
     private static class BooleanHolder {
 
         public boolean value;
@@ -203,52 +229,6 @@ public class PushToApplicationButton implements ActionListener {
             this.value = value;
         }
     }
-
-
-    public static void showSettingsDialog(JFrame parent, PushToApplication toApp, JPanel options) {
-
-        final BooleanHolder okPressed = new BooleanHolder(false);
-        final JDialog diag = new JDialog(parent, Localization.lang("Settings"), true);
-        options.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        diag.getContentPane().add(options, BorderLayout.CENTER);
-        ButtonBarBuilder bb = new ButtonBarBuilder();
-        JButton ok = new JButton(Localization.lang("OK"));
-        JButton cancel = new JButton(Localization.lang("Cancel"));
-        bb.addGlue();
-        bb.addButton(ok);
-        bb.addButton(cancel);
-        bb.addGlue();
-        bb.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        diag.getContentPane().add(bb.getPanel(), BorderLayout.SOUTH);
-        ok.addActionListener(e -> {
-            okPressed.value = true;
-            diag.dispose();
-        });
-        cancel.addActionListener(e -> diag.dispose());
-
-        // Key bindings:
-        ActionMap am = bb.getPanel().getActionMap();
-        InputMap im = bb.getPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(Globals.getKeyPrefs().getKey(KeyBinding.CLOSE_DIALOG), "close");
-        am.put("close", new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                diag.dispose();
-            }
-        });
-        diag.pack();
-        diag.setLocationRelativeTo(parent);
-
-        // Show the dialog:
-        diag.setVisible(true);
-        // If the user pressed Ok, ask the PushToApplication implementation
-        // to store its settings:
-        if (okPressed.value) {
-            toApp.storeSettings();
-        }
-    }
-
 
     class PopupItemActionListener implements ActionListener {
 

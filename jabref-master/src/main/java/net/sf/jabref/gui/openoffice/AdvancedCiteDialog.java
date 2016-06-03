@@ -15,27 +15,18 @@
 */
 package net.sf.jabref.gui.openoffice;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Dialog for adding citation with page number info.
@@ -43,9 +34,9 @@ import com.jgoodies.forms.layout.FormLayout;
 class AdvancedCiteDialog {
 
     private static boolean defaultInPar = true;
-    private boolean okPressed;
     private final JDialog diag;
     private final JTextField pageInfo = new JTextField(15);
+    private boolean okPressed;
 
 
     public AdvancedCiteDialog(JabRefFrame parent) {
@@ -85,8 +76,8 @@ class AdvancedCiteDialog {
         diag.pack();
 
         ActionListener okAction = actionEvent -> {
-                okPressed = true;
-                diag.dispose();
+            okPressed = true;
+            diag.dispose();
         };
 
         ok.addActionListener(okAction);

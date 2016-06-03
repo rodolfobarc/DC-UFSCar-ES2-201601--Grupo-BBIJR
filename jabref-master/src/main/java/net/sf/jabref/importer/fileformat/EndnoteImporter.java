@@ -15,6 +15,12 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,17 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
-
 /**
  * Importer for the Refer/Endnote format.
  * modified to use article number for pages if pages are missing (some
  * journals, e.g., Physical Review Letters, don't use pages anymore)
- *
+ * <p>
  * check here for details on the format
  * http://www.ecst.csuchico.edu/~jacobsd/bib/formats/endnote.html
  */
@@ -45,6 +45,30 @@ public class EndnoteImporter extends ImportFormat {
     private static final Pattern A_PATTERN = Pattern.compile("%A .*");
     private static final Pattern E_PATTERN = Pattern.compile("%E .*");
 
+    /**
+     * We must be careful about the author names, since they can be presented differently
+     * by different sources. Normally each %A tag brings one name, and we get the authors
+     * separated by " and ". This is the correct behaviour.
+     * One source lists the names separated by comma, with a comma at the end. We can detect
+     * this format and fix it.
+     *
+     * @param s The author string
+     * @return The fixed author string
+     */
+    private static String fixAuthor(String s) {
+        int index = s.indexOf(" and ");
+        if (index >= 0) {
+            return AuthorList.fixAuthorLastNameFirst(s);
+        }
+        // Look for the comma at the end:
+        index = s.lastIndexOf(',');
+        if (index == (s.length() - 1)) {
+            String mod = s.substring(0, s.length() - 1).replace(", ", " and ");
+            return AuthorList.fixAuthorLastNameFirst(mod);
+        } else {
+            return AuthorList.fixAuthorLastNameFirst(s);
+        }
+    }
 
     /**
      * Return the name of this import format.
@@ -283,30 +307,6 @@ public class EndnoteImporter extends ImportFormat {
 
         return bibitems;
 
-    }
-
-    /**
-     * We must be careful about the author names, since they can be presented differently
-     * by different sources. Normally each %A tag brings one name, and we get the authors
-     * separated by " and ". This is the correct behaviour.
-     * One source lists the names separated by comma, with a comma at the end. We can detect
-     * this format and fix it.
-     * @param s The author string
-     * @return The fixed author string
-     */
-    private static String fixAuthor(String s) {
-        int index = s.indexOf(" and ");
-        if (index >= 0) {
-            return AuthorList.fixAuthorLastNameFirst(s);
-        }
-        // Look for the comma at the end:
-        index = s.lastIndexOf(',');
-        if (index == (s.length() - 1)) {
-            String mod = s.substring(0, s.length() - 1).replace(", ", " and ");
-            return AuthorList.fixAuthorLastNameFirst(mod);
-        } else {
-            return AuthorList.fixAuthorLastNameFirst(s);
-        }
     }
 
 }

@@ -15,28 +15,18 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JPanel;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -80,12 +70,12 @@ public class ColorSetupPanel extends JPanel {
         int col = 0;
         int row;
         for (ColorButton but : buttons) {
-            row = (2*(rowcnt/2)) + 1; // == 2*floor(rowcnt/2) + 1
-            builder.add((JButton)but).xy((6*col)+1, row);
-            builder.add(but.getDefaultButton()).xy((6*col)+3, row);
-            builder.add(but.getName()).xy((6*col)+5, row);
+            row = (2 * (rowcnt / 2)) + 1; // == 2*floor(rowcnt/2) + 1
+            builder.add((JButton) but).xy((6 * col) + 1, row);
+            builder.add(but.getDefaultButton()).xy((6 * col) + 3, row);
+            builder.add(but.getName()).xy((6 * col) + 5, row);
             but.addActionListener(new ColorButtonListener(but));
-            col = 1-col;  // Change 0 -> 1 -> 0 ...
+            col = 1 - col;  // Change 0 -> 1 -> 0 ...
             rowcnt++;
         }
 
@@ -133,9 +123,9 @@ public class ColorSetupPanel extends JPanel {
      * Includes a method to produce a Default button for this setting.
      */
     static class ColorButton extends JButton implements Icon {
-        private Color color = Color.white;
         private final String key;
         private final String name;
+        private Color color = Color.white;
 
 
         public ColorButton(String key, String name) {

@@ -27,25 +27,24 @@
  */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.Objects;
-
 import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
 import net.sf.jabref.logic.layout.LayoutFormatter;
+
+import java.util.Objects;
 
 /**
  * JournalAbbreviator formats the given text in an abbreviated form
  * according to the journal abbreviation lists.
- *
+ * <p>
  * The given input text is abbreviated according to the journal abbreviation lists.
  * If no abbreviation for input is found (e.g. not in list or already abbreviated), the input will be returned unmodified.
- *
+ * <p>
  * Usage:
- *    \format[JournalAbbreviator]{\journal}
+ * \format[JournalAbbreviator]{\journal}
  * Example result:
- *    "Phys. Rev. Lett." instead of "Physical Review Letters"
+ * "Phys. Rev. Lett." instead of "Physical Review Letters"
  *
- * @author  Meigel
- *
+ * @author Meigel
  */
 public class JournalAbbreviator implements LayoutFormatter {
 

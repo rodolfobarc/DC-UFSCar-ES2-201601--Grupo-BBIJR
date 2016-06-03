@@ -15,107 +15,45 @@
 */
 package net.sf.jabref.bst;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
-
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.*;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
- *
  * A Bibtex Virtual machine that can execute .bst files.
- *
+ * <p>
  * Documentation can be found in the original bibtex distribution:
- *
+ * <p>
  * https://www.ctan.org/pkg/bibtex
- *
  */
 
 public class VM implements Warn {
 
-    private static final Log LOGGER = LogFactory.getLog(VM.class);
-
-    private List<BstEntry> entries;
-
-    private Map<String, String> strings = new HashMap<>();
-
-    private Map<String, Integer> integers = new HashMap<>();
-
-    private Map<String, BstFunction> functions = new HashMap<>();
-
-    private Stack<Object> stack = new Stack<>();
-
     public static final Integer FALSE = 0;
-
     public static final Integer TRUE = 1;
-
-    private final Map<String, BstFunction> buildInFunctions;
-
-    private File file;
-
-    private final CommonTree tree;
-
-    private StringBuilder bbl;
-
-    private String preamble;
-
+    private static final Log LOGGER = LogFactory.getLog(VM.class);
     private static final Pattern ADD_PERIOD_PATTERN = Pattern.compile("([^\\.\\?\\!\\}\\s])(\\}|\\s)*$");
-
-
-    public static class Identifier {
-
-        public final String name;
-
-
-        public Identifier(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    public static class Variable {
-
-        public final String name;
-
-
-        public Variable(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    @FunctionalInterface
-    public interface BstFunction {
-        void execute(BstEntry context);
-    }
+    private final Map<String, BstFunction> buildInFunctions;
+    private final CommonTree tree;
+    private List<BstEntry> entries;
+    private Map<String, String> strings = new HashMap<>();
+    private Map<String, Integer> integers = new HashMap<>();
+    private Map<String, BstFunction> functions = new HashMap<>();
+    private Stack<Object> stack = new Stack<>();
+    private File file;
+    private StringBuilder bbl;
+    private String preamble;
 
 
     public VM(File f) throws RecognitionException, IOException {
@@ -130,6 +68,7 @@ public class VM implements Warn {
     private VM(CharStream bst) throws RecognitionException {
         this(VM.charStream2CommonTree(bst));
     }
+
 
     private VM(CommonTree tree) {
         this.tree = tree;
@@ -511,7 +450,7 @@ public class VM implements Warn {
          * Is a no-op.
          */
         buildInFunctions.put("skip$", context -> {
-                // Nothing to do! Yeah!
+            // Nothing to do! Yeah!
         });
 
         /**
@@ -632,6 +571,14 @@ public class VM implements Warn {
             VM.this.bbl.append(s);
         });
 
+    }
+
+    private static CommonTree charStream2CommonTree(CharStream bst) throws RecognitionException {
+        BstLexer lex = new BstLexer(bst);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        BstParser parser = new BstParser(tokens);
+        BstParser.program_return r = parser.program();
+        return (CommonTree) r.getTree();
     }
 
     private void textLengthFunction() {
@@ -806,14 +753,6 @@ public class VM implements Warn {
         }
     }
 
-    private static CommonTree charStream2CommonTree(CharStream bst) throws RecognitionException {
-        BstLexer lex = new BstLexer(bst);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        BstParser parser = new BstParser(tokens);
-        BstParser.program_return r = parser.program();
-        return (CommonTree) r.getTree();
-    }
-
     private boolean assign(BstEntry context, Object o1, Object o2) {
 
         if (!(o1 instanceof Identifier) || !((o2 instanceof String) || (o2 instanceof Integer))) {
@@ -849,7 +788,6 @@ public class VM implements Warn {
         return false;
     }
 
-
     public String run(BibDatabase db) {
         preamble = db.getPreamble();
         return run(db.getEntries());
@@ -882,39 +820,39 @@ public class VM implements Warn {
         for (int i = 0; i < tree.getChildCount(); i++) {
             Tree child = tree.getChild(i);
             switch (child.getType()) {
-            case BstParser.STRINGS:
-                strings(child);
-                break;
-            case BstParser.INTEGERS:
-                integers(child);
-                break;
-            case BstParser.FUNCTION:
-                function(child);
-                break;
-            case BstParser.EXECUTE:
-                execute(child);
-                break;
-            case BstParser.SORT:
-                sort();
-                break;
-            case BstParser.ITERATE:
-                iterate(child);
-                break;
-            case BstParser.REVERSE:
-                reverse(child);
-                break;
-            case BstParser.ENTRY:
-                entry(child);
-                break;
-            case BstParser.READ:
-                read();
-                break;
-            case BstParser.MACRO:
-                macro(child);
-                break;
-            default:
-                LOGGER.info("Unknown type: " + child.getType());
-                break;
+                case BstParser.STRINGS:
+                    strings(child);
+                    break;
+                case BstParser.INTEGERS:
+                    integers(child);
+                    break;
+                case BstParser.FUNCTION:
+                    function(child);
+                    break;
+                case BstParser.EXECUTE:
+                    execute(child);
+                    break;
+                case BstParser.SORT:
+                    sort();
+                    break;
+                case BstParser.ITERATE:
+                    iterate(child);
+                    break;
+                case BstParser.REVERSE:
+                    reverse(child);
+                    break;
+                case BstParser.ENTRY:
+                    entry(child);
+                    break;
+                case BstParser.READ:
+                    read();
+                    break;
+                case BstParser.MACRO:
+                    macro(child);
+                    break;
+                default:
+                    LOGGER.info("Unknown type: " + child.getType());
+                    break;
             }
         }
 
@@ -926,7 +864,7 @@ public class VM implements Warn {
      * list. It has no arguments. If a database entry doesn't have a value for a
      * field (and probably no database entry will have a value for every field),
      * that field variable is marked as missing for the entry.
-     *
+     * <p>
      * We use null for the missing entry designator.
      */
     private void read() {
@@ -964,23 +902,6 @@ public class VM implements Warn {
         String replacement = child.getChild(1).getText();
         functions.put(name, new MacroFunction(replacement));
     }
-
-
-    public class MacroFunction implements BstFunction {
-
-        private final String replacement;
-
-
-        public MacroFunction(String replacement) {
-            this.replacement = replacement;
-        }
-
-        @Override
-        public void execute(BstEntry context) {
-            VM.this.push(replacement);
-        }
-    }
-
 
     /*
      * Declares the fields and entry variables. It has three arguments, each a
@@ -1072,61 +993,6 @@ public class VM implements Warn {
         execute(child.getChild(0).getText(), null);
     }
 
-
-    public class StackFunction implements BstFunction {
-
-        private final Tree localTree;
-
-
-        public StackFunction(Tree stack) {
-            localTree = stack;
-        }
-
-        public Tree getTree() {
-            return localTree;
-        }
-
-        @Override
-        public void execute(BstEntry context) {
-
-            for (int i = 0; i < localTree.getChildCount(); i++) {
-
-                Tree c = localTree.getChild(i);
-                try {
-
-                    switch (c.getType()) {
-                    case BstParser.STRING:
-                        String s = c.getText();
-                        push(s.substring(1, s.length() - 1));
-                        break;
-                    case BstParser.INTEGER:
-                        push(Integer.parseInt(c.getText().substring(1)));
-                        break;
-                    case BstParser.QUOTED:
-                        push(new Identifier(c.getText().substring(1)));
-                        break;
-                    case BstParser.STACK:
-                        push(c);
-                        break;
-                    default:
-                        VM.this.execute(c.getText(), context);
-                        break;
-                    }
-                } catch (VMException e) {
-                    if (file == null) {
-                        LOGGER.error("ERROR " + e.getMessage() + " (" + c.getLine() + ")");
-                    } else {
-                        LOGGER.error("ERROR " + e.getMessage() + " (" + file.getPath() + ":"
-                                + c.getLine() + ")");
-                    }
-                    throw e;
-                }
-            }
-
-        }
-    }
-
-
     private void push(Tree t) {
         stack.push(t);
     }
@@ -1207,32 +1073,6 @@ public class VM implements Warn {
         }
     }
 
-
-    public static class BstEntry {
-
-        private final BibEntry entry;
-
-        private final Map<String, String> localStrings = new HashMap<>();
-
-        private final Map<String, String> fields = new HashMap<>();
-
-        private final Map<String, Integer> localIntegers = new HashMap<>();
-
-
-        public BstEntry(BibEntry e) {
-            this.entry = e;
-        }
-
-        public Map<String, String> getFields() {
-            return fields;
-        }
-
-        public BibEntry getBibtexEntry() {
-            return entry;
-        }
-    }
-
-
     private void push(Integer integer) {
         stack.push(integer);
     }
@@ -1268,6 +1108,131 @@ public class VM implements Warn {
     @Override
     public void warn(String string) {
         LOGGER.warn(string);
+    }
+
+    @FunctionalInterface
+    public interface BstFunction {
+        void execute(BstEntry context);
+    }
+
+    public static class Identifier {
+
+        public final String name;
+
+
+        public Identifier(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public static class Variable {
+
+        public final String name;
+
+
+        public Variable(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public static class BstEntry {
+
+        private final BibEntry entry;
+
+        private final Map<String, String> localStrings = new HashMap<>();
+
+        private final Map<String, String> fields = new HashMap<>();
+
+        private final Map<String, Integer> localIntegers = new HashMap<>();
+
+
+        public BstEntry(BibEntry e) {
+            this.entry = e;
+        }
+
+        public Map<String, String> getFields() {
+            return fields;
+        }
+
+        public BibEntry getBibtexEntry() {
+            return entry;
+        }
+    }
+
+    public class MacroFunction implements BstFunction {
+
+        private final String replacement;
+
+
+        public MacroFunction(String replacement) {
+            this.replacement = replacement;
+        }
+
+        @Override
+        public void execute(BstEntry context) {
+            VM.this.push(replacement);
+        }
+    }
+
+    public class StackFunction implements BstFunction {
+
+        private final Tree localTree;
+
+
+        public StackFunction(Tree stack) {
+            localTree = stack;
+        }
+
+        public Tree getTree() {
+            return localTree;
+        }
+
+        @Override
+        public void execute(BstEntry context) {
+
+            for (int i = 0; i < localTree.getChildCount(); i++) {
+
+                Tree c = localTree.getChild(i);
+                try {
+
+                    switch (c.getType()) {
+                        case BstParser.STRING:
+                            String s = c.getText();
+                            push(s.substring(1, s.length() - 1));
+                            break;
+                        case BstParser.INTEGER:
+                            push(Integer.parseInt(c.getText().substring(1)));
+                            break;
+                        case BstParser.QUOTED:
+                            push(new Identifier(c.getText().substring(1)));
+                            break;
+                        case BstParser.STACK:
+                            push(c);
+                            break;
+                        default:
+                            VM.this.execute(c.getText(), context);
+                            break;
+                    }
+                } catch (VMException e) {
+                    if (file == null) {
+                        LOGGER.error("ERROR " + e.getMessage() + " (" + c.getLine() + ")");
+                    } else {
+                        LOGGER.error("ERROR " + e.getMessage() + " (" + file.getPath() + ":"
+                                + c.getLine() + ")");
+                    }
+                    throw e;
+                }
+            }
+
+        }
     }
 
 }

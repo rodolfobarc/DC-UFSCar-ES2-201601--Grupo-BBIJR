@@ -15,19 +15,19 @@
  */
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.importer.ImportFormatReader;
 import net.sf.jabref.importer.OutputPrinter;
 import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.model.entry.BibEntry;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This importer exists only to enable `--importToOpen someEntry.bib`
- *
+ * <p>
  * It is NOT intended to import a bib file. This is done via the option action, which treats the metadata fields
  * The metadata is not required to be read here, as this class is NOT called at --import
  */
@@ -35,7 +35,7 @@ public class BibtexImporter extends ImportFormat {
 
     /**
      * @return true as we have no effective way to decide whether a file is in bibtex format or not. See
-     *         https://github.com/JabRef/jabref/pull/379#issuecomment-158685726 for more details.
+     * https://github.com/JabRef/jabref/pull/379#issuecomment-158685726 for more details.
      */
     @Override
     public boolean isRecognizedFormat(InputStream in) throws IOException {
@@ -47,7 +47,7 @@ public class BibtexImporter extends ImportFormat {
      * Only plain bibtex entries are returned.
      * That especially means that metadata is ignored.
      *
-     * @param in the inputStream to read from
+     * @param in     the inputStream to read from
      * @param status the OutputPrinter to put status to
      * @return a list of BibTeX entries contained in the given inputStream
      */

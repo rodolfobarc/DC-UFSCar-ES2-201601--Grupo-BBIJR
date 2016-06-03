@@ -15,6 +15,16 @@
 */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.gui.help.HelpFiles;
+import net.sf.jabref.importer.ImportInspector;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.importer.fileformat.MedlineImporter;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,22 +34,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import net.sf.jabref.gui.help.HelpFiles;
-import net.sf.jabref.importer.ImportInspector;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.importer.fileformat.MedlineImporter;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Fetch or search from Pubmed http://www.ncbi.nlm.nih.gov/sites/entrez/
- *
  */
 public class MedlineFetcher implements EntryFetcher {
 
@@ -54,13 +50,13 @@ public class MedlineFetcher implements EntryFetcher {
     private static final Pattern RET_START_PATTERN = Pattern.compile("<RetStart>(\\d+)<\\/RetStart>");
 
 
-
     /**
      * How many entries to query in one request
      */
     private static final int PACING = 20;
 
     private boolean shouldContinue;
+
     private static String toSearchTerm(String in) {
         // This can probably be simplified using simple String.replace()...
         String result = in;

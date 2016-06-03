@@ -1,5 +1,11 @@
 package net.sf.jabref.logic.fulltext;
 
+import net.sf.jabref.logic.net.URLDownload;
+import net.sf.jabref.logic.util.DOI;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -7,13 +13,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.logic.net.URLDownload;
-import net.sf.jabref.logic.util.DOI;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Class for finding PDF URLs for entries on IEEE

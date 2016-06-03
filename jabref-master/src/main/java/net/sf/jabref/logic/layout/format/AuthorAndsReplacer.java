@@ -38,24 +38,24 @@ public class AuthorAndsReplacer implements LayoutFormatter {
         String s;
 
         switch (authors.length) {
-        case 1:
-            //Does nothing;
-            s = authors[0];
-            break;
-        case 2:
-            s = authors[0] + " & " + authors[1];
-            break;
-        default:
-            int i;
-            int x = authors.length;
-            StringBuilder sb = new StringBuilder();
+            case 1:
+                //Does nothing;
+                s = authors[0];
+                break;
+            case 2:
+                s = authors[0] + " & " + authors[1];
+                break;
+            default:
+                int i;
+                int x = authors.length;
+                StringBuilder sb = new StringBuilder();
 
-            for (i = 0; i < (x - 2); i++) {
-                sb.append(authors[i]).append("; ");
-            }
-            sb.append(authors[i]).append(" & ").append(authors[i + 1]);
-            s = sb.toString();
-            break;
+                for (i = 0; i < (x - 2); i++) {
+                    sb.append(authors[i]).append("; ");
+                }
+                sb.append(authors[i]).append(" & ").append(authors[i + 1]);
+                s = sb.toString();
+                break;
         }
 
         return s;

@@ -15,6 +15,23 @@
 */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.gui.help.HelpFiles;
+import net.sf.jabref.importer.ImportInspector;
+import net.sf.jabref.importer.OAI2Handler;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.IdGenerator;
+import net.sf.jabref.model.entry.MonthUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -25,28 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import net.sf.jabref.gui.help.HelpFiles;
-import net.sf.jabref.importer.ImportInspector;
-import net.sf.jabref.importer.OAI2Handler;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.IdGenerator;
-import net.sf.jabref.model.entry.MonthUtil;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 /**
- *
  * This class can be used to access any archive offering an OAI2 interface. By
  * default it will access ArXiv.org
  *
@@ -62,34 +58,27 @@ public class OAI2Fetcher implements EntryFetcher {
     private static final String OAI2_ARXIV_METADATAPREFIX = "arXiv";
     private static final String OAI2_ARXIV_ARCHIVENAME = "ArXiv.org";
     private static final String OAI2_IDENTIFIER_FIELD = "oai2identifier";
-    private SAXParser saxParser;
     private final String oai2Host;
     private final String oai2Script;
     private final String oai2MetaDataPrefix;
     private final String oai2PrefixIdentifier;
     private final String oai2ArchiveName;
+    private SAXParser saxParser;
     private boolean shouldContinue = true;
     private OutputPrinter status;
     private long waitTime = -1;
     private Date lastCall;
 
     /**
-     *
-     *
-     * @param oai2Host
-     *            the host to query without leading http:// and without trailing /
-     * @param oai2Script
-     *            the relative location of the oai2 interface without leading
-     *            and trailing /
-     * @param oai2Metadataprefix
-     *            the urlencoded metadataprefix
-     * @param oai2Prefixidentifier
-     *            the urlencoded prefix identifier
-     * @param waitTimeMs
-     *            Time to wait in milliseconds between query-requests.
+     * @param oai2Host             the host to query without leading http:// and without trailing /
+     * @param oai2Script           the relative location of the oai2 interface without leading
+     *                             and trailing /
+     * @param oai2Metadataprefix   the urlencoded metadataprefix
+     * @param oai2Prefixidentifier the urlencoded prefix identifier
+     * @param waitTimeMs           Time to wait in milliseconds between query-requests.
      */
     public OAI2Fetcher(String oai2Host, String oai2Script, String oai2Metadataprefix, String oai2Prefixidentifier,
-            String oai2ArchiveName, long waitTimeMs) {
+                       String oai2ArchiveName, long waitTimeMs) {
         this.oai2Host = oai2Host;
         this.oai2Script = oai2Script;
         this.oai2MetaDataPrefix = oai2Metadataprefix;
@@ -106,37 +95,10 @@ public class OAI2Fetcher implements EntryFetcher {
 
     /**
      * Default Constructor. The archive queried will be ArXiv.org
-     *
      */
     public OAI2Fetcher() {
         this(OAI2Fetcher.OAI2_ARXIV_HOST, OAI2Fetcher.OAI2_ARXIV_SCRIPT, OAI2Fetcher.OAI2_ARXIV_METADATAPREFIX,
                 OAI2Fetcher.OAI2_ARXIV_PREFIXIDENTIFIER, OAI2Fetcher.OAI2_ARXIV_ARCHIVENAME, 20000L);
-    }
-
-    /**
-     * Construct the query URL
-     *
-     * @param key
-     *            The key of the OAI2 entry that the url should point to.
-     *
-     * @return a String denoting the query URL
-     */
-    public String constructUrl(String key) {
-        String identifier;
-        try {
-            identifier = URLEncoder.encode(key, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-        return "http://" + oai2Host + "/" + oai2Script + "?" + "verb=GetRecord" + "&identifier=" + oai2PrefixIdentifier
-                + identifier + "&metadataPrefix=" + oai2MetaDataPrefix;
-    }
-
-    /**
-     * some archives - like ArXiv.org - might expect of you to wait some time
-     */
-    private boolean shouldWait() {
-        return waitTime > 0;
     }
 
     /**
@@ -169,11 +131,34 @@ public class OAI2Fetcher implements EntryFetcher {
     }
 
     /**
+     * Construct the query URL
+     *
+     * @param key The key of the OAI2 entry that the url should point to.
+     * @return a String denoting the query URL
+     */
+    public String constructUrl(String key) {
+        String identifier;
+        try {
+            identifier = URLEncoder.encode(key, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
+        return "http://" + oai2Host + "/" + oai2Script + "?" + "verb=GetRecord" + "&identifier=" + oai2PrefixIdentifier
+                + identifier + "&metadataPrefix=" + oai2MetaDataPrefix;
+    }
+
+    /**
+     * some archives - like ArXiv.org - might expect of you to wait some time
+     */
+    private boolean shouldWait() {
+        return waitTime > 0;
+    }
+
+    /**
      * Import an entry from an OAI2 archive. The BibEntry provided has to
      * have the field OAI2_IDENTIFIER_FIELD set to the search string.
      *
-     * @param key
-     *            The OAI2 key to fetch from ArXiv.
+     * @param key The OAI2 key to fetch from ArXiv.
      * @return The imported BibEntry or null if none.
      */
     public BibEntry importOai2Entry(String key) {
@@ -226,7 +211,7 @@ public class OAI2Fetcher implements EntryFetcher {
             status.showMessage(
                     Localization.lang("Error while fetching from %0", "OAI2 source (" + url + "):") + "\n\n"
                             + e.getMessage() + "\n\n" + Localization
-                                    .lang("Note: A full text search is currently not supported for %0", getTitle()),
+                            .lang("Note: A full text search is currently not supported for %0", getTitle()),
                     getTitle(), JOptionPane.ERROR_MESSAGE);
         }
         return null;

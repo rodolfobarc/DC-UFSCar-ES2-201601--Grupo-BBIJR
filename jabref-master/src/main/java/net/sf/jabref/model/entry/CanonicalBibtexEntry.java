@@ -1,20 +1,15 @@
 package net.sf.jabref.model.entry;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.StringJoiner;
-import java.util.TreeSet;
-
 import com.google.common.base.Strings;
+
+import java.util.*;
 
 public class CanonicalBibtexEntry {
 
     /**
      * This returns a canonical BibTeX serialization. Special characters such as "{" or "&" are NOT escaped, but written
      * as is
-     *
+     * <p>
      * Serializes all fields, even the JabRef internal ones. Does NOT serialize "KEY_FIELD" as field, but as key
      */
     public static String getCanonicalRepresentation(BibEntry e) {
@@ -41,7 +36,7 @@ public class CanonicalBibtexEntry {
         // generate field entries
         StringJoiner sj = new StringJoiner(",\n", "", "\n");
         for (String fieldName : sortedFields) {
-            String line = String.format("  %s = {%s}", fieldName, String.valueOf(mapFieldToValue.get(fieldName)).replaceAll("\\r\\n","\n"));
+            String line = String.format("  %s = {%s}", fieldName, String.valueOf(mapFieldToValue.get(fieldName)).replaceAll("\\r\\n", "\n"));
             sj.add(line);
         }
         sb.append(sj);

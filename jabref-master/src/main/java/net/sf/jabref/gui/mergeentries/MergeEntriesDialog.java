@@ -15,13 +15,11 @@
  */
 package net.sf.jabref.gui.mergeentries;
 
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
@@ -31,24 +29,20 @@ import net.sf.jabref.gui.util.PositionWindow;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.*;
+import java.util.List;
 
 /**
  * @author Oscar
- *
+ *         <p>
  *         Dialog for merging two Bibtex entries
  */
 public class MergeEntriesDialog extends JDialog {
 
-    private final BasePanel panel;
-    private final CellConstraints cc = new CellConstraints();
-
     private static final String MERGE_ENTRIES = Localization.lang("Merge entries");
     private static final String MARGIN = "5px";
+    private final BasePanel panel;
+    private final CellConstraints cc = new CellConstraints();
 
     public MergeEntriesDialog(BasePanel panel) {
         super(panel.frame(), MERGE_ENTRIES, true);
@@ -118,7 +112,7 @@ public class MergeEntriesDialog extends JDialog {
             dispose();
         });
 
-        bb.addButton(new JButton[] {replaceentries, cancel});
+        bb.addButton(new JButton[]{replaceentries, cancel});
         this.add(bb.getPanel(), cc.xy(1, 5));
 
         // Add some margin around the layout

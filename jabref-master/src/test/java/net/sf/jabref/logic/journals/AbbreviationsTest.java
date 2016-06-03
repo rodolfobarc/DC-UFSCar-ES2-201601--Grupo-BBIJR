@@ -1,7 +1,6 @@
 package net.sf.jabref.logic.journals;
 
 import net.sf.jabref.JabRefPreferences;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

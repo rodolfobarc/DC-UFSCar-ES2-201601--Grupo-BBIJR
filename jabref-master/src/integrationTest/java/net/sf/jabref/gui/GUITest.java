@@ -1,16 +1,8 @@
 package net.sf.jabref.gui;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.swing.JButton;
-
 import net.sf.jabref.JabRefMain;
 import net.sf.jabref.gui.dbproperties.DatabasePropertiesDialog;
 import net.sf.jabref.gui.preftabs.PreferencesDialog;
-
 import org.assertj.swing.core.GenericTypeMatcher;
 import org.assertj.swing.dependency.jsr305.Nonnull;
 import org.assertj.swing.fixture.AbstractWindowFixture;
@@ -21,6 +13,12 @@ import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.assertj.swing.timing.Pause;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.swing.finder.WindowFinder.findDialog;
 import static org.assertj.swing.finder.WindowFinder.findFrame;
@@ -97,11 +95,11 @@ public class GUITest extends AssertJSwingJUnitTestCase {
         takeScreenshot(preferencesDialog, "PreferencesDialog");
         preferencesDialog.button(new GenericTypeMatcher<JButton>(JButton.class) {
 
-                    @Override
-                    protected boolean isMatching(@Nonnull JButton jButton) {
-                        return "OK".equals(jButton.getText());
-                    }
-                }).click();
+            @Override
+            protected boolean isMatching(@Nonnull JButton jButton) {
+                return "OK".equals(jButton.getText());
+            }
+        }).click();
 
         exitJabRef(mainFrame);
     }
@@ -140,11 +138,11 @@ public class GUITest extends AssertJSwingJUnitTestCase {
         takeScreenshot(databasePropertiesDialog, "DatabasePropertiesDialog");
         databasePropertiesDialog.button(new GenericTypeMatcher<JButton>(JButton.class) {
 
-                    @Override
-                    protected boolean isMatching(@Nonnull JButton jButton) {
-                        return "OK".equals(jButton.getText());
-                    }
-                }).click();
+            @Override
+            protected boolean isMatching(@Nonnull JButton jButton) {
+                return "OK".equals(jButton.getText());
+            }
+        }).click();
 
         exitJabRef(mainFrame);
     }

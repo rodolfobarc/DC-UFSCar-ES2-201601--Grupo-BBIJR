@@ -3,22 +3,15 @@ package net.sf.jabref.cli;
 import net.sf.jabref.Globals;
 import net.sf.jabref.exporter.ExportFormats;
 import net.sf.jabref.logic.l10n.Localization;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class JabRefCLI {
 
     private static final Log LOGGER = LogFactory.getLog(JabRefCLI.class);
-
-    private String[] leftOver;
     private final CommandLine cl;
+    private String[] leftOver;
 
 
     public JabRefCLI(String[] args) {
@@ -34,6 +27,13 @@ public class JabRefCLI {
             this.printUsage();
             throw new RuntimeException();
         }
+    }
+
+    public static String getExportMatchesSyntax() {
+        return String.format("[%s]searchTerm,outputFile: %s[,%s]",
+                Localization.lang("field"),
+                Localization.lang("file"),
+                Localization.lang("exportFormat"));
     }
 
     public boolean isHelp() {
@@ -132,9 +132,13 @@ public class JabRefCLI {
         return cl.getOptionValue("exportMatches");
     }
 
-    public boolean isGenerateBibtexKeys() { return cl.hasOption("generateBibtexKeys"); }
+    public boolean isGenerateBibtexKeys() {
+        return cl.hasOption("generateBibtexKeys");
+    }
 
-    public boolean isAutomaticallySetFileLinks() { return cl.hasOption("automaticallySetFileLinks");}
+    public boolean isAutomaticallySetFileLinks() {
+        return cl.hasOption("automaticallySetFileLinks");
+    }
 
     private Options getOptions() {
         Options options = new Options();
@@ -249,12 +253,5 @@ public class JabRefCLI {
 
     public String[] getLeftOver() {
         return leftOver;
-    }
-
-    public static String getExportMatchesSyntax() {
-        return String.format("[%s]searchTerm,outputFile: %s[,%s]",
-                Localization.lang("field"),
-                Localization.lang("file"),
-                Localization.lang("exportFormat"));
     }
 }

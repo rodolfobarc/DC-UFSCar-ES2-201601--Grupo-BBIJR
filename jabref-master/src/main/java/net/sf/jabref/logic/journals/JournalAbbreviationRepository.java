@@ -15,31 +15,21 @@
 */
 package net.sf.jabref.logic.journals;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * A repository for all journal abbreviations, including add and find methods.
  */
 public class JournalAbbreviationRepository {
 
+    private static final Log LOGGER = LogFactory.getLog(JournalAbbreviationRepository.class);
     private final Map<String, Abbreviation> fullNameLowerCase2Abbreviation = new HashMap<>();
     private final Map<String, Abbreviation> isoLowerCase2Abbreviation = new HashMap<>();
     private final Map<String, Abbreviation> medlineLowerCase2Abbreviation = new HashMap<>();
-
     private final SortedSet<Abbreviation> abbreviations = new TreeSet<>();
-
-    private static final Log LOGGER = LogFactory.getLog(JournalAbbreviationRepository.class);
 
     public int size() {
         return abbreviations.size();

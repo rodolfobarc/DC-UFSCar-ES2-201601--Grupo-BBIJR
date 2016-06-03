@@ -15,11 +15,11 @@
 */
 package net.sf.jabref.logic.autocompleter;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Returns an autocompleter to a given fieldname.

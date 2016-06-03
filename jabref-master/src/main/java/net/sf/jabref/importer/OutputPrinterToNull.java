@@ -17,9 +17,8 @@ package net.sf.jabref.importer;
 
 /**
  * Outputs nothing
- *
+ * <p>
  * Used where really no output is desired
- *
  */
 public class OutputPrinterToNull implements OutputPrinter {
 

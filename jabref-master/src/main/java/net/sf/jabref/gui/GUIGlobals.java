@@ -15,42 +15,28 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JLabel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.external.ExternalFileType;
 import net.sf.jabref.external.ExternalFileTypes;
 import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.specialfields.Printed;
-import net.sf.jabref.specialfields.Priority;
-import net.sf.jabref.specialfields.Quality;
-import net.sf.jabref.specialfields.Rank;
-import net.sf.jabref.specialfields.ReadStatus;
-import net.sf.jabref.specialfields.Relevance;
-import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
+import net.sf.jabref.specialfields.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnap.commons.gui.shortcut.EmacsKeyBindings;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Static variables for graphics files and keyboard shortcuts.
  */
 public class GUIGlobals {
-    private static final Log LOGGER = LogFactory.getLog(GUIGlobals.class);
-
     // Frame titles.
     public static final String FRAME_TITLE = "JabRef";
-
     public static final String UNTITLED_TITLE = Localization.lang("untitled");
-    public static Font currentFont;
-
     // Divider size for BaseFrame split pane. 0 means non-resizable.
     public static final int SPLIT_PANE_DIVIDER_SIZE = 4;
     public static final int SPLIT_PANE_DIVIDER_LOCATION = 160 + 15; // + 15 for possible scrollbar.
@@ -58,47 +44,38 @@ public class GUIGlobals {
     public static final int KEYBIND_COL_0 = 200;
     public static final int KEYBIND_COL_1 = 80; // Added to the font size when determining table
     public static final int MAX_CONTENT_SELECTOR_WIDTH = 240; // The max width of the combobox for content selectors.
-
     // Filenames.
     public static final String BACKUP_EXTENSION = ".bak";
-
-    private static final Map<String, JLabel> TABLE_ICONS = new HashMap<>(); // Contains table icon mappings. Set up
     // further below.
     public static final Color ACTIVE_EDITOR_COLOR = new Color(230, 230, 255);
-
     //	Colors.
     public static final Color ENTRY_EDITOR_LABEL_COLOR = new Color(100, 100, 150); // Empty field, blue.
     public static final Color NULL_FIELD_COLOR = new Color(75, 130, 95); // Valid field, green.
     public static final Color ACTIVE_TABBED_COLOR = GUIGlobals.ENTRY_EDITOR_LABEL_COLOR.darker(); // active Database (JTabbedPane)
     public static final Color INACTIVE_TABBED_COLOR = Color.black; // inactive Database
-    public static Color editorTextColor;
-    public static Color validFieldBackgroundColor;
-    public static Color activeBackground;
-    public static Color invalidFieldBackgroundColor;
-
-
     public static final int MAX_BACK_HISTORY_SIZE = 10; // The maximum number of "Back" operations stored.
-
     //	Constants controlling formatted bibtex output.
     public static final int INDENT = 4;
     public static final int LINE_LENGTH = 65; // Maximum
-
     public static final int NUMBER_COL_LENGTH = 32;
-
     public static final int WIDTH_ICON_COL_RANKING = 80; // Width of Ranking Icon Column
-
     public static final int WIDTH_ICON_COL = 26;
-
     // Column widths for export customization dialog table:
     public static final int EXPORT_DIALOG_COL_0_WIDTH = 50;
     public static final int EXPORT_DIALOG_COL_1_WIDTH = 200;
     public static final int EXPORT_DIALOG_COL_2_WIDTH = 30;
-
     // Column widths for import customization dialog table:
     public static final int IMPORT_DIALOG_COL_0_WIDTH = 200;
     public static final int IMPORT_DIALOG_COL_1_WIDTH = 80;
     public static final int IMPORT_DIALOG_COL_2_WIDTH = 200;
     public static final int IMPORT_DIALOG_COL_3_WIDTH = 200;
+    private static final Log LOGGER = LogFactory.getLog(GUIGlobals.class);
+    private static final Map<String, JLabel> TABLE_ICONS = new HashMap<>(); // Contains table icon mappings. Set up
+    public static Font currentFont;
+    public static Color editorTextColor;
+    public static Color validFieldBackgroundColor;
+    public static Color activeBackground;
+    public static Color invalidFieldBackgroundColor;
 
     static {
         // Set up entry editor colors, first time:

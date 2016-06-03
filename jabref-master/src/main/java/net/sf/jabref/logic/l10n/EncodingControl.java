@@ -15,7 +15,7 @@ import java.util.ResourceBundle.Control;
  * {@link Control} class allowing properties bundles to be in different encodings.
  *
  * @see <a href="http://stackoverflow.com/questions/4659929/how-to-use-utf-8-in-resource-properties-with-resourcebundle">utf-8
- *      and property files</a>
+ * and property files</a>
  */
 public class EncodingControl extends Control {
 

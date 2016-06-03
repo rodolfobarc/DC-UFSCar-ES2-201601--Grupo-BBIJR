@@ -36,27 +36,9 @@
 
 package net.sf.jabref.gui.auximport;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.io.File;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.FileDialogs;
@@ -67,9 +49,10 @@ import net.sf.jabref.logic.auxparser.AuxParserResult;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
 
 public class FromAuxDialog extends JDialog {
     private final JPanel statusPanel = new JPanel();
@@ -79,19 +62,14 @@ public class FromAuxDialog extends JDialog {
     private final JButton parseButton = new JButton();
 
     private final JComboBox<String> dbChooser = new JComboBox<>();
-    private JTextField auxFileField;
-
-    private JList<String> notFoundList;
-    private JTextArea statusInfos;
-
     // all open databases from JabRefFrame
     private final JTabbedPane parentTabbedPane;
-
-    private boolean generatePressed;
-
-    private AuxParser auxParser;
-
     private final JabRefFrame parentFrame;
+    private JTextField auxFileField;
+    private JList<String> notFoundList;
+    private JTextArea statusInfos;
+    private boolean generatePressed;
+    private AuxParser auxParser;
 
 
     public FromAuxDialog(JabRefFrame frame, String title, boolean modal,

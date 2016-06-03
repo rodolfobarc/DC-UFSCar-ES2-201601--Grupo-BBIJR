@@ -15,34 +15,30 @@
 */
 package net.sf.jabref.importer.fetcher;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.importer.ImportInspector;
 import net.sf.jabref.importer.OutputPrinter;
 import net.sf.jabref.importer.fileformat.JSONEntryParser;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import javax.swing.*;
 
 public class DOAJFetcher implements EntryFetcher {
 
     private static final String SEARCH_URL = "https://doaj.org/api/v1/search/articles/";
     private static final Log LOGGER = LogFactory.getLog(DOAJFetcher.class);
     private static final int MAX_PER_PAGE = 100;
-    private boolean shouldContinue;
-
-
     private final JSONEntryParser jsonConverter = new JSONEntryParser();
+    private boolean shouldContinue;
 
     @Override
     public void stopFetching() {

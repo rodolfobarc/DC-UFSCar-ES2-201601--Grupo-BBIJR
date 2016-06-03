@@ -28,15 +28,13 @@ package net.sf.jabref.bst;
  * consider braces to be text characters; furthermore, this function appends any
  * needed matching |right_brace|s. If any of the types is incorrect, it
  * complains and pushes the null string.
- *
  */
 public class BibtexTextPrefix {
 
     /**
-     *
      * @param numOfChars
      * @param toPrefix
-     * @param warn may-be-null
+     * @param warn       may-be-null
      * @return
      */
     public static String textPrefix(int inNumOfChars, String toPrefix, Warn warn) {

@@ -15,6 +15,16 @@
 */
 package net.sf.jabref.logic.search.rules;
 
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.search.SearchBaseVisitor;
+import net.sf.jabref.search.SearchLexer;
+import net.sf.jabref.search.SearchParser;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -22,22 +32,6 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.search.SearchBaseVisitor;
-import net.sf.jabref.search.SearchLexer;
-import net.sf.jabref.search.SearchParser;
-
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * The search query must be specified in an expression that is acceptable by the Search.g4 grammar.
@@ -52,18 +46,6 @@ public class GrammarBasedSearchRule implements SearchRule {
     private ParseTree tree;
     private String query;
 
-
-    public static class ThrowingErrorListener extends BaseErrorListener {
-
-        public static final ThrowingErrorListener INSTANCE = new ThrowingErrorListener();
-
-        @Override
-        public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
-                int line, int charPositionInLine, String msg, RecognitionException e)
-                throws ParseCancellationException {
-            throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
-        }
-    }
 
     public GrammarBasedSearchRule(boolean caseSensitiveSearch, boolean regExpSearch) throws RecognitionException {
         this.caseSensitiveSearch = caseSensitiveSearch;
@@ -137,6 +119,18 @@ public class GrammarBasedSearchRule implements SearchRule {
             } else {
                 return DOES_NOT_CONTAIN;
             }
+        }
+    }
+
+    public static class ThrowingErrorListener extends BaseErrorListener {
+
+        public static final ThrowingErrorListener INSTANCE = new ThrowingErrorListener();
+
+        @Override
+        public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
+                                int line, int charPositionInLine, String msg, RecognitionException e)
+                throws ParseCancellationException {
+            throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 
@@ -228,7 +222,7 @@ public class GrammarBasedSearchRule implements SearchRule {
         public Boolean visitComparison(SearchParser.ComparisonContext ctx) {
             // remove possible enclosing " symbols
             String right = ctx.right.getText();
-            if(right.startsWith("\"") && right.endsWith("\"")) {
+            if (right.startsWith("\"") && right.endsWith("\"")) {
                 right = right.substring(1, right.length() - 2);
             }
 

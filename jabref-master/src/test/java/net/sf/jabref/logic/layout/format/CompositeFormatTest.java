@@ -1,7 +1,6 @@
 package net.sf.jabref.logic.layout.format;
 
 import net.sf.jabref.logic.layout.LayoutFormatter;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ public class CompositeFormatTest {
             Assert.assertEquals("No Change", f.format("No Change"));
         }
         {
-            LayoutFormatter f = new CompositeFormat(new LayoutFormatter[] {new LayoutFormatter() {
+            LayoutFormatter f = new CompositeFormat(new LayoutFormatter[]{new LayoutFormatter() {
 
                 @Override
                 public String format(String fieldText) {

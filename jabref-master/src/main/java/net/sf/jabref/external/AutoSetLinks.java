@@ -1,25 +1,5 @@
 package net.sf.jabref.external;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -31,12 +11,22 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.BibEntry;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
 public class AutoSetLinks {
 
     /**
      * Shortcut method if links are set without using the GUI
      *
-     * @param entries  the entries for which links should be set
+     * @param entries         the entries for which links should be set
      * @param databaseContext the database for which links are set
      */
     public static void autoSetLinks(Collection<BibEntry> entries, BibDatabaseContext databaseContext) {
@@ -78,26 +68,26 @@ public class AutoSetLinks {
             diag.setTitle(Localization.lang("Automatically setting file links"));
             diag.getContentPane().add(prog, BorderLayout.CENTER);
             diag.getContentPane().add(label, BorderLayout.SOUTH);
-    
+
             diag.pack();
             diag.setLocationRelativeTo(diag.getParent());
         }
-    
+
         Runnable r = new Runnable() {
-    
+
             @Override
             public void run() {
                 // determine directories to search in
                 List<File> dirs = new ArrayList<>();
                 List<String> dirsS = databaseContext.getFileDirectory();
                 dirs.addAll(dirsS.stream().map(File::new).collect(Collectors.toList()));
-    
+
                 // determine extensions
                 Collection<String> extensions = new ArrayList<>();
                 for (final ExternalFileType type : types) {
                     extensions.add(type.getExtension());
                 }
-    
+
                 // Run the search operation:
                 Map<BibEntry, List<File>> result;
                 if (Globals.prefs.getBoolean(JabRefPreferences.AUTOLINK_USE_REG_EXP_SEARCH_KEY)) {
@@ -106,7 +96,7 @@ public class AutoSetLinks {
                 } else {
                     result = FileUtil.findAssociatedFiles(entries, extensions, dirs);
                 }
-    
+
                 boolean foundAny = false;
                 // Iterate over the entries:
                 for (Entry<BibEntry, List<File>> entryFilePair : result.entrySet()) {
@@ -146,7 +136,7 @@ public class AutoSetLinks {
                             }
                             FileListEntry flEntry = new FileListEntry(f.getName(), f.getPath(), type);
                             tableModel.addEntry(tableModel.getRowCount(), flEntry);
-    
+
                             String newVal = tableModel.getStringRepresentation();
                             if (newVal.isEmpty()) {
                                 newVal = null;
@@ -167,12 +157,12 @@ public class AutoSetLinks {
                         }
                     }
                 }
-    
+
                 // handle callbacks and dialog
                 // FIXME: The ID signals if action was successful :/
                 final int id = foundAny ? 1 : 0;
                 SwingUtilities.invokeLater(new Runnable() {
-    
+
                     @Override
                     public void run() {
                         if (diag != null) {

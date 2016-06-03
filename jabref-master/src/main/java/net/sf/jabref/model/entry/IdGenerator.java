@@ -10,15 +10,13 @@ import java.text.NumberFormat;
 public class IdGenerator {
 
     private static final NumberFormat idFormat;
+    private static int idCounter;
 
     static {
         idFormat = NumberFormat.getInstance();
         IdGenerator.idFormat.setMinimumIntegerDigits(8);
         IdGenerator.idFormat.setGroupingUsed(false);
     }
-
-    private static int idCounter;
-
 
     public static synchronized String next() {
         String result = idFormat.format(idCounter);

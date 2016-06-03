@@ -15,30 +15,17 @@
 */
 package net.sf.jabref.logic.net;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import net.sf.jabref.Globals;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
 import java.net.CookieHandler;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.sf.jabref.Globals;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Each call to a public method creates a new HTTP connection. Nothing is cached.
@@ -48,10 +35,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class URLDownload {
 
-    private final URL source;
-
     private static final Log LOGGER = LogFactory.getLog(URLDownload.class);
-
+    private final URL source;
     private final Map<String, String> parameters = new HashMap<>();
 
     private String postData = "";
@@ -76,10 +61,6 @@ public class URLDownload {
         URLDownload.setCookieHandler();
     }
 
-    public URL getSource() {
-        return source;
-    }
-
     private static void setCookieHandler() {
         try {
             // This should set up JabRef to receive cookies properly
@@ -90,6 +71,10 @@ public class URLDownload {
             // Setting or getting the system default cookie handler is forbidden
             // In this case cookie handling is not possible.
         }
+    }
+
+    public URL getSource() {
+        return source;
     }
 
     public String determineMimeType() throws IOException {

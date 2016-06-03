@@ -27,7 +27,6 @@ import net.sf.jabref.model.entry.AuthorList;
  * </ul>
  *
  * @author Morten O. Alver / Christopher Oezbek <oezi@oezi.de>
- *
  */
 public class AuthorFirstFirstCommas implements LayoutFormatter {
 

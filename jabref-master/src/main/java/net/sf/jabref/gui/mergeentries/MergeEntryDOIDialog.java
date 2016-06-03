@@ -15,14 +15,11 @@
  */
 package net.sf.jabref.gui.mergeentries;
 
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
@@ -33,29 +30,25 @@ import net.sf.jabref.importer.fetcher.DOItoBibTeXFetcher;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Oscar
- *
+ *         <p>
  *         Dialog for merging Bibtex entry with data fetched from DOI
  */
 public class MergeEntryDOIDialog extends JDialog {
 
+    private static final String MARGIN = "5px";
     private final BasePanel panel;
     private final CellConstraints cc = new CellConstraints();
+    private final DOItoBibTeXFetcher doiFetcher = new DOItoBibTeXFetcher();
     private BibEntry originalEntry;
     private BibEntry doiEntry;
     private NamedCompound ce;
     private MergeEntries mergeEntries;
-
-    private final DOItoBibTeXFetcher doiFetcher = new DOItoBibTeXFetcher();
-
-    private static final String MARGIN = "5px";
 
 
     public MergeEntryDOIDialog(BasePanel panel) {
@@ -116,7 +109,7 @@ public class MergeEntryDOIDialog extends JDialog {
         replaceentry.setActionCommand("done");
         replaceentry.addActionListener(e -> buttonPressed(e.getActionCommand()));
 
-        bb.addButton(new JButton[] {replaceentry, cancel});
+        bb.addButton(new JButton[]{replaceentry, cancel});
         this.add(bb.getPanel(), cc.xy(1, 5));
 
         // Add some margin around the layout
@@ -156,7 +149,7 @@ public class MergeEntryDOIDialog extends JDialog {
             String oldType = originalEntry.getType();
             String newType = mergedEntry.getType();
 
-            if(!oldType.equalsIgnoreCase(newType)) {
+            if (!oldType.equalsIgnoreCase(newType)) {
                 originalEntry.setType(newType);
                 ce.addEdit(new UndoableChangeType(originalEntry, oldType, newType));
                 edited = true;

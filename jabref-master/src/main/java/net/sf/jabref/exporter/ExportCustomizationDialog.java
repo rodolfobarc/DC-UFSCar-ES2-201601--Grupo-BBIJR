@@ -15,28 +15,9 @@
 */
 package net.sf.jabref.exporter;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.table.TableColumnModel;
-
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.DefaultEventTableModel;
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.JabRefFrame;
@@ -46,15 +27,20 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.logic.l10n.Localization;
 
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.DefaultEventTableModel;
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>Title: </p>
  * <p>Description: </p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: </p>
+ *
  * @author not attributable
  * @version 1.0
  */
@@ -93,37 +79,37 @@ public class ExportCustomizationDialog extends JDialog {
 
         JButton modify = new JButton(Localization.lang("Modify"));
         modify.addActionListener(e -> {
-                int row = table.getSelectedRow();
-                if (row == -1) {
-                    return;
-                }
-                List<String> old = Globals.prefs.customExports.getSortedList().get(row);
-                CustomExportDialog ecd = new CustomExportDialog(frame, old.get(0), old.get(1), old.get(2));
-                ecd.setVisible(true); // ecd.show(); -> deprecated since 1.5
-                if (ecd.okPressed()) {
-                    old.set(0, ecd.name());
-                    old.set(1, ecd.layoutFile());
-                    old.set(2, ecd.extension());
-                    table.revalidate();
-                    table.repaint();
-                    Globals.prefs.customExports.store();
-                }
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                return;
+            }
+            List<String> old = Globals.prefs.customExports.getSortedList().get(row);
+            CustomExportDialog ecd = new CustomExportDialog(frame, old.get(0), old.get(1), old.get(2));
+            ecd.setVisible(true); // ecd.show(); -> deprecated since 1.5
+            if (ecd.okPressed()) {
+                old.set(0, ecd.name());
+                old.set(1, ecd.layoutFile());
+                old.set(2, ecd.extension());
+                table.revalidate();
+                table.repaint();
+                Globals.prefs.customExports.store();
+            }
         });
 
         JButton remove = new JButton(Localization.lang("Remove"));
         remove.addActionListener(e -> {
-                int[] rows = table.getSelectedRows();
-                if (rows.length == 0) {
-                    return;
-                }
-                List<List<String>> entries = new ArrayList<>();
-                for (int i = 0; i < rows.length; i++) {
-                    entries.add(Globals.prefs.customExports.getSortedList().get(rows[i]));
-                }
-                for (List<String> list : entries) {
-                    Globals.prefs.customExports.remove(list);
-                }
-                Globals.prefs.customExports.store();
+            int[] rows = table.getSelectedRows();
+            if (rows.length == 0) {
+                return;
+            }
+            List<List<String>> entries = new ArrayList<>();
+            for (int i = 0; i < rows.length; i++) {
+                entries.add(Globals.prefs.customExports.getSortedList().get(rows[i]));
+            }
+            for (List<String> list : entries) {
+                Globals.prefs.customExports.remove(list);
+            }
+            Globals.prefs.customExports.store();
         });
 
         Action closeAction = new AbstractAction() {
@@ -182,12 +168,12 @@ public class ExportCustomizationDialog extends JDialog {
         @Override
         public String getColumnName(int col) {
             switch (col) {
-            case 0:
-                return Localization.lang("Export name");
-            case 1:
-                return Localization.lang("Main layout file");
-            default:
-                return Localization.lang("Extension");
+                case 0:
+                    return Localization.lang("Export name");
+                case 1:
+                    return Localization.lang("Main layout file");
+                default:
+                    return Localization.lang("Extension");
             }
         }
     }

@@ -1,8 +1,8 @@
 package net.sf.jabref.logic.search;
 
-import java.util.Optional;
-
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

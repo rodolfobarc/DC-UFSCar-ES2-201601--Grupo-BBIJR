@@ -15,24 +15,19 @@
 */
 package net.sf.jabref.exporter;
 
+import net.sf.jabref.BibDatabaseContext;
+import net.sf.jabref.logic.msbib.MSBibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.logic.msbib.MSBibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
 
 /**
  * ExportFormat for exporting in MSBIB XML format.
@@ -45,7 +40,7 @@ class MSBibExportFormat extends ExportFormat {
 
     @Override
     public void performExport(final BibDatabaseContext databaseContext, final String file,
-            final Charset encoding, List<BibEntry> entries) throws IOException {
+                              final Charset encoding, List<BibEntry> entries) throws IOException {
         Objects.requireNonNull(databaseContext);
         Objects.requireNonNull(entries);
 
@@ -58,7 +53,7 @@ class MSBibExportFormat extends ExportFormat {
         MSBibDatabase md = new MSBibDatabase(databaseContext.getDatabase(), entries);
         try (VerifyingWriter ps = ss.getWriter()) {
 
-        // PS: DOES NOT SUPPORT EXPORTING ONLY A SET OF ENTRIES
+            // PS: DOES NOT SUPPORT EXPORTING ONLY A SET OF ENTRIES
 
             try {
                 DOMSource source = new DOMSource(md.getDOMrepresentation());

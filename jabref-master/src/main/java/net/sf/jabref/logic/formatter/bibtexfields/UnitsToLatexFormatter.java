@@ -15,16 +15,16 @@
  */
 package net.sf.jabref.logic.formatter.bibtexfields;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringLengthComparator;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class UnitsToLatexFormatter implements Formatter {
 
-    private static final String[] UNIT_LIST = new String[] {
+    private static final String[] UNIT_LIST = new String[]{
             "A", // Ampere
             "Ah", // Ampere hours
             "B", // Byte
@@ -66,7 +66,7 @@ public class UnitsToLatexFormatter implements Formatter {
             "sr", // steradians
     };
 
-    private static final String[] UNIT_PREFIX_LIST = new String[] {
+    private static final String[] UNIT_PREFIX_LIST = new String[]{
             "y", // yocto
             "z", // zepto
             "a", // atto

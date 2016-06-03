@@ -15,6 +15,10 @@
  */
 package net.sf.jabref.logic.openoffice;
 
+import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,18 +28,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class StyleLoader {
-
-    private static final Log LOGGER = LogFactory.getLog(StyleLoader.class);
 
     public static final String DEFAULT_AUTHORYEAR_STYLE_PATH = "/resource/openoffice/default_authoryear.jstyle";
     public static final String DEFAULT_NUMERICAL_STYLE_PATH = "/resource/openoffice/default_numerical.jstyle";
-
+    private static final Log LOGGER = LogFactory.getLog(StyleLoader.class);
     // All internal styles
     private final List<String> internalStyleFiles = Arrays.asList(DEFAULT_AUTHORYEAR_STYLE_PATH,
             DEFAULT_NUMERICAL_STYLE_PATH);

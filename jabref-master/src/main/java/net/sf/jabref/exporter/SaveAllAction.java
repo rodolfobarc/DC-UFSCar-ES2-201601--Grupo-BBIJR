@@ -15,10 +15,6 @@
 */
 package net.sf.jabref.exporter;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.IconTheme;
@@ -28,11 +24,12 @@ import net.sf.jabref.gui.actions.MnemonicAwareAction;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.worker.Worker;
 import net.sf.jabref.logic.l10n.Localization;
-
 import spin.Spin;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+
 /**
- *
  * @author alver
  */
 public class SaveAllAction extends MnemonicAwareAction implements Worker {
@@ -41,7 +38,9 @@ public class SaveAllAction extends MnemonicAwareAction implements Worker {
     private int databases;
 
 
-    /** Creates a new instance of SaveAllAction */
+    /**
+     * Creates a new instance of SaveAllAction
+     */
     public SaveAllAction(JabRefFrame frame) {
         super(IconTheme.JabRefIcon.SAVE_ALL.getIcon());
         this.frame = frame;

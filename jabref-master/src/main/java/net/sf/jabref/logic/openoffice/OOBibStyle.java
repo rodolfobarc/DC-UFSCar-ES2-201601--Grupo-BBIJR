@@ -15,27 +15,6 @@
 */
 package net.sf.jabref.logic.openoffice;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.JabRefMain;
 import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
 import net.sf.jabref.logic.layout.Layout;
@@ -46,9 +25,14 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.Author;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * This class embodies a bibliography formatting for OpenOffice, which is composed
@@ -68,89 +52,67 @@ import org.apache.commons.logging.LogFactory;
 public class OOBibStyle implements Comparable<OOBibStyle> {
 
     public static final String UNDEFINED_CITATION_MARKER = "??";
-    private String name;
-    private final SortedSet<String> journals = new TreeSet<>();
-
-    // Formatter to be run on fields before they are used as part of citation marker:
-    private final LayoutFormatter fieldFormatter = new OOPreFormatter();
-
-    private Layout defaultBibLayout;
-
-    // reference layout mapped from entry type number:
-    private final Map<String, Layout> bibLayout = new HashMap<>();
-
-    private final Map<String, Object> properties = new HashMap<>();
-    private final Map<String, Object> citProperties = new HashMap<>();
-
+    public static final String ITALIC_ET_AL = "ItalicEtAl";
+    public static final String MULTI_CITE_CHRONOLOGICAL = "MultiCiteChronological";
+    public static final String MINIMUM_GROUPING_COUNT = "MinimumGroupingCount";
+    public static final String ET_AL_STRING = "EtAlString";
+    public static final String MAX_AUTHORS_FIRST = "MaxAuthorsFirst";
+    public static final String REFERENCE_HEADER_PARAGRAPH_FORMAT = "ReferenceHeaderParagraphFormat";
+    public static final String REFERENCE_PARAGRAPH_FORMAT = "ReferenceParagraphFormat";
+    public static final String TITLE = "Title";
     private static final Pattern NUM_PATTERN = Pattern.compile("-?\\d+");
-
-    private boolean valid;
-
-    private final boolean fromResource;
-
-    private final String path;
-
-
-    enum BibStyleMode {
-        NONE,
-        LAYOUT,
-        PROPERTIES,
-        CITATION,
-        NAME,
-        JOURNALS
-    }
     private static final String LAYOUT_MRK = "LAYOUT";
     private static final String PROPERTIES_MARK = "PROPERTIES";
     private static final String CITATION_MARK = "CITATION";
     private static final String NAME_MARK = "NAME";
     private static final String JOURNALS_MARK = "JOURNALS";
     private static final String DEFAULT_MARK = "default";
-    private File styleFile;
-    private final Charset encoding;
-    private long styleFileModificationTime = Long.MIN_VALUE;
-    private String localCopy;
-
     private static final String BRACKET_AFTER_IN_LIST = "BracketAfterInList";
     private static final String BRACKET_BEFORE_IN_LIST = "BracketBeforeInList";
     private static final String UNIQUEFIER_SEPARATOR = "UniquefierSeparator";
-    public static final String ITALIC_ET_AL = "ItalicEtAl";
     private static final String BIBTEX_KEY_CITATIONS = "BibTeXKeyCitations";
-    public static final String MULTI_CITE_CHRONOLOGICAL = "MultiCiteChronological";
     private static final String SUBSCRIPT_CITATIONS = "SubscriptCitations";
     private static final String SUPERSCRIPT_CITATIONS = "SuperscriptCitations";
     private static final String BOLD_CITATIONS = "BoldCitations";
     private static final String ITALIC_CITATIONS = "ItalicCitations";
     private static final String CITATION_CHARACTER_FORMAT = "CitationCharacterFormat";
     private static final String FORMAT_CITATIONS = "FormatCitations";
-    public static final String MINIMUM_GROUPING_COUNT = "MinimumGroupingCount";
     private static final String GROUPED_NUMBERS_SEPARATOR = "GroupedNumbersSeparator";
     private static final String PAGE_INFO_SEPARATOR = "PageInfoSeparator";
     private static final String CITATION_SEPARATOR = "CitationSeparator";
     private static final String IN_TEXT_YEAR_SEPARATOR = "InTextYearSeparator";
-    public static final String ET_AL_STRING = "EtAlString";
-    public static final String MAX_AUTHORS_FIRST = "MaxAuthorsFirst";
     private static final String MAX_AUTHORS = "MaxAuthors";
     private static final String YEAR_FIELD = "YearField";
     private static final String AUTHOR_FIELD = "AuthorField";
-    public static final String REFERENCE_HEADER_PARAGRAPH_FORMAT = "ReferenceHeaderParagraphFormat";
-    public static final String REFERENCE_PARAGRAPH_FORMAT = "ReferenceParagraphFormat";
     private static final String BRACKET_AFTER = "BracketAfter";
     private static final String BRACKET_BEFORE = "BracketBefore";
     private static final String IS_NUMBER_ENTRIES = "IsNumberEntries";
     private static final String IS_SORT_BY_POSITION = "IsSortByPosition";
     private static final String SORT_ALGORITHM = "SortAlgorithm";
     private static final String OXFORD_COMMA = "OxfordComma";
-    public static final String TITLE = "Title";
     private static final String YEAR_SEPARATOR = "YearSeparator";
     private static final String AUTHOR_LAST_SEPARATOR_IN_TEXT = "AuthorLastSeparatorInText";
     private static final String AUTHOR_LAST_SEPARATOR = "AuthorLastSeparator";
     private static final String AUTHOR_SEPARATOR = "AuthorSeparator";
-
-    private final JournalAbbreviationRepository repository;
     private static final Pattern QUOTED = Pattern.compile("\".*\"");
-
     private static final Log LOGGER = LogFactory.getLog(OOBibStyle.class);
-
+    private final SortedSet<String> journals = new TreeSet<>();
+    // Formatter to be run on fields before they are used as part of citation marker:
+    private final LayoutFormatter fieldFormatter = new OOPreFormatter();
+    // reference layout mapped from entry type number:
+    private final Map<String, Layout> bibLayout = new HashMap<>();
+    private final Map<String, Object> properties = new HashMap<>();
+    private final Map<String, Object> citProperties = new HashMap<>();
+    private final boolean fromResource;
+    private final String path;
+    private final Charset encoding;
+    private final JournalAbbreviationRepository repository;
+    private String name;
+    private Layout defaultBibLayout;
+    private boolean valid;
+    private File styleFile;
+    private long styleFileModificationTime = Long.MIN_VALUE;
+    private String localCopy;
 
     public OOBibStyle(File styleFile, JournalAbbreviationRepository repository, Charset encoding) throws IOException {
         this.repository = Objects.requireNonNull(repository);
@@ -161,6 +123,7 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
         fromResource = false;
         path = styleFile.getPath();
     }
+
 
     public OOBibStyle(String resourcePath, JournalAbbreviationRepository repository)
             throws IOException {
@@ -303,46 +266,46 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
             }
             // Check if we should change mode:
             switch (line) {
-            case NAME_MARK:
-                mode = BibStyleMode.NAME;
-                continue;
-            case LAYOUT_MRK:
-                mode = BibStyleMode.LAYOUT;
-                continue;
-            case PROPERTIES_MARK:
-                mode = BibStyleMode.PROPERTIES;
-                continue;
-            case CITATION_MARK:
-                mode = BibStyleMode.CITATION;
-                continue;
-            case JOURNALS_MARK:
-                mode = BibStyleMode.JOURNALS;
-                continue;
-            default:
-                break;
+                case NAME_MARK:
+                    mode = BibStyleMode.NAME;
+                    continue;
+                case LAYOUT_MRK:
+                    mode = BibStyleMode.LAYOUT;
+                    continue;
+                case PROPERTIES_MARK:
+                    mode = BibStyleMode.PROPERTIES;
+                    continue;
+                case CITATION_MARK:
+                    mode = BibStyleMode.CITATION;
+                    continue;
+                case JOURNALS_MARK:
+                    mode = BibStyleMode.JOURNALS;
+                    continue;
+                default:
+                    break;
 
             }
 
             switch (mode) {
-            case NAME:
-                if (!line.trim().isEmpty()) {
-                    name = line.trim();
-                }
-                break;
-            case LAYOUT:
-                handleStructureLine(line);
-                break;
-            case PROPERTIES:
-                handlePropertiesLine(line, properties);
-                break;
-            case CITATION:
-                handlePropertiesLine(line, citProperties);
-                break;
-            case JOURNALS:
-                handleJournalsLine(line);
-                break;
-            default:
-                break;
+                case NAME:
+                    if (!line.trim().isEmpty()) {
+                        name = line.trim();
+                    }
+                    break;
+                case LAYOUT:
+                    handleStructureLine(line);
+                    break;
+                case PROPERTIES:
+                    handlePropertiesLine(line, properties);
+                    break;
+                case CITATION:
+                    handlePropertiesLine(line, citProperties);
+                    break;
+                case JOURNALS:
+                    handleJournalsLine(line);
+                    break;
+                default:
+                    break;
             }
 
         }
@@ -522,7 +485,7 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
      * @return The formatted citation.
      */
     public String getCitationMarker(List<BibEntry> entries, Map<BibEntry, BibDatabase> database, boolean inParenthesis,
-            String[] uniquefiers, int[] unlimAuthors) {
+                                    String[] uniquefiers, int[] unlimAuthors) {
         // Look for groups of uniquefied entries that should be combined in the output.
         // E.g. (Olsen, 2005a, b) should be output instead of (Olsen, 2005a; Olsen, 2005b).
         int piv = -1;
@@ -608,17 +571,17 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
     /**
      * This method produces (Author, year) style citation strings in many different forms.
      *
-     * @param entries           The list of BibEntry to get fields from.
-     * @param database          A map of BibEntry-BibDatabase pairs.
-     * @param uniquifiers       Optional parameter to separate similar citations. Elements can be null if not needed.
+     * @param entries     The list of BibEntry to get fields from.
+     * @param database    A map of BibEntry-BibDatabase pairs.
+     * @param uniquifiers Optional parameter to separate similar citations. Elements can be null if not needed.
      * @return The formatted citation.
      */
     private String getAuthorYearParenthesisMarker(List<BibEntry> entries, Map<BibEntry, BibDatabase> database,
-            String[] uniquifiers, int[] unlimAuthors) {
+                                                  String[] uniquifiers, int[] unlimAuthors) {
 
         String authorField = getStringCitProperty(AUTHOR_FIELD); // The bibtex field providing author names, e.g. "author" or "editor".
         int maxA = getIntCitProperty(MAX_AUTHORS); // The maximum number of authors to write out in full without using etal. Set to
-                                                             // -1 to always write out all authors.
+        // -1 to always write out all authors.
         String yearSep = getStringCitProperty(YEAR_SEPARATOR); // The String to separate authors from year, e.g. "; ".
         String startBrace = getStringCitProperty(BRACKET_BEFORE); // The opening parenthesis.
         String endBrace = getStringCitProperty(BRACKET_AFTER); // The closing parenthesis.
@@ -667,11 +630,11 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
      * @return The formatted citation.
      */
     private String getAuthorYearInTextMarker(List<BibEntry> entries, Map<BibEntry, BibDatabase> database,
-            String[] uniquefiers,
-            int[] unlimAuthors) {
+                                             String[] uniquefiers,
+                                             int[] unlimAuthors) {
         String authorField = getStringCitProperty(AUTHOR_FIELD); // The bibtex field providing author names, e.g. "author" or "editor".
         int maxA = getIntCitProperty(MAX_AUTHORS); // The maximum number of authors to write out in full without using etal. Set to
-                                                             // -1 to always write out all authors.
+        // -1 to always write out all authors.
         String yearSep = getStringCitProperty(IN_TEXT_YEAR_SEPARATOR); // The String to separate authors from year, e.g. "; ".
         String startBrace = getStringCitProperty(BRACKET_BEFORE); // The opening parenthesis.
         String endBrace = getStringCitProperty(BRACKET_AFTER); // The closing parenthesis.
@@ -742,7 +705,6 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
         // No luck? Return an empty string:
         return "";
     }
-
 
     /**
      * Look up the nth author and return the proper last name for citation markers.
@@ -899,7 +861,7 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
     }
 
     private String createAuthorList(String author, int maxAuthors, String andString,
-            String yearSep) {
+                                    String yearSep) {
         Objects.requireNonNull(author);
         String etAlString = getStringCitProperty(ET_AL_STRING); //  The String to represent authors that are not mentioned, e.g. " et al."
         String authorSep = getStringCitProperty(AUTHOR_SEPARATOR); // The String to add between author names except the last two, e.g. ", ".
@@ -926,5 +888,14 @@ public class OOBibStyle implements Comparable<OOBibStyle> {
         }
         sb.append(yearSep);
         return sb.toString();
+    }
+
+    enum BibStyleMode {
+        NONE,
+        LAYOUT,
+        PROPERTIES,
+        CITATION,
+        NAME,
+        JOURNALS
     }
 }

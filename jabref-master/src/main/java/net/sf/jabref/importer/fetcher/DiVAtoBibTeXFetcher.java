@@ -14,17 +14,6 @@
 */
 package net.sf.jabref.importer.fetcher;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.help.HelpFiles;
@@ -37,9 +26,17 @@ import net.sf.jabref.logic.formatter.casechanger.ProtectTermsFormatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.net.URLDownload;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class DiVAtoBibTeXFetcher implements EntryFetcher {
 
@@ -84,7 +81,7 @@ public class DiVAtoBibTeXFetcher implements EntryFetcher {
             bibtexString = dl.downloadToString(StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             status.showMessage(Localization.lang("Unknown DiVA entry: '%0'.",
-                            query),
+                    query),
                     Localization.lang("Get BibTeX entry from DiVA"), JOptionPane.INFORMATION_MESSAGE);
             return false;
         } catch (IOException e) {

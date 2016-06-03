@@ -16,15 +16,6 @@
 */
 package net.sf.jabref.importer.fetcher;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.JPanel;
-
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.importer.ImportInspector;
 import net.sf.jabref.importer.OutputPrinter;
@@ -32,9 +23,16 @@ import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.logic.net.URLDownload;
 import net.sf.jabref.model.DuplicateCheck;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class DBLPFetcher implements EntryFetcher {
 
@@ -43,11 +41,9 @@ public class DBLPFetcher implements EntryFetcher {
     private static final String URL_START = "http://www.dblp.org/search/api/";
     private static final String URL_PART1 = "?q=";
     private static final String URL_END = "&h=1000&c=4&f=0&format=json";
-
+    private final DBLPHelper helper = new DBLPHelper();
     private volatile boolean shouldContinue;
     private String query;
-    private final DBLPHelper helper = new DBLPHelper();
-
 
     @Override
     public void stopFetching() {
@@ -56,7 +52,7 @@ public class DBLPFetcher implements EntryFetcher {
 
     @Override
     public boolean processQuery(String newQuery, ImportInspector inspector,
-            OutputPrinter status) {
+                                OutputPrinter status) {
 
         final HashMap<String, Boolean> bibentryKnown = new HashMap<>();
 

@@ -1,10 +1,10 @@
 package net.sf.jabref.exporter;
 
-import java.nio.charset.Charset;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.config.SaveOrderConfig;
+
+import java.nio.charset.Charset;
 
 public class SavePreferences {
 
@@ -21,7 +21,7 @@ public class SavePreferences {
     }
 
     public SavePreferences(Boolean saveInOriginalOrder, SaveOrderConfig saveOrder, Charset encoding, Boolean makeBackup,
-            DatabaseSaveType saveType, Boolean takeMetadataSaveOrderInAccount, Boolean reformatFile) {
+                           DatabaseSaveType saveType, Boolean takeMetadataSaveOrderInAccount, Boolean reformatFile) {
         this.saveInOriginalOrder = saveInOriginalOrder;
         this.saveOrder = saveOrder;
         this.encoding = encoding;

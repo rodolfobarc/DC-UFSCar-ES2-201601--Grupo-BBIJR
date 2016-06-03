@@ -2,7 +2,6 @@ package net.sf.jabref.importer.fileformat;
 
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

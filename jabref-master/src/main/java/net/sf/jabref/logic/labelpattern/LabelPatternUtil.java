@@ -17,13 +17,6 @@
 */
 package net.sf.jabref.logic.labelpattern;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.MetaData;
@@ -33,9 +26,15 @@ import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -51,17 +50,13 @@ public class LabelPatternUtil {
     private static final Log LOGGER = LogFactory.getLog(LabelPatternUtil.class);
 
     private static final Pattern REGEX_PATTERN = Pattern.compile(".*\\(\\{([A-Z]+)\\}\\).*");
-
-    private static List<String> defaultLabelPattern;
-
     private static final int CHARS_OF_FIRST = 5;
-
+    private static List<String> defaultLabelPattern;
+    private static BibDatabase database;
 
     static {
         updateDefaultPattern();
     }
-
-    private static BibDatabase database;
 
     public static void updateDefaultPattern() {
         defaultLabelPattern = LabelPatternUtil
@@ -125,7 +120,7 @@ public class LabelPatternUtil {
 
     /**
      * Will remove diacritics from the content.
-     *
+     * <p>
      * Replaces umlaut: \"x with xe, e.g. \"o -> oe, \"u -> ue, etc.
      * Removes all other diacritics: \?x -> x, e.g. \'a -> a, etc.
      *
@@ -151,7 +146,7 @@ public class LabelPatternUtil {
 
     /**
      * Unifies umlauts.
-     *
+     * <p>
      * Replaces: $\ddot{\mathrm{X}}$ (an alternative umlaut) with: {\"X}
      * Replaces: \?{X} and \?X with {\?X}, where ? is a diacritic symbol
      *
@@ -168,17 +163,17 @@ public class LabelPatternUtil {
 
     /**
      * Check if a value is institution.
-     *
+     * <p>
      * This is usable for distinguishing between persons and institutions in
      * the author or editor fields.
-     *
+     * <p>
      * A person:
-     *   - "John Doe"
-     *   - "Doe, John"
-     *
+     * - "John Doe"
+     * - "Doe, John"
+     * <p>
      * An institution:
-     *   - "{The Big Company or Institution Inc.}"
-     *   - "{The Big Company or Institution Inc. (BCI)}"
+     * - "{The Big Company or Institution Inc.}"
+     * - "{The Big Company or Institution Inc. (BCI)}"
      *
      * @param author Author or editor.
      * @return True if the author or editor is an institution.
@@ -194,7 +189,7 @@ public class LabelPatternUtil {
      * Graph Grammar System (AGG)&rdquo; ->
      * &ldquo;TheAttributedGraphGrammarSystemAGG&rdquo;.
      * </p>
-     *
+     * <p>
      * <p>
      * An institution name should be inside <code>{}</code> brackets. If the
      * institution name also includes its abbreviation this abbreviation should
@@ -202,17 +197,17 @@ public class LabelPatternUtil {
      * should look like:
      * <code>{The Attributed Graph Grammar System ({AGG})}</code>.
      * </p>
-     *
+     * <p>
      * <p>
      * If an institution includes its abbreviation, i.e. "...({XYZ})", first
      * such abbreviation should be used as the key value part of such author.
      * </p>
-     *
+     * <p>
      * <p>
      * If an institution does not include its abbreviation the key should be
      * generated form its name in the following way:
      * </p>
-     *
+     * <p>
      * <p>
      * The institution value can contain: institution name, part of the
      * institution, address, etc. Those information should be separated by
@@ -220,7 +215,7 @@ public class LabelPatternUtil {
      * should be on the beginning, while address and secondary information
      * should be on the end.
      * </p>
-     *
+     * <p>
      * Each part is examined separately:
      * <ol>
      * <li>We remove all tokens of a part which are one of the defined ignore
@@ -239,7 +234,7 @@ public class LabelPatternUtil {
      * from the first letters of words starting with and uppercase letter.</li>
      * </ul>
      * </ol>
-     *
+     * <p>
      * Parts are concatenated together in the following way:
      * <ul>
      * <li>If there is a university part use it otherwise use the rest part.</li>
@@ -247,16 +242,16 @@ public class LabelPatternUtil {
      * <li>If there is a department part and it is not same as school part
      * append it.</li>
      * </ul>
-     *
+     * <p>
      * Rest part is only the first part which do not match any other type. All
      * other parts (address, ...) are ignored.
      *
      * @param content the institution to generate a Bibtex key for
      * @return <ul>
-     *         <li>the institution key</li>
-     *         <li>"" in the case of a failure</li>
-     *         <li>null if content is null</li>
-     *         </ul>
+     * <li>the institution key</li>
+     * <li>"" in the case of a failure</li>
+     * <li>null if content is null</li>
+     * </ul>
      */
     private static String generateInstitutionKey(String content) {
         if (content.isEmpty()) {
@@ -369,7 +364,7 @@ public class LabelPatternUtil {
                 if (part.size() < 3) {
                     for (String k : part) {
                         restSB.append(k);
-                    // More than 3 parts -> use 1st letter abbreviation
+                        // More than 3 parts -> use 1st letter abbreviation
                     }
                 } else {
                     for (String k : part) {
@@ -388,7 +383,7 @@ public class LabelPatternUtil {
                 + (school == null ? "" : school)
                 + ((department == null)
                 || ((school != null) && department.equals(school)) ?
-                        "" : department);
+                "" : department);
     }
 
     /**
@@ -418,7 +413,7 @@ public class LabelPatternUtil {
     /**
      * Generates a BibTeX label according to the pattern for a given entry type, and saves the unique label in the
      * <code>Bibtexentry</code>.
-     *
+     * <p>
      * The given database is used to avoid duplicate keys.
      *
      * @param dBase a <code>BibDatabase</code>
@@ -543,8 +538,9 @@ public class LabelPatternUtil {
 
     /**
      * Applies modifiers to a label generated based on a field marker.
-     * @param label The generated label.
-     * @param parts String array containing the modifiers.
+     *
+     * @param label  The generated label.
+     * @param parts  String array containing the modifiers.
      * @param offset The number of initial items in the modifiers array to skip.
      * @return The modified label.
      */
@@ -761,7 +757,7 @@ public class LabelPatternUtil {
                     return "";
                 } else {
                     // num counts from 1 to n, but index in arrayList count from 0 to n-1
-                    return separatedKeywords.get(num-1);
+                    return separatedKeywords.get(num - 1);
                 }
             } else if (val.matches("keywords\\d*")) {
                 // return all keywords, not separated
@@ -794,6 +790,7 @@ public class LabelPatternUtil {
     /**
      * Look up a field of a BibEntry, returning its String value, or an
      * empty string if it isn't set.
+     *
      * @param entry The entry.
      * @param field The field to look up.
      * @return The field value.
@@ -807,8 +804,7 @@ public class LabelPatternUtil {
      * Computes an appendix to a BibTeX key that could make it unique. We use
      * a-z for numbers 0-25, and then aa-az, ba-bz, etc.
      *
-     * @param number
-     *            The appendix number.
+     * @param number The appendix number.
      * @return The String to append.
      */
     private static String getAddition(int number) {
@@ -832,7 +828,8 @@ public class LabelPatternUtil {
 
         // sorry for being English-centric. I guess these
         // words should really be an editable preference.
-        mainl: while ((piv < ss.length()) && (words < number)) {
+        mainl:
+        while ((piv < ss.length()) && (words < number)) {
             current = new StringBuilder();
             // Get the next word:
             while ((piv < ss.length()) && !Character.isWhitespace(ss.charAt(piv))
@@ -846,7 +843,7 @@ public class LabelPatternUtil {
             if (word.isEmpty()) {
                 continue;
             }
-            for (String smallWord: Word.SMALLER_WORDS) {
+            for (String smallWord : Word.SMALLER_WORDS) {
                 if (word.equalsIgnoreCase(smallWord)) {
                     continue mainl;
                 }
@@ -877,13 +874,10 @@ public class LabelPatternUtil {
     /**
      * Gets the last name of the first author/editor
      *
-     * @param authorField
-     *            a <code>String</code>
+     * @param authorField a <code>String</code>
      * @return the surname of an author/editor or "" if no author was found
-     *    This method is guaranteed to never return null.
-     *
-     * @throws NullPointerException
-     *             if authorField == null
+     * This method is guaranteed to never return null.
+     * @throws NullPointerException if authorField == null
      */
     public static String firstAuthor(String authorField) {
         AuthorList authorList = AuthorList.parse(authorField);
@@ -898,13 +892,10 @@ public class LabelPatternUtil {
     /**
      * Gets the first name initials of the first author/editor
      *
-     * @param authorField
-     *            a <code>String</code>
+     * @param authorField a <code>String</code>
      * @return the first name initial of an author/editor or "" if no author was found
-     *    This method is guaranteed to never return null.
-     *
-     * @throws NullPointerException
-     *             if authorField == null
+     * This method is guaranteed to never return null.
+     * @throws NullPointerException if authorField == null
      */
     public static String firstAuthorForenameInitials(String authorField) {
         AuthorList authorList = AuthorList.parse(authorField);
@@ -919,13 +910,10 @@ public class LabelPatternUtil {
      * Gets the von part and the last name of the first author/editor
      * No spaces are returned
      *
-     * @param authorField
-     *            a <code>String</code>
+     * @param authorField a <code>String</code>
      * @return the von part and surname of an author/editor or "" if no author was found.
-     *  This method is guaranteed to never return null.
-     *
-     * @throws NullPointerException
-     *             if authorField == null
+     * This method is guaranteed to never return null.
+     * @throws NullPointerException if authorField == null
      */
     public static String firstAuthorVonAndLast(String authorField) {
         AuthorList authorList = AuthorList.parse(authorField);
@@ -946,6 +934,7 @@ public class LabelPatternUtil {
 
     /**
      * Gets the last name of the last author/editor
+     *
      * @param authorField a <code>String</code>
      * @return the surname of an author/editor
      */
@@ -963,13 +952,10 @@ public class LabelPatternUtil {
     /**
      * Gets the forename initials of the last author/editor
      *
-     * @param authorField
-     *            a <code>String</code>
+     * @param authorField a <code>String</code>
      * @return the forename initial of an author/editor or "" if no author was found
-     *    This method is guaranteed to never return null.
-     *
-     * @throws NullPointerException
-     *             if authorField == null
+     * This method is guaranteed to never return null.
+     * @throws NullPointerException if authorField == null
      */
     public static String lastAuthorForenameInitials(String authorField) {
         AuthorList authorList = AuthorList.parse(authorField);
@@ -982,6 +968,7 @@ public class LabelPatternUtil {
 
     /**
      * Gets the last name of all authors/editors
+     *
      * @param authorField a <code>String</code>
      * @return the sur name of all authors/editors
      */
@@ -992,6 +979,7 @@ public class LabelPatternUtil {
 
     /**
      * Returns the authors according to the BibTeX-alpha-Style
+     *
      * @param authorField string containing the value of the author field
      * @return the initials of all authornames
      */
@@ -1034,8 +1022,9 @@ public class LabelPatternUtil {
 
     /**
      * Gets the surnames of the first N authors and appends EtAl if there are more than N authors
+     *
      * @param authorField a <code>String</code>
-     * @param n the number of desired authors
+     * @param n           the number of desired authors
      * @return Gets the surnames of the first N authors and appends EtAl if there are more than N authors
      */
     public static String nAuthors(String authorField, int n) {
@@ -1058,6 +1047,7 @@ public class LabelPatternUtil {
      * author/editor, and appends the last name initial of the
      * remaining authors/editors.
      * Maximum 5 characters
+     *
      * @param authorField a <code>String</code>
      * @return the surname of all authors/editors
      */
@@ -1084,7 +1074,7 @@ public class LabelPatternUtil {
      * auth.auth.ea format:
      * Isaac Newton and James Maxwell and Albert Einstein (1960)
      * Isaac Newton and James Maxwell (1960)
-     *  give:
+     * give:
      * Newton.Maxwell.ea
      * Newton.Maxwell
      */
@@ -1115,19 +1105,19 @@ public class LabelPatternUtil {
      * auth.etal, authEtAl, ... format:
      * Isaac Newton and James Maxwell and Albert Einstein (1960)
      * Isaac Newton and James Maxwell (1960)
-     *
-     *  auth.etal give (delim=".", append=".etal"):
+     * <p>
+     * auth.etal give (delim=".", append=".etal"):
      * Newton.etal
      * Newton.Maxwell
-     *
-     *  authEtAl give (delim="", append="EtAl"):
+     * <p>
+     * authEtAl give (delim="", append="EtAl"):
      * NewtonEtAl
      * NewtonMaxwell
-     *
+     * <p>
      * Note that [authEtAl] equals [authors2]
      */
     public static String authEtal(String authorField, String delim,
-            String append) {
+                                  String append) {
         String fixedAuthorField = AuthorList.fixAuthorForAlphabetization(authorField);
 
         String[] tokens = fixedAuthorField.split("\\s*\\band\\b\\s*");
@@ -1170,26 +1160,26 @@ public class LabelPatternUtil {
     /**
      * authshort format:
      * added by Kolja Brix, kbx@users.sourceforge.net
-     *
+     * <p>
      * given author names
-     *
-     *   Isaac Newton and James Maxwell and Albert Einstein and N. Bohr
-     *
-     *   Isaac Newton and James Maxwell and Albert Einstein
-     *
-     *   Isaac Newton and James Maxwell
-     *
-     *   Isaac Newton
-     *
+     * <p>
+     * Isaac Newton and James Maxwell and Albert Einstein and N. Bohr
+     * <p>
+     * Isaac Newton and James Maxwell and Albert Einstein
+     * <p>
+     * Isaac Newton and James Maxwell
+     * <p>
+     * Isaac Newton
+     * <p>
      * yield
-     *
-     *   NME+
-     *
-     *   NME
-     *
-     *   NM
-     *
-     *   Newton
+     * <p>
+     * NME+
+     * <p>
+     * NME
+     * <p>
+     * NM
+     * <p>
+     * Newton
      */
     public static String authshort(String authorField) {
         String fixedAuthorField = AuthorList.fixAuthorForAlphabetization(authorField);
@@ -1214,33 +1204,28 @@ public class LabelPatternUtil {
 
     /**
      * authIniN format:
-     *
+     * <p>
      * Each author gets (N div #authors) chars, the remaining (N mod #authors)
      * chars are equally distributed to the authors first in the row.
-     *
+     * <p>
      * If (N < #authors), only the first N authors get mentioned.
-     *
+     * <p>
      * For example if
-     *
+     * <p>
      * a) I. Newton and J. Maxwell and A. Einstein and N. Bohr (..)
-     *
+     * <p>
      * b) I. Newton and J. Maxwell and A. Einstein
-     *
+     * <p>
      * c) I. Newton and J. Maxwell
-     *
+     * <p>
      * d) I. Newton
-     *
+     * <p>
      * authIni4 gives: a) NMEB, b) NeME, c) NeMa, d) Newt
      *
-     * @param authorField
-     *            The authors to format.
-     *
-     * @param n
-     *            The maximum number of characters this string will be long. A
-     *            negative number or zero will lead to "" be returned.
-     *
-     * @throws NullPointerException
-     *             if authorField is null and n > 0
+     * @param authorField The authors to format.
+     * @param n           The maximum number of characters this string will be long. A
+     *                    negative number or zero will lead to "" be returned.
+     * @throws NullPointerException if authorField is null and n > 0
      */
     public static String authIniN(String authorField, int n) {
 
@@ -1277,14 +1262,10 @@ public class LabelPatternUtil {
     /**
      * Split the pages field into separate numbers and return the lowest
      *
-     * @param pages
-     *            (may not be null) a pages string such as 42--111 or
-     *            7,41,73--97 or 43+
-     *
+     * @param pages (may not be null) a pages string such as 42--111 or
+     *              7,41,73--97 or 43+
      * @return the first page number or "" if no number is found in the string
-     *
-     * @throws NullPointerException
-     *             if pages is null
+     * @throws NullPointerException if pages is null
      */
     public static String firstPage(String pages) {
         final String[] splitPages = pages.split("\\D+");
@@ -1305,13 +1286,9 @@ public class LabelPatternUtil {
     /**
      * Split the pages field into separate numbers and return the highest
      *
-     * @param pages
-     *            a pages string such as 42--111 or 7,41,73--97 or 43+
-     *
+     * @param pages a pages string such as 42--111 or 7,41,73--97 or 43+
      * @return the first page number or "" if no number is found in the string
-     *
-     * @throws NullPointerException
-     *             if pages is null.
+     * @throws NullPointerException if pages is null.
      */
     public static String lastPage(String pages) {
         final String[] splitPages = pages.split("\\D+");
@@ -1332,6 +1309,7 @@ public class LabelPatternUtil {
     /**
      * Parse a field marker with modifiers, possibly containing a parenthesised modifier,
      * as well as escaped colons and parentheses.
+     *
      * @param arg The argument string.
      * @return An array of strings representing the parts of the marker
      */

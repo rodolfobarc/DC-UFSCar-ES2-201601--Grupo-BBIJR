@@ -15,31 +15,27 @@
 */
 package net.sf.jabref.logic.mods;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author Michael Wrighton
- *
  */
 public class MODSDatabase {
 
-    private Set<MODSEntry> entries;
-
     private static final Log LOGGER = LogFactory.getLog(MODSDatabase.class);
+    private Set<MODSEntry> entries;
 
     public MODSDatabase() {
         // maybe make this sorted later...
@@ -80,8 +76,8 @@ public class MODSDatabase {
             }
 
             result.appendChild(modsCollection);
-        } catch (Exception e)         {
-           LOGGER.info("Could not get DOM representation", e);
+        } catch (Exception e) {
+            LOGGER.info("Could not get DOM representation", e);
         }
         return result;
     }

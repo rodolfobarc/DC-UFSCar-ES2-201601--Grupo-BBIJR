@@ -15,28 +15,11 @@
 */
 package net.sf.jabref.pdfimport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.external.DroppedFileHandler;
 import net.sf.jabref.external.ExternalFileTypes;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.BasePanelMode;
-import net.sf.jabref.gui.EntryTypeDialog;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.JabRefFrame;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.entryeditor.EntryEditor;
 import net.sf.jabref.gui.maintable.MainTable;
 import net.sf.jabref.gui.undo.UndoableInsertEntry;
@@ -51,26 +34,35 @@ import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class PdfImporter {
 
+    private static final Log LOGGER = LogFactory.getLog(PdfImporter.class);
     private final JabRefFrame frame;
     private final BasePanel panel;
     private MainTable entryTable;
     private int dropRow;
 
-    private static final Log LOGGER = LogFactory.getLog(PdfImporter.class);
-
     /**
      * Creates the PdfImporter
      *
-     * @param frame the JabRef frame
-     * @param panel the panel to use
+     * @param frame      the JabRef frame
+     * @param panel      the panel to use
      * @param entryTable the entry table to work on
-     * @param dropRow the row the entry is dropped to. May be -1 to indicate that no row is selected.
+     * @param dropRow    the row the entry is dropped to. May be -1 to indicate that no row is selected.
      */
     public PdfImporter(JabRefFrame frame, BasePanel panel, MainTable entryTable, int dropRow) {
         this.frame = frame;
@@ -79,32 +71,7 @@ public class PdfImporter {
         this.dropRow = dropRow;
     }
 
-
-    public class ImportPdfFilesResult {
-
-        private final List<String> noPdfFiles;
-        private final List<BibEntry> entries;
-
-
-        public ImportPdfFilesResult(List<String> noPdfFiles, List<BibEntry> entries) {
-            this.noPdfFiles = noPdfFiles;
-            this.entries = entries;
-        }
-
-
-        public List<String> getNoPdfFiles() {
-            return noPdfFiles;
-        }
-
-
-        public List<BibEntry> getEntries() {
-            return entries;
-        }
-    }
-
-
     /**
-     *
      * Imports the PDF files given by fileNames
      *
      * @param fileNames states the names of the files to import
@@ -160,23 +127,23 @@ public class PdfImporter {
             if (neverShow || (importDialog.getResult() == JOptionPane.OK_OPTION)) {
                 int choice = neverShow ? globalChoice : importDialog.getChoice();
                 switch (choice) {
-                case ImportDialog.XMP:
-                    doXMPImport(fileName, res);
-                    break;
+                    case ImportDialog.XMP:
+                        doXMPImport(fileName, res);
+                        break;
 
-                case ImportDialog.CONTENT:
-                    doContentImport(fileName, res);
-                    break;
-                case ImportDialog.NOMETA:
-                    BibEntry entry = createNewBlankEntry(fileName);
-                    res.add(entry);
-                    break;
-                case ImportDialog.ONLYATTACH:
-                    DroppedFileHandler dfh = new DroppedFileHandler(frame, panel);
-                    dfh.linkPdfToEntry(fileName, entryTable, dropRow);
-                    break;
-                default:
-                    break;
+                    case ImportDialog.CONTENT:
+                        doContentImport(fileName, res);
+                        break;
+                    case ImportDialog.NOMETA:
+                        BibEntry entry = createNewBlankEntry(fileName);
+                        res.add(entry);
+                        break;
+                    case ImportDialog.ONLYATTACH:
+                        DroppedFileHandler dfh = new DroppedFileHandler(frame, panel);
+                        dfh.linkPdfToEntry(fileName, entryTable, dropRow);
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -219,6 +186,7 @@ public class PdfImporter {
         res.add(entry);
 
     }
+
     private BibEntry createNewBlankEntry(String fileName) {
         BibEntry newEntry = createNewEntry();
         if (newEntry != null) {
@@ -326,6 +294,28 @@ public class PdfImporter {
 
     public void setDropRow(int dropRow) {
         this.dropRow = dropRow;
+    }
+
+    public class ImportPdfFilesResult {
+
+        private final List<String> noPdfFiles;
+        private final List<BibEntry> entries;
+
+
+        public ImportPdfFilesResult(List<String> noPdfFiles, List<BibEntry> entries) {
+            this.noPdfFiles = noPdfFiles;
+            this.entries = entries;
+        }
+
+
+        public List<String> getNoPdfFiles() {
+            return noPdfFiles;
+        }
+
+
+        public List<BibEntry> getEntries() {
+            return entries;
+        }
     }
 
 

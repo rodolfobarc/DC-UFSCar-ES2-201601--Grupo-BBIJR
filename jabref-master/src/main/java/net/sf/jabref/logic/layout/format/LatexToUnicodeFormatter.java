@@ -15,14 +15,14 @@
  */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.Map;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.util.strings.HTMLUnicodeConversionMaps;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.Map;
 
 /**
  * This formatter converts LaTeX character sequences their equivalent unicode characters,
@@ -87,7 +87,8 @@ public class LatexToUnicodeFormatter implements LayoutFormatter, Formatter {
                     sb.append(c);
                 } else {
                     currentCommand.append(c);
-                    testCharCom: if ((currentCommand.length() == 1)
+                    testCharCom:
+                    if ((currentCommand.length() == 1)
                             && Globals.SPECIAL_COMMAND_CHARS.contains(currentCommand.toString())) {
                         // This indicates that we are in a command of the type
                         // \^o or \~{n}
@@ -184,7 +185,7 @@ public class LatexToUnicodeFormatter implements LayoutFormatter, Formatter {
                     System.out.printf("com term by }: '%s'\n", currentCommand.toString());
 
                     argument = "";
-                 }*/else {
+                 }*/ else {
                      /*
                       * TODO: this point is reached, apparently, if a command is
                       * terminated in a strange way, such as with "$\omega$".
@@ -194,7 +195,7 @@ public class LatexToUnicodeFormatter implements LayoutFormatter, Formatter {
                       * LaTeX parser, so maybe it's better to ignore these
                       * commands?
                       */
-                 }
+                }
 
                 incommand = false;
                 escaped = false;

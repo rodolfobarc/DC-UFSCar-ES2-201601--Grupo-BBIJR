@@ -15,28 +15,7 @@
 */
 package net.sf.jabref.external;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.FileListEntry;
@@ -50,10 +29,15 @@ import net.sf.jabref.logic.xmp.XMPUtil;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- *
  * This action goes through all selected entries in the BasePanel, and attempts
  * to write the XMP data to the external pdf.
  */
@@ -178,14 +162,14 @@ public class WriteXMPAction extends AbstractWorker {
 
             if (optDiag.isCanceled()) {
                 optDiag.getProgressArea().append("\n"
-                        + Localization.lang("Operation canceled.") +"\n");
+                        + Localization.lang("Operation canceled.") + "\n");
                 break;
             }
         }
         optDiag.getProgressArea()
                 .append("\n"
-                + Localization.lang("Finished writing XMP for %0 file (%1 skipped, %2 errors).", String
-                .valueOf(entriesChanged), String.valueOf(skipped), String.valueOf(errors)));
+                        + Localization.lang("Finished writing XMP for %0 file (%1 skipped, %2 errors).", String
+                        .valueOf(entriesChanged), String.valueOf(skipped), String.valueOf(errors)));
         optDiag.done();
     }
 
@@ -204,10 +188,8 @@ public class WriteXMPAction extends AbstractWorker {
 
         private final JButton okButton = new JButton(Localization.lang("OK"));
         private final JButton cancelButton = new JButton(Localization.lang("Cancel"));
-
-        private boolean canceled;
-
         private final JTextArea progressArea;
+        private boolean canceled;
 
 
         public OptionsDialog(JFrame parent) {

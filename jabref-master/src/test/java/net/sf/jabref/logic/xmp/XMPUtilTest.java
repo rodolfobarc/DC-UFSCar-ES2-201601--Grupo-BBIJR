@@ -1,31 +1,6 @@
 package net.sf.jabref.logic.xmp;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TimeZone;
-
-import javax.xml.transform.TransformerException;
-
+import com.google.common.io.CharStreams;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibEntryWriter;
@@ -37,24 +12,19 @@ import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.IdGenerator;
-
-import com.google.common.io.CharStreams;
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchema;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaMediaManagement;
+import org.apache.jempbox.xmp.*;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.util.XMLUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+
+import javax.xml.transform.TransformerException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Limitations: The test suite only handles UTF8. Not UTF16.
@@ -101,6 +71,39 @@ public class XMPUtilTest {
         return xmp.toString();
     }
 
+    public static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
+        ParserResult result = BibtexParser.parse(new StringReader(s));
+        Collection<BibEntry> c = result.getDatabase().getEntries();
+        Assert.assertEquals(1, c.size());
+        return c.iterator().next();
+    }
+
+    public static String bibtexEntry2BibtexString(BibEntry e) throws IOException {
+        StringWriter sw = new StringWriter();
+        new BibEntryWriter(new LatexFieldFormatter(), false).write(e, sw, BibDatabaseMode.BIBTEX);
+        return sw.getBuffer().toString();
+    }
+
+    public static String readManually(File tempFile) throws IOException {
+        try (PDDocument document = PDDocument.load(tempFile.getAbsoluteFile())) {
+            if (document.isEncrypted()) {
+                Assert.fail("Cannot add metadata to encrypted document.");
+            }
+            PDDocumentCatalog catalog = document.getDocumentCatalog();
+            PDMetadata meta = catalog.getMetadata();
+
+            if (meta == null) {
+                return null;
+            } else {
+                try (InputStream is = meta.createInputStream();
+                     InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                    // trim() for killing padding end-newline
+                    return CharStreams.toString(reader).trim();
+                }
+            }
+        }
+    }
+
     /**
      * Write a manually constructed xmp-string to file
      *
@@ -130,19 +133,6 @@ public class XMPUtilTest {
             document.save(tempFile.getAbsolutePath());
 
         }
-    }
-
-    public static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
-        ParserResult result = BibtexParser.parse(new StringReader(s));
-        Collection<BibEntry> c = result.getDatabase().getEntries();
-        Assert.assertEquals(1, c.size());
-        return c.iterator().next();
-    }
-
-    public static String bibtexEntry2BibtexString(BibEntry e) throws IOException {
-        StringWriter sw = new StringWriter();
-        new BibEntryWriter(new LatexFieldFormatter(), false).write(e, sw, BibDatabaseMode.BIBTEX);
-        return sw.getBuffer().toString();
     }
 
     public String t1BibtexString() {
@@ -255,6 +245,7 @@ public class XMPUtilTest {
 
     /**
      * Most basic test for reading.
+     *
      * @throws IOException
      * @throws COSVisitorException
      */
@@ -280,6 +271,7 @@ public class XMPUtilTest {
 
     /**
      * Is UTF8 handling working? This is because Java by default uses the platform encoding or a special UTF-kind.
+     *
      * @throws IOException
      * @throws COSVisitorException
      */
@@ -305,7 +297,7 @@ public class XMPUtilTest {
     /**
      * Make sure that the privacy filter works.
      *
-     * @throws IOException Should not happen.
+     * @throws IOException          Should not happen.
      * @throws TransformerException Should not happen.
      */
     @Test
@@ -352,6 +344,7 @@ public class XMPUtilTest {
 
     /**
      * Are authors and editors correctly read?
+     *
      * @throws IOException
      * @throws COSVisitorException
      */
@@ -378,9 +371,9 @@ public class XMPUtilTest {
 
     /**
      * Is the XMPEntryType correctly set?
+     *
      * @throws IOException
      * @throws COSVisitorException
-     *
      */
     @Test
     public void testReadXMPEntryType() throws COSVisitorException, IOException {
@@ -397,28 +390,9 @@ public class XMPUtilTest {
         Assert.assertEquals("article", e.getType());
     }
 
-    public static String readManually(File tempFile) throws IOException {
-        try (PDDocument document = PDDocument.load(tempFile.getAbsoluteFile())) {
-            if (document.isEncrypted()) {
-                Assert.fail("Cannot add metadata to encrypted document.");
-            }
-            PDDocumentCatalog catalog = document.getDocumentCatalog();
-            PDMetadata meta = catalog.getMetadata();
-
-            if (meta == null) {
-                return null;
-            } else {
-                try (InputStream is = meta.createInputStream();
-                        InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-                    // trim() for killing padding end-newline
-                    return CharStreams.toString(reader).trim();
-                }
-            }
-        }
-    }
-
     /**
      * Test whether the helper function work correctly.
+     *
      * @throws IOException
      * @throws COSVisitorException
      */
@@ -444,9 +418,9 @@ public class XMPUtilTest {
 
     /**
      * Test that readXMP and writeXMP work together.
+     *
      * @throws IOException
      * @throws TransformerException
-     *
      */
     @Test
     public void testReadWriteXMP() throws IOException, TransformerException {
@@ -473,9 +447,9 @@ public class XMPUtilTest {
 
     /**
      * Are newlines in the XML processed correctly?
+     *
      * @throws IOException
      * @throws COSVisitorException
-     *
      */
     @Test
     public void testNewlineHandling() throws COSVisitorException, IOException {
@@ -498,9 +472,9 @@ public class XMPUtilTest {
 
     /**
      * Test whether XMP.readFile can deal with text-properties that are not element-nodes, but attribute-nodes
+     *
      * @throws IOException
      * @throws COSVisitorException
-     *
      */
     @Test
     public void testAttributeRead() throws COSVisitorException, IOException {
@@ -1086,11 +1060,10 @@ public class XMPUtilTest {
 
     /**
      * Test whether the command-line client works correctly with writing a single entry
+     *
      * @throws IOException
      * @throws TransformerException
      * @throws COSVisitorException
-     *
-
      */
     @Test
     public void testCommandLineSingleBib() throws IOException, TransformerException, COSVisitorException {
@@ -1104,7 +1077,7 @@ public class XMPUtilTest {
             try (ByteArrayOutputStream s = new ByteArrayOutputStream()) {
                 PrintStream oldOut = System.out;
                 System.setOut(new PrintStream(s));
-                XMPUtil.main(new String[] {tempBib.getAbsolutePath()});
+                XMPUtil.main(new String[]{tempBib.getAbsolutePath()});
                 System.setOut(oldOut);
                 String xmp = s.toString();
 
@@ -1139,7 +1112,7 @@ public class XMPUtilTest {
             try (ByteArrayOutputStream s = new ByteArrayOutputStream()) {
                 PrintStream oldOut = System.out;
                 System.setOut(new PrintStream(s));
-                XMPUtil.main(new String[] {pdfFile.getAbsolutePath()});
+                XMPUtil.main(new String[]{pdfFile.getAbsolutePath()});
                 System.setOut(oldOut);
                 String bibtex = s.toString();
 
@@ -1159,7 +1132,7 @@ public class XMPUtilTest {
         try (ByteArrayOutputStream s = new ByteArrayOutputStream()) {
             PrintStream oldOut = System.out;
             System.setOut(new PrintStream(s));
-            XMPUtil.main(new String[] {"-x", pdfFile.getAbsolutePath()});
+            XMPUtil.main(new String[]{"-x", pdfFile.getAbsolutePath()});
             System.setOut(oldOut);
             s.close();
             String xmp = s.toString();
@@ -1188,9 +1161,9 @@ public class XMPUtilTest {
 
     /**
      * Test whether the command-line client can pick one of several entries from a bibtex file
+     *
      * @throws IOException
      * @throws TransformerException
-     *
      */
     @Test
     @Ignore
@@ -1205,7 +1178,7 @@ public class XMPUtilTest {
                 PrintStream oldOut = System.out;
                 try (ByteArrayOutputStream s = new ByteArrayOutputStream()) {
                     System.setOut(new PrintStream(s));
-                    XMPUtil.main(new String[] {"canh05", tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
+                    XMPUtil.main(new String[]{"canh05", tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
                 } finally {
                     System.setOut(oldOut);
                 }
@@ -1220,7 +1193,7 @@ public class XMPUtilTest {
                 PrintStream oldOut = System.out;
                 System.setOut(new PrintStream(s));
                 try {
-                    XMPUtil.main(new String[] {"OezbekC06", tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
+                    XMPUtil.main(new String[]{"OezbekC06", tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
                 } finally {
                     System.setOut(oldOut);
                 }
@@ -1239,6 +1212,7 @@ public class XMPUtilTest {
 
     /**
      * Test whether the command-line client can deal with several bibtex entries.
+     *
      * @throws IOException
      * @throws TransformerException
      */
@@ -1257,7 +1231,7 @@ public class XMPUtilTest {
             try (ByteArrayOutputStream s = new ByteArrayOutputStream()) {
                 PrintStream oldOut = System.out;
                 System.setOut(new PrintStream(s));
-                XMPUtil.main(new String[] {tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
+                XMPUtil.main(new String[]{tempBib.getAbsolutePath(), pdfFile.getAbsolutePath()});
                 System.setOut(oldOut);
             }
             List<BibEntry> l = XMPUtil.readXMP(pdfFile);
@@ -1291,9 +1265,9 @@ public class XMPUtilTest {
 
     /**
      * Test that readXMP and writeXMP work together.
+     *
      * @throws IOException
      * @throws TransformerException
-     *
      * @throws Exception
      */
     @Test

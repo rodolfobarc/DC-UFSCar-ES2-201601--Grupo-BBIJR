@@ -15,18 +15,11 @@
  */
 package net.sf.jabref.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
-
 import org.jdesktop.swingx.JXTitledPanel;
 import org.jdesktop.swingx.painter.MattePainter;
+
+import javax.swing.*;
+import java.awt.*;
 
 public abstract class SidePaneComponent extends JXTitledPanel {
 
@@ -83,12 +76,12 @@ public abstract class SidePaneComponent extends JXTitledPanel {
         manager.moveDown(this);
     }
 
-    public void setActiveBasePanel(BasePanel panel) {
-        this.panel = panel;
-    }
-
     public BasePanel getActiveBasePanel() {
         return panel;
+    }
+
+    public void setActiveBasePanel(BasePanel panel) {
+        this.panel = panel;
     }
 
     /**

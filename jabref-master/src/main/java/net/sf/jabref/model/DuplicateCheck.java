@@ -15,12 +15,6 @@
  */
 package net.sf.jabref.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.model.database.BibDatabase;
@@ -28,9 +22,10 @@ import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * This class contains utility method for duplicate checking of entries.
@@ -48,17 +43,13 @@ public class DuplicateCheck {
     private static final int EMPTY_IN_ONE = 2;
     private static final int EMPTY_IN_TWO = 3;
     private static final int EMPTY_IN_BOTH = 4;
-
-    public static double duplicateThreshold = 0.75; // The overall threshold to signal a duplicate pair
     // Non-required fields are investigated only if the required fields give a value within
     // the doubt range of the threshold:
     private static final double DOUBT_RANGE = 0.05;
-
     private static final double REQUIRED_WEIGHT = 3; // Weighting of all required fields
-
     // Extra weighting of those fields that are most likely to provide correct duplicate detection:
     private static final Map<String, Double> FIELD_WEIGHTS = new HashMap<>();
-
+    public static double duplicateThreshold = 0.75; // The overall threshold to signal a duplicate pair
 
     static {
         DuplicateCheck.FIELD_WEIGHTS.put("author", 2.5);
@@ -129,7 +120,7 @@ public class DuplicateCheck {
         if (totWeights > 0) {
             return new double[]{res / totWeights, totWeights};
         }
-        return new double[] {0.5, 0.0};
+        return new double[]{0.5, 0.0};
     }
 
     private static int compareSingleField(String field, BibEntry one, BibEntry two) {
@@ -229,8 +220,8 @@ public class DuplicateCheck {
     /**
      * Compare two strings on the basis of word-by-word correlation analysis.
      *
-     * @param s1       The first string
-     * @param s2       The second string
+     * @param s1 The first string
+     * @param s2 The second string
      * @return a value in the interval [0, 1] indicating the degree of match.
      */
     public static double correlateByWords(String s1, String s2) {
@@ -264,7 +255,8 @@ public class DuplicateCheck {
         int longerLength = longer.length();
         if (longerLength == 0) {
             return 1.0;
-            /* both strings are zero length */ }
+            /* both strings are zero length */
+        }
         double sim = (longerLength - editDistance(longer, shorter)) / (double) longerLength;
         LOGGER.debug("Longer string: " + longer + " Shorter string: " + shorter + " Similarity: " + sim);
         return sim;

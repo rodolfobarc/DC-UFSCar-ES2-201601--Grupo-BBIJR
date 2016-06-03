@@ -15,15 +15,15 @@
 */
 package net.sf.jabref.bst;
 
-import java.util.Stack;
-
 import net.sf.jabref.bst.BibtexCaseChanger.FORMAT_MODE;
 import net.sf.jabref.bst.VM.BstEntry;
 import net.sf.jabref.bst.VM.BstFunction;
 
+import java.util.Stack;
+
 /**
  * From the Bibtex manual:
- *
+ * <p>
  * Pops the top two (string) literals; it changes the case of the second
  * according to the specifications of the first, as follows. (Note: The word
  * `letters' in the next sentence refers only to those at brace-level 0, the
@@ -41,9 +41,8 @@ import net.sf.jabref.bst.VM.BstFunction;
  * note: It ignores case differences in the specification string; for example,
  * the strings t and T are equivalent for the purposes of this built-in
  * function.)
- *
+ * <p>
  * Christopher: I think this should be another grammar! This parser is horrible.
- *
  */
 public class ChangeCaseFunction implements BstFunction {
 

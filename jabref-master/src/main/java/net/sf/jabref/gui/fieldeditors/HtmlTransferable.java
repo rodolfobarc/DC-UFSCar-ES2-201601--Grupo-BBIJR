@@ -22,7 +22,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 /**
- Based on http://newsgroups.derkeiler.com/Archive/De/de.comp.lang.java/2010-04/msg00203.html
+ * Based on http://newsgroups.derkeiler.com/Archive/De/de.comp.lang.java/2010-04/msg00203.html
  */
 class HtmlTransferable implements Transferable {
 
@@ -38,7 +38,7 @@ class HtmlTransferable implements Transferable {
 
 
     /**
-     * @param htmlText the text in html 
+     * @param htmlText  the text in html
      * @param plainText the plain text
      */
     public HtmlTransferable(String htmlText, String plainText) {

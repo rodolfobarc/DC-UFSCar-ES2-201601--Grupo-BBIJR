@@ -15,46 +15,28 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.MetaData;
 import net.sf.jabref.gui.help.HelpAction;
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.gui.keyboard.KeyBinder;
 import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.*;
+import java.util.List;
+
 class ContentSelectorDialog2 extends JDialog {
 
+    private static final Log LOGGER = LogFactory.getLog(ContentSelectorDialog2.class);
     private final GridBagLayout gbl = new GridBagLayout();
     private final GridBagConstraints con = new GridBagConstraints();
     private final JPanel fieldPan = new JPanel();
@@ -62,11 +44,9 @@ class ContentSelectorDialog2 extends JDialog {
     private final JPanel buttonPan = new JPanel();
     private final JPanel fieldNamePan = new JPanel();
     private final JPanel wordEditPan = new JPanel();
-
     private final String WORD_FIRSTLINE_TEXT = Localization.lang("<select word>");
     private final String FIELD_FIRST_LINE = Localization.lang("<field name>");
     private final MetaData metaData;
-    private String currentField;
     private final JabRefFrame frame;
     private final BasePanel panel;
     private final JButton newField = new JButton(Localization.lang("New"));
@@ -77,30 +57,28 @@ class ContentSelectorDialog2 extends JDialog {
     private final JButton cancel = new JButton();
     private final JButton apply = new JButton(Localization.lang("Apply"));
     private final DefaultListModel<String> fieldListModel = new DefaultListModel<>();
-    private DefaultListModel<String> wordListModel = new DefaultListModel<>();
     private final JList<String> fieldList = new JList<>(fieldListModel);
-    private final JList<String> wordList = new JList<>(wordListModel);
     private final JTextField fieldNameField = new JTextField("", 20);
     private final JTextField wordEditField = new JTextField("", 20);
     private final JScrollPane fPane = new JScrollPane(fieldList);
+    private DefaultListModel<String> wordListModel = new DefaultListModel<>();
+    private final JList<String> wordList = new JList<>(wordListModel);
     private final JScrollPane wPane = new JScrollPane(wordList);
-
     private final Map<String, DefaultListModel<String>> wordListModels = new HashMap<>();
     private final List<String> removedFields = new ArrayList<>();
+    private String currentField;
 
-    private static final Log LOGGER = LogFactory.getLog(ContentSelectorDialog2.class);
 
     /**
-     *
-     * @param owner the parent Window (Dialog or Frame)
-     * @param frame the JabRef Frame
-     * @param panel the currently selected BasePanel
-     * @param modal should this dialog be modal?
-     * @param metaData The metadata of the current database
+     * @param owner     the parent Window (Dialog or Frame)
+     * @param frame     the JabRef Frame
+     * @param panel     the currently selected BasePanel
+     * @param modal     should this dialog be modal?
+     * @param metaData  The metadata of the current database
      * @param fieldName the field this selector is initialized for. May be null.
      */
     public ContentSelectorDialog2(Window owner, JabRefFrame frame, BasePanel panel, boolean modal, MetaData metaData,
-            String fieldName) {
+                                  String fieldName) {
         super(owner, Localization.lang("Setup selectors"));
         this.setModal(modal);
         this.metaData = metaData;
@@ -120,6 +98,16 @@ class ContentSelectorDialog2 extends JDialog {
         }
 
         pack();
+    }
+
+    private static int findPos(DefaultListModel<String> lm, String item) {
+        for (int i = 0; i < lm.size(); i++) {
+            String s = lm.get(i);
+            if (item.compareToIgnoreCase(s) < 0) { // item precedes s
+                return i;
+            }
+        }
+        return lm.size();
     }
 
     private void setupActions() {
@@ -309,7 +297,6 @@ class ContentSelectorDialog2 extends JDialog {
 
     /**
      * Set the contents of the field selector list.
-     *
      */
     private void setupFieldSelector() {
         fieldListModel.clear();
@@ -363,16 +350,6 @@ class ContentSelectorDialog2 extends JDialog {
         } else {
             wordList.setModel(wordListModel);
         }
-    }
-
-    private static int findPos(DefaultListModel<String> lm, String item) {
-        for (int i = 0; i < lm.size(); i++) {
-            String s = lm.get(i);
-            if (item.compareToIgnoreCase(s) < 0) { // item precedes s
-                return i;
-            }
-        }
-        return lm.size();
     }
 
     private void initLayout() {

@@ -15,25 +15,24 @@
  */
 package net.sf.jabref.logic.fulltext;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import net.sf.jabref.logic.util.DOI;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 
-import net.sf.jabref.logic.util.DOI;
-import net.sf.jabref.model.entry.BibEntry;
-
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONObject;
-
 /**
  * FullTextFinder implementation that attempts to find a PDF URL at SpringerLink.
- *
+ * <p>
  * Uses Springer API, see @link{https://dev.springer.com}
  */
 public class SpringerLink implements FullTextFinder {
@@ -51,7 +50,7 @@ public class SpringerLink implements FullTextFinder {
         // Try unique DOI first
         Optional<DOI> doi = DOI.build(entry.getField("doi"));
 
-        if(doi.isPresent()) {
+        if (doi.isPresent()) {
             // Available in catalog?
             try {
                 HttpResponse<JsonNode> jsonResponse = Unirest.get(API_URL)
@@ -66,7 +65,7 @@ public class SpringerLink implements FullTextFinder {
                     LOGGER.info("Fulltext PDF found @ Springer.");
                     pdfLink = Optional.of(new URL("http", CONTENT_HOST, String.format("/content/pdf/%s.pdf", doi.get().getDOI())));
                 }
-            } catch(UnirestException e) {
+            } catch (UnirestException e) {
                 LOGGER.warn("SpringerLink API request failed", e);
             }
         }

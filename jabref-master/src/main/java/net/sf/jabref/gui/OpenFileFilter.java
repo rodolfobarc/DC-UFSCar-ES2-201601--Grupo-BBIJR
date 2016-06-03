@@ -48,7 +48,7 @@ public class OpenFileFilter extends javax.swing.filechooser.FileFilter implement
     }
 
     public OpenFileFilter() {
-        this(new String[] {
+        this(new String[]{
                 ".bib",
                 ".dat", // silverplatter ending
                 ".txt", // windows puts ".txt" extentions and for scifinder

@@ -1,17 +1,10 @@
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibEntryAssert;
 import net.sf.jabref.importer.OutputPrinterToNull;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,6 +12,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @RunWith(Parameterized.class)
 public class MsBibImporterTestfiles {
@@ -34,7 +33,7 @@ public class MsBibImporterTestfiles {
 
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> fileNames() {
-        Object[][] data = new Object[][] {{"MsBibImporterTest1"}, {"MsBibImporterTest2"}, {"MsBibImporterTest3"},
+        Object[][] data = new Object[][]{{"MsBibImporterTest1"}, {"MsBibImporterTest2"}, {"MsBibImporterTest3"},
                 {"MsBibImporterTest4"}, {"MsBibImporterTest5"}, {"MsBibImporterTest6"}};
         return Arrays.asList(data);
     }

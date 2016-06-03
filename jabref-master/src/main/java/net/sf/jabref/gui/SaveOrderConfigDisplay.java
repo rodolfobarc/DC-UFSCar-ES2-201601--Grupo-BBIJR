@@ -16,23 +16,19 @@
 
 package net.sf.jabref.gui;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.logic.config.SaveOrderConfig;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class SaveOrderConfigDisplay {
 
@@ -96,6 +92,17 @@ public class SaveOrderConfigDisplay {
         saveTerDesc.setEnabled(enabled);
     }
 
+    public SaveOrderConfig getSaveOrderConfig() {
+        SaveOrderConfig saveOrderConfig = new SaveOrderConfig();
+        saveOrderConfig.sortCriteria[0].field = getSelectedItemAsLowerCaseTrim(savePriSort);
+        saveOrderConfig.sortCriteria[0].descending = savePriDesc.isSelected();
+        saveOrderConfig.sortCriteria[1].field = getSelectedItemAsLowerCaseTrim(saveSecSort);
+        saveOrderConfig.sortCriteria[1].descending = saveSecDesc.isSelected();
+        saveOrderConfig.sortCriteria[2].field = getSelectedItemAsLowerCaseTrim(saveTerSort);
+        saveOrderConfig.sortCriteria[2].descending = saveTerDesc.isSelected();
+        return saveOrderConfig;
+    }
+
     public void setSaveOrderConfig(SaveOrderConfig saveOrderConfig) {
         Objects.requireNonNull(saveOrderConfig);
 
@@ -106,17 +113,6 @@ public class SaveOrderConfigDisplay {
         saveTerSort.setSelectedItem(saveOrderConfig.sortCriteria[2].field);
         saveTerDesc.setSelected(saveOrderConfig.sortCriteria[2].descending);
 
-    }
-
-    public SaveOrderConfig getSaveOrderConfig() {
-        SaveOrderConfig saveOrderConfig = new SaveOrderConfig();
-        saveOrderConfig.sortCriteria[0].field = getSelectedItemAsLowerCaseTrim(savePriSort);
-        saveOrderConfig.sortCriteria[0].descending = savePriDesc.isSelected();
-        saveOrderConfig.sortCriteria[1].field = getSelectedItemAsLowerCaseTrim(saveSecSort);
-        saveOrderConfig.sortCriteria[1].descending = saveSecDesc.isSelected();
-        saveOrderConfig.sortCriteria[2].field = getSelectedItemAsLowerCaseTrim(saveTerSort);
-        saveOrderConfig.sortCriteria[2].descending = saveTerDesc.isSelected();
-        return saveOrderConfig;
     }
 
     private String getSelectedItemAsLowerCaseTrim(JComboBox<String> sortBox) {

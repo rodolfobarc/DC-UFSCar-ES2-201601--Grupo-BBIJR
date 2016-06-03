@@ -15,58 +15,47 @@
 */
 package net.sf.jabref.importer;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import net.sf.jabref.Globals;
-import net.sf.jabref.importer.fileformat.BibTeXMLImporter;
-import net.sf.jabref.importer.fileformat.BiblioscapeImporter;
-import net.sf.jabref.importer.fileformat.BibtexImporter;
-import net.sf.jabref.importer.fileformat.CopacImporter;
-import net.sf.jabref.importer.fileformat.EndnoteImporter;
-import net.sf.jabref.importer.fileformat.FreeCiteImporter;
-import net.sf.jabref.importer.fileformat.ImportFormat;
-import net.sf.jabref.importer.fileformat.InspecImporter;
-import net.sf.jabref.importer.fileformat.IsiImporter;
-import net.sf.jabref.importer.fileformat.MedlineImporter;
-import net.sf.jabref.importer.fileformat.MedlinePlainImporter;
-import net.sf.jabref.importer.fileformat.MsBibImporter;
-import net.sf.jabref.importer.fileformat.OvidImporter;
-import net.sf.jabref.importer.fileformat.PdfContentImporter;
-import net.sf.jabref.importer.fileformat.PdfXmpImporter;
-import net.sf.jabref.importer.fileformat.RepecNepImporter;
-import net.sf.jabref.importer.fileformat.RisImporter;
-import net.sf.jabref.importer.fileformat.SilverPlatterImporter;
+import net.sf.jabref.importer.fileformat.*;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.database.BibDatabases;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class ImportFormatReader {
 
     public static final String BIBTEX_FORMAT = "BibTeX";
-
+    private static final Log LOGGER = LogFactory.getLog(ImportFormatReader.class);
     /**
      * all import formats, in the default order of import formats
      */
     private final SortedSet<ImportFormat> formats = new TreeSet<>();
 
-    private static final Log LOGGER = LogFactory.getLog(ImportFormatReader.class);
+    public static InputStreamReader getUTF8Reader(File f) throws IOException {
+        return getReader(f, StandardCharsets.UTF_8);
+    }
 
+    public static InputStreamReader getUTF16Reader(File f) throws IOException {
+        return getReader(f, StandardCharsets.UTF_16);
+    }
+
+    public static InputStreamReader getReader(File f, Charset charset)
+            throws IOException {
+        return new InputStreamReader(new FileInputStream(f), charset);
+    }
+
+    public static Reader getReaderDefaultEncoding(InputStream in) {
+        InputStreamReader reader;
+        reader = new InputStreamReader(in, Globals.prefs.getDefaultEncoding());
+
+        return reader;
+    }
 
     public void resetImportFormats() {
         formats.clear();
@@ -138,7 +127,7 @@ public class ImportFormatReader {
         File file = new File(filename);
 
         try (InputStream stream = new FileInputStream(file);
-                BufferedInputStream bis = new BufferedInputStream(stream)) {
+             BufferedInputStream bis = new BufferedInputStream(stream)) {
 
             bis.mark(Integer.MAX_VALUE);
 
@@ -148,7 +137,7 @@ public class ImportFormatReader {
         }
 
         try (InputStream stream = new FileInputStream(file);
-                BufferedInputStream bis = new BufferedInputStream(stream)) {
+             BufferedInputStream bis = new BufferedInputStream(stream)) {
             return importer.importEntries(bis, status);
         }
     }
@@ -190,41 +179,6 @@ public class ImportFormatReader {
 
         return sb.toString();
     }
-
-
-
-    public static InputStreamReader getUTF8Reader(File f) throws IOException {
-        return getReader(f, StandardCharsets.UTF_8);
-    }
-
-    public static InputStreamReader getUTF16Reader(File f) throws IOException {
-        return getReader(f, StandardCharsets.UTF_16);
-    }
-
-    public static InputStreamReader getReader(File f, Charset charset)
-            throws IOException {
-        return new InputStreamReader(new FileInputStream(f), charset);
-    }
-
-    public static Reader getReaderDefaultEncoding(InputStream in) {
-        InputStreamReader reader;
-        reader = new InputStreamReader(in, Globals.prefs.getDefaultEncoding());
-
-        return reader;
-    }
-
-    public static class UnknownFormatImport {
-
-        public final String format;
-        public final ParserResult parserResult;
-
-
-        public UnknownFormatImport(String format, ParserResult parserResult) {
-            this.format = format;
-            this.parserResult = parserResult;
-        }
-    }
-
 
     /**
      * Tries to import a file by iterating through the available import filters,
@@ -287,5 +241,17 @@ public class ImportFormatReader {
         }
 
         return null;
+    }
+
+    public static class UnknownFormatImport {
+
+        public final String format;
+        public final ParserResult parserResult;
+
+
+        public UnknownFormatImport(String format, ParserResult parserResult) {
+            this.format = format;
+            this.parserResult = parserResult;
+        }
     }
 }

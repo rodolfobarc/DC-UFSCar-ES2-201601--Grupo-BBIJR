@@ -15,13 +15,6 @@
  */
 package net.sf.jabref.gui.groups;
 
-import java.awt.event.ActionEvent;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.swing.AbstractAction;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.logic.groups.AbstractGroup;
@@ -30,6 +23,12 @@ import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.util.Util;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AddToGroupAction extends AbstractAction {
 

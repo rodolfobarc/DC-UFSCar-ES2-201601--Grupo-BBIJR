@@ -40,6 +40,12 @@
  */
 package org.xnap.commons.gui.shortcut;
 
+import net.sf.jabref.JabRefPreferences;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -48,33 +54,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.Action;
-import javax.swing.JEditorPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.Keymap;
-import javax.swing.text.TextAction;
-import javax.swing.text.Utilities;
-
-import net.sf.jabref.JabRefPreferences;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Generic class which activates Emacs keybindings for java input {@link
  * JTextComponent}s.
- *
+ * <p>
  * The inner class actions can also be used independently.
  */
-public class EmacsKeyBindings
-{
+public class EmacsKeyBindings {
 
     private static final String KILL_LINE_ACTION = "emacs-kill-line";
 
@@ -100,40 +86,40 @@ public class EmacsKeyBindings
 
     private static final JTextComponent.KeyBinding[] EMACS_KEY_BINDINGS_BASE = {
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_E,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_E,
                     InputEvent.CTRL_MASK),
                     DefaultEditorKit.endLineAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_D,
                     InputEvent.CTRL_MASK),
                     DefaultEditorKit.deleteNextCharAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                     InputEvent.CTRL_MASK),
                     DefaultEditorKit.downAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_P,
                     InputEvent.CTRL_MASK),
                     DefaultEditorKit.upAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_B,
                     InputEvent.ALT_MASK),
                     DefaultEditorKit.previousWordAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LESS,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LESS,
                     InputEvent.ALT_MASK),
                     DefaultEditorKit.beginAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LESS,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LESS,
                     InputEvent.ALT_MASK
                             + InputEvent.SHIFT_MASK),
                     DefaultEditorKit.endAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_F,
                     InputEvent.ALT_MASK),
                     DefaultEditorKit.nextWordAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_B,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_B,
                     InputEvent.CTRL_MASK),
                     DefaultEditorKit.backwardAction),
             // CTRL+V and ALT+V are disabled as CTRL+V is also "paste"
@@ -146,53 +132,53 @@ public class EmacsKeyBindings
             //											  InputEvent.ALT_MASK),
             //					   DefaultEditorKit.pageUpAction),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_D,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.KILL_WORD_ACTION),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.BACKWARD_KILL_WORD_ACTION),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,
                     InputEvent.CTRL_MASK),
                     EmacsKeyBindings.SET_MARK_COMMAND_ACTION),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_W,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_W,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.KILL_RING_SAVE_ACTION),
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_W,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_W,
                     InputEvent.CTRL_MASK),
                     EmacsKeyBindings.KILL_REGION_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_K,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_K,
                     InputEvent.CTRL_MASK),
                     EmacsKeyBindings.KILL_LINE_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
                     InputEvent.CTRL_MASK),
                     EmacsKeyBindings.YANK_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.YANK_POP_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.CAPITALIZE_WORD_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_L,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.DOWNCASE_WORD_ACTION),
 
             new JTextComponent.
-            KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_U,
+                    KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_U,
                     InputEvent.ALT_MASK),
                     EmacsKeyBindings.UPCASE_WORD_ACTION),
     };
@@ -220,7 +206,7 @@ public class EmacsKeyBindings
     };
 
     // components to modify
-    private static final JTextComponent[] JTCS = new JTextComponent[] {
+    private static final JTextComponent[] JTCS = new JTextComponent[]{
             new JTextArea(),
             new JTextPane(),
             new JTextField(),
@@ -232,14 +218,13 @@ public class EmacsKeyBindings
 
     /**
      * Loads the emacs keybindings for all common <code>JTextComponent</code>s.
-     *
+     * <p>
      * The shared keymap instances of the concrete subclasses of
      * {@link JTextComponent} are fed with the keybindings.
-     *
+     * <p>
      * The original keybindings are stored in a backup array.
      */
-    public static void load()
-    {
+    public static void load() {
         EmacsKeyBindings.createBackup();
         EmacsKeyBindings.loadEmacsKeyBindings();
     }
@@ -269,10 +254,8 @@ public class EmacsKeyBindings
     /**
      * Restores the original keybindings for the concrete subclasses of
      * {@link JTextComponent}.
-     *
      */
-    public static void unload()
-    {
+    public static void unload() {
         for (int i = 0; i < EmacsKeyBindings.JTCS.length; i++) {
             Keymap backup = JTextComponent.getKeymap
                     (EmacsKeyBindings.JTCS[i].getClass().getName());
@@ -298,8 +281,7 @@ public class EmacsKeyBindings
      * Activates Emacs keybindings for all text components extending {@link
      * JTextComponent}.
      */
-    private static void loadEmacsKeyBindings()
-    {
+    private static void loadEmacsKeyBindings() {
         EmacsKeyBindings.LOGGER.debug("Loading emacs keybindings");
 
         for (JTextComponent jtc : EmacsKeyBindings.JTCS) {
@@ -345,122 +327,6 @@ public class EmacsKeyBindings
         }
     }
 
-
-    /**
-     * This action kills the next word.
-     *
-     * It removes the next word on the right side of the cursor from the active
-     * text component and adds it to the clipboard.
-     */
-    @SuppressWarnings("serial")
-    public static class KillWordAction extends TextAction
-    {
-
-        public KillWordAction(String nm)
-        {
-            super(nm);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            JTextComponent jtc = getTextComponent(e);
-            if (jtc != null) {
-                try {
-                    int offs = jtc.getCaretPosition();
-                    jtc.setSelectionStart(offs);
-                    offs = EmacsKeyBindings.getWordEnd(jtc, offs);
-                    jtc.setSelectionEnd(offs);
-                    String selectedText = jtc.getSelectedText();
-                    if (selectedText != null) {
-                        KillRing.getInstance().add(selectedText);
-                    }
-                    jtc.cut();
-                } catch (BadLocationException ble) {
-                    jtc.getToolkit().beep();
-                }
-            }
-        }
-    }
-
-    /**
-     * This action kills the previous word.
-     *
-     * It removes the previous word on the left side of the cursor from the
-     * active text component and adds it to the clipboard.
-     */
-    @SuppressWarnings("serial")
-    public static class BackwardKillWordAction extends TextAction
-    {
-
-        public BackwardKillWordAction(String nm)
-        {
-            super(nm);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            JTextComponent jtc = getTextComponent(e);
-            if (jtc != null) {
-                try {
-                    int offs = jtc.getCaretPosition();
-                    jtc.setSelectionEnd(offs);
-                    offs = Utilities.getPreviousWord(jtc, offs);
-                    jtc.setSelectionStart(offs);
-                    String selectedText = jtc.getSelectedText();
-                    if (selectedText != null) {
-                        KillRing.getInstance().add(selectedText);
-                    }
-                    jtc.cut();
-                } catch (BadLocationException ble) {
-                    jtc.getToolkit().beep();
-                }
-            }
-        }
-    }
-
-    /**
-     * This action copies the marked region and stores it in the killring.
-     */
-    @SuppressWarnings("serial")
-    public static class KillRingSaveAction extends TextAction
-    {
-
-        public KillRingSaveAction(String nm)
-        {
-            super(nm);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            JTextComponent jtc = getTextComponent(e);
-            EmacsKeyBindings.doCopyOrCut(jtc, true);
-        }
-    }
-
-    /**
-     * This action Kills the marked region and stores it in the killring.
-     */
-    @SuppressWarnings("serial")
-    public static class KillRegionAction extends TextAction
-    {
-
-        public KillRegionAction(String nm)
-        {
-            super(nm);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            JTextComponent jtc = getTextComponent(e);
-            EmacsKeyBindings.doCopyOrCut(jtc, false);
-        }
-    }
-
-
     private static void doCopyOrCut(JTextComponent jtc, boolean copy) {
         if (jtc != null) {
             int caretPosition = jtc.getCaretPosition();
@@ -498,23 +364,135 @@ public class EmacsKeyBindings
         }
     }
 
+    private static int getWordEnd(JTextComponent jtc, int start)
+            throws BadLocationException {
+        try {
+            return Utilities.getNextWord(jtc, start);
+        } catch (BadLocationException ble) {
+            int end = jtc.getText().length();
+            if (start < end) {
+                return end;
+            } else {
+                throw ble;
+            }
+        }
+    }
+
+    /**
+     * This action kills the next word.
+     * <p>
+     * It removes the next word on the right side of the cursor from the active
+     * text component and adds it to the clipboard.
+     */
+    @SuppressWarnings("serial")
+    public static class KillWordAction extends TextAction {
+
+        public KillWordAction(String nm) {
+            super(nm);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent jtc = getTextComponent(e);
+            if (jtc != null) {
+                try {
+                    int offs = jtc.getCaretPosition();
+                    jtc.setSelectionStart(offs);
+                    offs = EmacsKeyBindings.getWordEnd(jtc, offs);
+                    jtc.setSelectionEnd(offs);
+                    String selectedText = jtc.getSelectedText();
+                    if (selectedText != null) {
+                        KillRing.getInstance().add(selectedText);
+                    }
+                    jtc.cut();
+                } catch (BadLocationException ble) {
+                    jtc.getToolkit().beep();
+                }
+            }
+        }
+    }
+
+    /**
+     * This action kills the previous word.
+     * <p>
+     * It removes the previous word on the left side of the cursor from the
+     * active text component and adds it to the clipboard.
+     */
+    @SuppressWarnings("serial")
+    public static class BackwardKillWordAction extends TextAction {
+
+        public BackwardKillWordAction(String nm) {
+            super(nm);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent jtc = getTextComponent(e);
+            if (jtc != null) {
+                try {
+                    int offs = jtc.getCaretPosition();
+                    jtc.setSelectionEnd(offs);
+                    offs = Utilities.getPreviousWord(jtc, offs);
+                    jtc.setSelectionStart(offs);
+                    String selectedText = jtc.getSelectedText();
+                    if (selectedText != null) {
+                        KillRing.getInstance().add(selectedText);
+                    }
+                    jtc.cut();
+                } catch (BadLocationException ble) {
+                    jtc.getToolkit().beep();
+                }
+            }
+        }
+    }
+
+    /**
+     * This action copies the marked region and stores it in the killring.
+     */
+    @SuppressWarnings("serial")
+    public static class KillRingSaveAction extends TextAction {
+
+        public KillRingSaveAction(String nm) {
+            super(nm);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent jtc = getTextComponent(e);
+            EmacsKeyBindings.doCopyOrCut(jtc, true);
+        }
+    }
+
+    /**
+     * This action Kills the marked region and stores it in the killring.
+     */
+    @SuppressWarnings("serial")
+    public static class KillRegionAction extends TextAction {
+
+        public KillRegionAction(String nm) {
+            super(nm);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent jtc = getTextComponent(e);
+            EmacsKeyBindings.doCopyOrCut(jtc, false);
+        }
+    }
 
     /**
      * This actin kills text up to the end of the current line and stores it in
      * the killring.
      */
     @SuppressWarnings("serial")
-    public static class KillLineAction extends TextAction
-    {
+    public static class KillLineAction extends TextAction {
 
-        public KillLineAction(String nm)
-        {
+        public KillLineAction(String nm) {
             super(nm);
         }
 
         @Override
-        public void actionPerformed(ActionEvent e)
-        {
+        public void actionPerformed(ActionEvent e) {
             JTextComponent jtc = getTextComponent(e);
             if (jtc != null) {
                 try {
@@ -523,8 +501,7 @@ public class EmacsKeyBindings
                     if ((start == end) && jtc.isEditable()) {
                         Document doc = jtc.getDocument();
                         doc.remove(end, 1);
-                    }
-                    else {
+                    } else {
                         jtc.setSelectionStart(start);
                         jtc.setSelectionEnd(end);
                         String selectedText = jtc.getSelectedText();
@@ -546,41 +523,35 @@ public class EmacsKeyBindings
      * This action matchers a beginning mark for a selection.
      */
     @SuppressWarnings("serial")
-    public static class SetMarkCommandAction extends TextAction
-    {
+    public static class SetMarkCommandAction extends TextAction {
 
         private static int position = -1;
         private static JTextComponent jtc;
 
 
-        public SetMarkCommandAction(String nm)
-        {
+        public SetMarkCommandAction(String nm) {
             super(nm);
         }
 
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            SetMarkCommandAction.jtc = getTextComponent(e);
-            if (SetMarkCommandAction.jtc != null) {
-                SetMarkCommandAction.position = SetMarkCommandAction.jtc.getCaretPosition();
-            }
-        }
-
-        public static boolean isMarked(JTextComponent jt)
-        {
+        public static boolean isMarked(JTextComponent jt) {
             return (SetMarkCommandAction.jtc == jt) && (SetMarkCommandAction.position != -1);
         }
 
-        public static void reset()
-        {
+        public static void reset() {
             SetMarkCommandAction.jtc = null;
             SetMarkCommandAction.position = -1;
         }
 
-        public static int getCaretPosition()
-        {
+        public static int getCaretPosition() {
             return SetMarkCommandAction.position;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SetMarkCommandAction.jtc = getTextComponent(e);
+            if (SetMarkCommandAction.jtc != null) {
+                SetMarkCommandAction.position = SetMarkCommandAction.jtc.getCaretPosition();
+            }
         }
     }
 
@@ -588,21 +559,18 @@ public class EmacsKeyBindings
      * This action pastes text from the killring.
      */
     @SuppressWarnings("serial")
-    public static class YankAction extends TextAction
-    {
+    public static class YankAction extends TextAction {
 
         public static int start = -1;
         public static int end = -1;
 
 
-        public YankAction(String nm)
-        {
+        public YankAction(String nm) {
             super(nm);
         }
 
         @Override
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             JTextComponent jtc = getTextComponent(event);
 
             if (jtc != null) {
@@ -623,17 +591,14 @@ public class EmacsKeyBindings
      * This action pastes an element from the killring cycling through it.
      */
     @SuppressWarnings("serial")
-    public static class YankPopAction extends TextAction
-    {
+    public static class YankPopAction extends TextAction {
 
-        public YankPopAction(String nm)
-        {
+        public YankPopAction(String nm) {
             super(nm);
         }
 
         @Override
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             JTextComponent jtc = getTextComponent(event);
             boolean jtcNotNull = jtc != null;
             boolean jtcIsCurrentTextComponent = KillRing.getInstance().getCurrentTextComponent() == jtc;
@@ -659,29 +624,23 @@ public class EmacsKeyBindings
      * <p>
      * Also provides an unmodifiable copy of all cut pieces.
      */
-    public static class KillRing
-    {
-
-        private JTextComponent jtc;
-        private final LinkedList<String> ring = new LinkedList<>();
-        private Iterator<String> iter = ring.iterator();
+    public static class KillRing {
 
         private static final KillRing INSTANCE = new KillRing();
+        private final LinkedList<String> ring = new LinkedList<>();
+        private JTextComponent jtc;
+        private Iterator<String> iter = ring.iterator();
 
-
-        public static KillRing getInstance()
-        {
+        public static KillRing getInstance() {
             return KillRing.INSTANCE;
         }
 
-        public void setCurrentTextComponent(JTextComponent jtc)
-        {
-            this.jtc = jtc;
+        public JTextComponent getCurrentTextComponent() {
+            return jtc;
         }
 
-        public JTextComponent getCurrentTextComponent()
-        {
-            return jtc;
+        public void setCurrentTextComponent(JTextComponent jtc) {
+            this.jtc = jtc;
         }
 
         /**
@@ -690,8 +649,7 @@ public class EmacsKeyBindings
          * Deviating from the Emacs implementation we make sure the
          * exact same text is not somewhere else in the ring.
          */
-        public void add(String text)
-        {
+        public void add(String text) {
             if (text.isEmpty()) {
                 return;
             }
@@ -709,31 +667,28 @@ public class EmacsKeyBindings
         /**
          * Returns an unmodifiable version of the ring list which contains
          * the killed texts.
+         *
          * @return the content of the kill ring
          */
-        public List<String> getRing()
-        {
+        public List<String> getRing() {
             return Collections.unmodifiableList(ring);
         }
 
-        public boolean isEmpty()
-        {
+        public boolean isEmpty() {
             return ring.isEmpty();
         }
 
         /**
          * Returns the next text element which is to be yank-popped.
+         *
          * @return <code>null</code> if the ring is empty
          */
-        public String next()
-        {
+        public String next() {
             if (ring.isEmpty()) {
                 return null;
-            }
-            else if (iter.hasNext()) {
+            } else if (iter.hasNext()) {
                 return iter.next();
-            }
-            else {
+            } else {
                 iter = ring.iterator();
                 // guaranteed to not throw an exception, since ring is not empty
                 return iter.next();
@@ -745,11 +700,9 @@ public class EmacsKeyBindings
      * This action capitalizes the next word on the right side of the caret.
      */
     @SuppressWarnings("serial")
-    public static class CapitalizeWordAction extends TextAction
-    {
+    public static class CapitalizeWordAction extends TextAction {
 
-        public CapitalizeWordAction(String nm)
-        {
+        public CapitalizeWordAction(String nm) {
             super(nm);
         }
 
@@ -759,8 +712,7 @@ public class EmacsKeyBindings
          * word is in lower case, then the first letter is capialized.
          */
         @Override
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             JTextComponent jtc = getTextComponent(event);
 
             if (jtc != null) {
@@ -802,17 +754,14 @@ public class EmacsKeyBindings
      * This action renders all characters of the next word to lowercase.
      */
     @SuppressWarnings("serial")
-    public static class DowncaseWordAction extends TextAction
-    {
+    public static class DowncaseWordAction extends TextAction {
 
-        public DowncaseWordAction(String nm)
-        {
+        public DowncaseWordAction(String nm) {
             super(nm);
         }
 
         @Override
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             JTextComponent jtc = getTextComponent(event);
 
             if (jtc != null) {
@@ -835,17 +784,14 @@ public class EmacsKeyBindings
      * This action renders all characters of the next word to upppercase.
      */
     @SuppressWarnings("serial")
-    public static class UpcaseWordAction extends TextAction
-    {
+    public static class UpcaseWordAction extends TextAction {
 
-        public UpcaseWordAction(String nm)
-        {
+        public UpcaseWordAction(String nm) {
             super(nm);
         }
 
         @Override
-        public void actionPerformed(ActionEvent event)
-        {
+        public void actionPerformed(ActionEvent event) {
             JTextComponent jtc = getTextComponent(event);
 
             if (jtc != null) {
@@ -860,23 +806,6 @@ public class EmacsKeyBindings
                 } catch (BadLocationException ble) {
                     jtc.getToolkit().beep();
                 }
-            }
-        }
-    }
-
-
-    private static int getWordEnd(JTextComponent jtc, int start)
-            throws BadLocationException
-    {
-        try {
-            return Utilities.getNextWord(jtc, start);
-        } catch (BadLocationException ble) {
-            int end = jtc.getText().length();
-            if (start < end) {
-                return end;
-            }
-            else {
-                throw ble;
             }
         }
     }

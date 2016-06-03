@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
  * implement this interface
  *
  * @author Ben
- *
  */
 @FunctionalInterface
 public interface SearchQueryHighlightListener {

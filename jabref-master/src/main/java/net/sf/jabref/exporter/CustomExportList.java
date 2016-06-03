@@ -15,20 +15,15 @@
 */
 package net.sf.jabref.exporter;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * This class handles user defined custom export formats. They are initially
@@ -40,11 +35,10 @@ import org.apache.commons.logging.LogFactory;
 
 public class CustomExportList {
 
+    private static final Log LOGGER = LogFactory.getLog(CustomExportList.class);
     private final EventList<List<String>> list;
     private final SortedList<List<String>> sorted;
     private final Map<String, ExportFormat> formats = new TreeMap<>();
-
-    private static final Log LOGGER = LogFactory.getLog(CustomExportList.class);
 
 
     public CustomExportList(Comparator<List<String>> comp) {

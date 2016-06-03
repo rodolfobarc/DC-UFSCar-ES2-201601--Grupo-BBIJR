@@ -15,14 +15,13 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoablePreambleChange;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
+
+import javax.swing.*;
 
 class PreambleChange extends Change {
 

@@ -17,30 +17,7 @@
  */
 package net.sf.jabref.importer;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.zip.ZipFile;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.FileDialogs;
@@ -52,22 +29,27 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.importer.fileformat.ImportFormat;
 import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.zip.ZipFile;
 
 /**
  * Dialog to manage custom importers.
  */
 public class ImportCustomizationDialog extends JDialog {
 
+    private static final Log LOGGER = LogFactory.getLog(ImportCustomizationDialog.class);
     private final JTable customImporterTable;
 
-    private static final Log LOGGER = LogFactory.getLog(ImportCustomizationDialog.class);
-
     /**
-     *
      * @param frame_
      * @throws HeadlessException
      */
@@ -95,7 +77,7 @@ public class ImportCustomizationDialog extends JDialog {
             CustomImporter importer = new CustomImporter();
             importer.setBasePath(
                     FileDialogs.getNewDir(frame, new File(Globals.prefs.get(JabRefPreferences.WORKING_DIRECTORY)),
-                    "", Localization.lang("Select Classpath of New Importer"), JFileChooser.CUSTOM_DIALOG, false));
+                            "", Localization.lang("Select Classpath of New Importer"), JFileChooser.CUSTOM_DIALOG, false));
             if (importer.getBasePath() != null) {
                 chosenFileStr = FileDialogs.getNewFile(frame, importer.getFileFromBasePath(), ".class",
                         Localization.lang("Select new ImportFormat Subclass"), JFileChooser.CUSTOM_DIALOG, false);
@@ -221,23 +203,12 @@ public class ImportCustomizationDialog extends JDialog {
         new FocusRequester(customImporterTable);
     }
 
-    /*
-    *  (non-Javadoc)
-    * @see java.awt.Component#getSize()
-    */
-    @Override
-    public Dimension getSize() {
-        int width = GUIGlobals.IMPORT_DIALOG_COL_0_WIDTH + GUIGlobals.IMPORT_DIALOG_COL_1_WIDTH
-                + GUIGlobals.IMPORT_DIALOG_COL_2_WIDTH + GUIGlobals.IMPORT_DIALOG_COL_3_WIDTH;
-        return new Dimension(width, width / 2);
-    }
-
     /**
      * Converts a path relative to a base-path into a class name.
      *
-     * @param basePath  base path
-     * @param path  path that includes base-path as a prefix
-     * @return  class name
+     * @param basePath base path
+     * @param path     path that includes base-path as a prefix
+     * @return class name
      */
     private static String pathToClass(File basePath, File path) {
         String className = null;
@@ -257,10 +228,21 @@ public class ImportCustomizationDialog extends JDialog {
         return className;
     }
 
+    /*
+    *  (non-Javadoc)
+    * @see java.awt.Component#getSize()
+    */
+    @Override
+    public Dimension getSize() {
+        int width = GUIGlobals.IMPORT_DIALOG_COL_0_WIDTH + GUIGlobals.IMPORT_DIALOG_COL_1_WIDTH
+                + GUIGlobals.IMPORT_DIALOG_COL_2_WIDTH + GUIGlobals.IMPORT_DIALOG_COL_3_WIDTH;
+        return new Dimension(width, width / 2);
+    }
+
     /**
      * Adds an importer to the model that underlies the custom importers.
      *
-     * @param importer  importer
+     * @param importer importer
      */
     public void addOrReplaceImporter(CustomImporter importer) {
         Globals.prefs.customImports.replaceImporter(importer);
@@ -274,7 +256,7 @@ public class ImportCustomizationDialog extends JDialog {
      */
     private class ImportTableModel extends AbstractTableModel {
 
-        private final String[] columnNames = new String[] {
+        private final String[] columnNames = new String[]{
                 Localization.lang("Import name"),
                 Localization.lang("Command line id"),
                 Localization.lang("ImportFormat class"),

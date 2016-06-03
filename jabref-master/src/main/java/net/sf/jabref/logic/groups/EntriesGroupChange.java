@@ -15,12 +15,12 @@
  */
 package net.sf.jabref.logic.groups;
 
+import net.sf.jabref.logic.FieldChange;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import net.sf.jabref.logic.FieldChange;
-import net.sf.jabref.model.entry.BibEntry;
 
 public class EntriesGroupChange {
 
@@ -37,7 +37,7 @@ public class EntriesGroupChange {
     }
 
     public EntriesGroupChange(Set<BibEntry> oldEntries, Set<BibEntry> newEntries,
-            List<FieldChange> entryChanges) {
+                              List<FieldChange> entryChanges) {
         this.oldEntries = oldEntries;
         this.newEntries = newEntries;
         this.entryChanges = entryChanges;

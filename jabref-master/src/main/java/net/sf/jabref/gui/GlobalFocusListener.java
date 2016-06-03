@@ -15,11 +15,10 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
-import javax.swing.JComponent;
 
 public class GlobalFocusListener implements FocusListener {
     private Component focused;

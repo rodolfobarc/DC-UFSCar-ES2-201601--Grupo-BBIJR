@@ -17,10 +17,16 @@ public class HTMLUnicodeConversionMaps {
     // http://llg.cubic.org/docs/ent2latex.html and http://www.w3.org/TR/xml-entity-names/byalpha.html are also useful
     // as well as http://www.w3.org/Math/characters/unicode.xml
 
+    public static final Map<String, String> HTML_LATEX_CONVERSION_MAP = new HashMap<>();
+    public static final Map<Integer, String> ESCAPED_ACCENTS = new HashMap<>();
+    public static final Map<Integer, String> NUMERICAL_LATEX_CONVERSION_MAP = new HashMap<>();
+    public static final Map<Character, String> UNICODE_LATEX_CONVERSION_MAP = new HashMap<>();
+    public static final Map<String, String> LATEX_HTML_CONVERSION_MAP = new HashMap<>();
+    public static final Map<String, String> LATEX_UNICODE_CONVERSION_MAP = new HashMap<>();
     // An array of arrays of strings in the format:
     // {"decimal number of HTML entity", "text HTML entity", "corresponding LaTeX command"}
     // Leaving a field empty is OK as it then will not be included
-    private static final String[][] CONVERSION_LIST = new String[][] {{"160", "nbsp", "\\{~\\}"}, // no-break space = non-breaking space,
+    private static final String[][] CONVERSION_LIST = new String[][]{{"160", "nbsp", "\\{~\\}"}, // no-break space = non-breaking space,
             //                                 U+00A0 ISOnum
             {"161", "iexcl", "\\{\\\\textexclamdown\\}"}, // inverted exclamation mark, U+00A1 ISOnum
             {"162", "cent", "\\{\\\\textcent\\}"}, // cent sign, U+00A2 ISOnum
@@ -653,7 +659,7 @@ public class HTMLUnicodeConversionMaps {
 
     };
     // List of combining accents
-    private static final String[][] ACCENT_LIST = new String[][] {{"768", "`"}, // Grave
+    private static final String[][] ACCENT_LIST = new String[][]{{"768", "`"}, // Grave
             {"769", "'"}, // Acute
             {"770", "\\^"}, // Circumflex
             {"771", "~"}, // Tilde
@@ -739,14 +745,6 @@ public class HTMLUnicodeConversionMaps {
             {"865", "texttoptiebar"}, // Double inverted breve
             {"866", "sliding"}, // Double rightwards arrow below - requires extraipa
     };
-
-    public static final Map<String, String> HTML_LATEX_CONVERSION_MAP = new HashMap<>();
-    public static final Map<Integer, String> ESCAPED_ACCENTS = new HashMap<>();
-    public static final Map<Integer, String> NUMERICAL_LATEX_CONVERSION_MAP = new HashMap<>();
-    public static final Map<Character, String> UNICODE_LATEX_CONVERSION_MAP = new HashMap<>();
-    public static final Map<String, String> LATEX_HTML_CONVERSION_MAP = new HashMap<>();
-    public static final Map<String, String> LATEX_UNICODE_CONVERSION_MAP = new HashMap<>();
-
 
     static {
         for (String[] aConversionList : CONVERSION_LIST) {

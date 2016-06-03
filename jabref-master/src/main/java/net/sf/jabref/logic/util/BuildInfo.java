@@ -22,7 +22,7 @@ import java.util.Properties;
 public class BuildInfo {
 
     private static final String UNKOWN_VERSION = "*unknown*";
-    
+
     private final String version;
     private final String authors;
     private final String developers;
@@ -36,7 +36,7 @@ public class BuildInfo {
         Properties properties = new Properties();
 
         try (InputStream stream = getClass().getResourceAsStream(path)) {
-            if(stream != null) {
+            if (stream != null) {
                 properties.load(stream);
             }
         } catch (IOException ignored) {

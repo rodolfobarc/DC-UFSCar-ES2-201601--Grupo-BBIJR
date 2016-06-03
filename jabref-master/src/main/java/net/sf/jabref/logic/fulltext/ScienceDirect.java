@@ -15,18 +15,12 @@
  */
 package net.sf.jabref.logic.fulltext;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-
-import net.sf.jabref.logic.util.DOI;
-import net.sf.jabref.model.entry.BibEntry;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import net.sf.jabref.logic.util.DOI;
+import net.sf.jabref.model.entry.BibEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -35,6 +29,11 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * FullTextFinder implementation that attempts to find a PDF URL at ScienceDirect.
@@ -46,6 +45,7 @@ public class ScienceDirect implements FullTextFinder {
 
     private static final String API_URL = "http://api.elsevier.com/content/article/doi/";
     private static final String API_KEY = "fb82f2e692b3c72dafe5f4f1fa0ac00b";
+
     @Override
     public Optional<URL> findFullText(BibEntry entry) throws IOException {
         Objects.requireNonNull(entry);
@@ -54,7 +54,7 @@ public class ScienceDirect implements FullTextFinder {
         // Try unique DOI first
         Optional<DOI> doi = DOI.build(entry.getField("doi"));
 
-        if(doi.isPresent()) {
+        if (doi.isPresent()) {
             // Available in catalog?
             try {
                 String sciLink = getUrlByDoi(doi.get().getDOI());
@@ -69,7 +69,7 @@ public class ScienceDirect implements FullTextFinder {
                         pdfLink = Optional.of(new URL(link.attr("pdfurl")));
                     }
                 }
-            } catch(UnirestException e) {
+            } catch (UnirestException e) {
                 LOGGER.warn("ScienceDirect API request failed", e);
             }
         }
@@ -88,14 +88,14 @@ public class ScienceDirect implements FullTextFinder {
             JSONObject json = jsonResponse.getBody().getObject();
             JSONArray links = json.getJSONObject("full-text-retrieval-response").getJSONObject("coredata").getJSONArray("link");
 
-            for (int i=0; i < links.length(); i++) {
+            for (int i = 0; i < links.length(); i++) {
                 JSONObject link = links.getJSONObject(i);
                 if (link.getString("@rel").equals("scidir")) {
                     sciLink = link.getString("@href");
                 }
             }
             return sciLink;
-        } catch(JSONException e) {
+        } catch (JSONException e) {
             LOGGER.debug("No ScienceDirect link found in API request", e);
             return sciLink;
         }

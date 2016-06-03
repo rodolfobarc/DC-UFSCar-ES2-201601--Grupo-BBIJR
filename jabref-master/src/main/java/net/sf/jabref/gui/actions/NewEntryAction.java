@@ -1,10 +1,5 @@
 package net.sf.jabref.gui.actions;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-import javax.swing.KeyStroke;
-
 import net.sf.jabref.gui.EntryTypeDialog;
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.gui.JabRefFrame;
@@ -12,9 +7,11 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.EntryUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class NewEntryAction extends MnemonicAwareAction {
     private static final Log LOGGER = LogFactory.getLog(NewEntryAction.class);

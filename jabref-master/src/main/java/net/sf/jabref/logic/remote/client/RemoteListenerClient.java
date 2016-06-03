@@ -1,13 +1,12 @@
 package net.sf.jabref.logic.remote.client;
 
-import java.net.InetAddress;
-import java.net.Socket;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.remote.shared.Protocol;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.net.InetAddress;
+import java.net.Socket;
 
 public class RemoteListenerClient {
 

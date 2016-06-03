@@ -15,14 +15,6 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.MetaData;
 import net.sf.jabref.model.database.BibDatabase;
@@ -30,17 +22,19 @@ import net.sf.jabref.model.database.BibDatabases;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.*;
+
 public class ParserResult {
 
     private static final ParserResult NULL_RESULT = new ParserResult(null, null, null);
     private final BibDatabase base;
-    private MetaData metaData;
     private final Map<String, EntryType> entryTypes;
-
-    private File file;
     private final List<String> warnings = new ArrayList<>();
     private final List<String> duplicateKeys = new ArrayList<>();
-
+    private MetaData metaData;
+    private File file;
     private String errorMessage;
     // Which encoding was used?
     private Charset encoding;
@@ -58,6 +52,10 @@ public class ParserResult {
         this.base = base;
         this.metaData = metaData;
         this.entryTypes = entryTypes;
+    }
+
+    public static ParserResult getNullResult() {
+        return NULL_RESULT;
     }
 
     /**
@@ -98,20 +96,20 @@ public class ParserResult {
     }
 
     /**
+     * Returns the encoding used during parsing, or null if not specified (indicates that
+     * prefs.get(JabRefPreferences.DEFAULT_ENCODING) was used).
+     */
+    public Charset getEncoding() {
+        return encoding;
+    }
+
+    /**
      * Sets the variable indicating which encoding was used during parsing.
      *
      * @param enc the encoding.
      */
     public void setEncoding(Charset enc) {
         encoding = enc;
-    }
-
-    /**
-     * Returns the encoding used during parsing, or null if not specified (indicates that
-     * prefs.get(JabRefPreferences.DEFAULT_ENCODING) was used).
-     */
-    public Charset getEncoding() {
-        return encoding;
     }
 
     /**
@@ -193,9 +191,5 @@ public class ParserResult {
     public boolean isNullResult() {
         // TODO Auto-generated method stub
         return this == NULL_RESULT;
-    }
-
-    public static ParserResult getNullResult() {
-        return NULL_RESULT;
     }
 }

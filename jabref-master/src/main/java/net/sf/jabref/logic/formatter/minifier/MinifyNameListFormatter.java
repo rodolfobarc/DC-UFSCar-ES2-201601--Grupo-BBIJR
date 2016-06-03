@@ -1,9 +1,9 @@
 package net.sf.jabref.logic.formatter.minifier;
 
-import java.util.Objects;
-
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.logic.l10n.Localization;
+
+import java.util.Objects;
 
 /**
  * Replaces three or more authors with and others
@@ -21,11 +21,11 @@ public class MinifyNameListFormatter implements Formatter {
 
     /**
      * Replaces three or more authors with and others.
-     *
+     * <p>
      * <example>
-     *     Stefan Kolb -> Stefan Kolb
-     *     Stefan Kolb and Simon Harrer -> Stefan Kolb and Simon Harrer
-     *     Stefan Kolb and Simon Harrer and Jörg Lenhard -> Stefan Kolb and others
+     * Stefan Kolb -> Stefan Kolb
+     * Stefan Kolb and Simon Harrer -> Stefan Kolb and Simon Harrer
+     * Stefan Kolb and Simon Harrer and Jörg Lenhard -> Stefan Kolb and others
      * </example>
      */
     @Override

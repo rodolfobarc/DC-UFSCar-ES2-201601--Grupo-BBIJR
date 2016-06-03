@@ -15,15 +15,14 @@
 */
 package net.sf.jabref.collab;
 
+import net.sf.jabref.logic.util.io.FileUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.sf.jabref.logic.util.io.FileUtil;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This thread monitors a set of files, each associated with a FileUpdateListener, for changes
@@ -34,15 +33,25 @@ public class FileUpdateMonitor implements Runnable {
     private static final Log LOGGER = LogFactory.getLog(FileUpdateMonitor.class);
 
     private static final int WAIT = 4000;
-
-    private int numberOfUpdateListener;
     private final Map<String, Entry> entries = new HashMap<>();
+    private int numberOfUpdateListener;
+
+    private static synchronized File getTempFile() {
+        File f = null;
+        try {
+            f = File.createTempFile("jabref", null);
+            f.deleteOnExit();
+        } catch (IOException ex) {
+            LOGGER.warn("Could not create temporary file.", ex);
+        }
+        return f;
+    }
 
     @Override
     public void run() {
         // The running variable is used to make the thread stop when needed.
         while (true) {
-            for(Entry e : entries.values()) {
+            for (Entry e : entries.values()) {
                 try {
                     if (e.hasBeenUpdated()) {
                         e.notifyListener();
@@ -64,7 +73,8 @@ public class FileUpdateMonitor implements Runnable {
 
     /**
      * Add a new file to monitor. Returns a handle for accessing the entry.
-     * @param ul FileUpdateListener The listener to notify when the file changes.
+     *
+     * @param ul   FileUpdateListener The listener to notify when the file changes.
      * @param file File The file to monitor.
      * @throws IOException if the file does not exist.
      */
@@ -100,6 +110,7 @@ public class FileUpdateMonitor implements Runnable {
      * the file's timestamp on disk, after this call the file will appear to
      * have been modified. Used if a file has been modified, and the change
      * scan fails, in order to ensure successive checks.
+     *
      * @param handle the handle to the correct file.
      */
     public void perturbTimestamp(String handle) {
@@ -112,6 +123,7 @@ public class FileUpdateMonitor implements Runnable {
 
     /**
      * Removes a listener from the monitor.
+     *
      * @param handle String The handle for the listener to remove.
      */
     public void removeUpdateListener(String handle) {
@@ -129,9 +141,10 @@ public class FileUpdateMonitor implements Runnable {
     /**
      * Method for getting the temporary file used for this database. The tempfile
      * is used for comparison with the changed on-disk version.
+     *
      * @param key String The handle for this monitor.
-     * @throws IllegalArgumentException If the handle doesn't correspond to an entry.
      * @return File The temporary file.
+     * @throws IllegalArgumentException If the handle doesn't correspond to an entry.
      */
     public File getTempFile(String key) throws IllegalArgumentException {
         Object o = entries.get(key);
@@ -140,7 +153,6 @@ public class FileUpdateMonitor implements Runnable {
         }
         return ((Entry) o).getTmpFile();
     }
-
 
     /**
      * A class containing the File, the FileUpdateListener and the current time stamp for one file.
@@ -168,8 +180,9 @@ public class FileUpdateMonitor implements Runnable {
 
         /**
          * Check if time stamp or the file size has changed.
-         * @throws IOException if the file does no longer exist.
+         *
          * @return boolean true if the file has changed.
+         * @throws IOException if the file does no longer exist.
          */
         public boolean hasBeenUpdated() throws IOException {
             long modified = file.lastModified();
@@ -225,17 +238,5 @@ public class FileUpdateMonitor implements Runnable {
         public void decreaseTimeStamp() {
             timeStamp--;
         }
-    }
-
-
-    private static synchronized File getTempFile() {
-        File f = null;
-        try {
-            f = File.createTempFile("jabref", null);
-            f.deleteOnExit();
-        } catch (IOException ex) {
-            LOGGER.warn("Could not create temporary file.", ex);
-        }
-        return f;
     }
 }

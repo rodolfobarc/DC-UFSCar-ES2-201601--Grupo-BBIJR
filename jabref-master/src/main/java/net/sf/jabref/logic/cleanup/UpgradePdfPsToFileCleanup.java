@@ -14,17 +14,17 @@
 
 package net.sf.jabref.logic.cleanup;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.external.ExternalFileTypes;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Collects file links from the given set of fields, and add them to the list contained in the file field.

@@ -14,18 +14,6 @@
 */
 package net.sf.jabref.importer.fetcher;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
-
-import javax.swing.JPanel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.help.HelpFiles;
@@ -36,9 +24,19 @@ import net.sf.jabref.logic.formatter.bibtexfields.UnitsToLatexFormatter;
 import net.sf.jabref.logic.formatter.casechanger.ProtectTermsFormatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 /**
  * This class uses ebook.de's ISBN to BibTeX Converter to convert an ISBN to a BibTeX entry <br />
@@ -81,9 +79,9 @@ public class ISBNtoBibTeXFetcher implements EntryFetcher {
             return false;
         }
 
-        try(InputStream source = url.openStream()) {
+        try (InputStream source = url.openStream()) {
             String bibtexString;
-            try(Scanner scan = new Scanner(source)) {
+            try (Scanner scan = new Scanner(source)) {
                 bibtexString = scan.useDelimiter("\\A").next();
             }
 

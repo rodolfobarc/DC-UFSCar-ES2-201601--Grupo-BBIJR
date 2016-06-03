@@ -15,42 +15,13 @@
  */
 package net.sf.jabref.external;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListEntryEditor;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.IconTheme;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableFieldChange;
@@ -60,9 +31,12 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 
 /**
  * This action goes through all selected entries in the BasePanel, and attempts to autoset the
@@ -72,18 +46,15 @@ import com.jgoodies.forms.layout.FormLayout;
 public class SynchronizeFileField extends AbstractWorker {
 
     private final BasePanel panel;
-    private List<BibEntry> sel;
-    private SynchronizeFileField.OptionsDialog optDiag;
-
-    private int entriesChangedCount;
-
     private final Object[] brokenLinkOptions = {
             Localization.lang("Ignore"),
             Localization.lang("Assign new file"),
             Localization.lang("Remove link"),
             Localization.lang("Remove all broken links"),
             Localization.lang("Quit synchronization")};
-
+    private List<BibEntry> sel;
+    private SynchronizeFileField.OptionsDialog optDiag;
+    private int entriesChangedCount;
     private boolean goOn = true;
     private boolean autoSet = true;
     private boolean checkExisting = true;
@@ -145,7 +116,8 @@ public class SynchronizeFileField extends AbstractWorker {
         // The following loop checks all external links that are already set.
         if (checkExisting) {
             boolean removeAllBroken = false;
-            mainLoop: for (BibEntry aSel : sel) {
+            mainLoop:
+            for (BibEntry aSel : sel) {
                 panel.frame().setProgressBarValue(progress++);
                 final String old = aSel.getField(Globals.FILE_FIELD);
                 // Check if a extension is set:
@@ -185,38 +157,38 @@ public class SynchronizeFileField extends AbstractWorker {
                                         Localization.lang("Broken link"),
                                         JOptionPane.YES_NO_CANCEL_OPTION,
                                         JOptionPane.QUESTION_MESSAGE, null, brokenLinkOptions, brokenLinkOptions[0]
-                                        );
+                                );
                             }
                             switch (answer) {
-                            case 1:
-                                // Assign new file.
-                                FileListEntryEditor flEditor = new FileListEntryEditor
-                                (panel.frame(), flEntry, false, true, panel.getBibDatabaseContext());
-                                flEditor.setVisible(true, true);
-                                break;
-                            case 2:
-                                // Clear field:
-                                tableModel.removeEntry(j);
-                                deleted = true; // Make sure we don't investigate this link further.
-                                j--; // Step back in the iteration, because we removed an entry.
-                                break;
-                            case 3:
-                                // Clear field:
-                                tableModel.removeEntry(j);
-                                deleted = true; // Make sure we don't investigate this link further.
-                                j--; // Step back in the iteration, because we removed an entry.
-                                removeAllBroken = true; // Notify for further cases.
-                                break;
-                            default:
-                                // Cancel
-                                break mainLoop;
+                                case 1:
+                                    // Assign new file.
+                                    FileListEntryEditor flEditor = new FileListEntryEditor
+                                            (panel.frame(), flEntry, false, true, panel.getBibDatabaseContext());
+                                    flEditor.setVisible(true, true);
+                                    break;
+                                case 2:
+                                    // Clear field:
+                                    tableModel.removeEntry(j);
+                                    deleted = true; // Make sure we don't investigate this link further.
+                                    j--; // Step back in the iteration, because we removed an entry.
+                                    break;
+                                case 3:
+                                    // Clear field:
+                                    tableModel.removeEntry(j);
+                                    deleted = true; // Make sure we don't investigate this link further.
+                                    j--; // Step back in the iteration, because we removed an entry.
+                                    removeAllBroken = true; // Notify for further cases.
+                                    break;
+                                default:
+                                    // Cancel
+                                    break mainLoop;
                             }
                         }
 
                         // Unless we deleted this link, see if its file type is recognized:
                         if (!deleted && flEntry.type.isPresent()
                                 && (flEntry.type.get() instanceof UnknownExternalFileType)) {
-                            String[] options = new String[] {
+                            String[] options = new String[]{
                                     Localization.lang("Define '%0'", flEntry.type.get().getName()),
                                     Localization.lang("Change file type"),
                                     Localization.lang("Cancel")};
@@ -225,7 +197,7 @@ public class SynchronizeFileField extends AbstractWorker {
                                     flEntry.type.get().getName()),
                                     Localization.lang("Undefined file type"), JOptionPane.YES_NO_CANCEL_OPTION,
                                     JOptionPane.QUESTION_MESSAGE, null, options, defOption
-                                    );
+                            );
                             if (answer == JOptionPane.CANCEL_OPTION) {
                                 // User doesn't want to handle this unknown link type.
                             } else if (answer == JOptionPane.YES_OPTION) {
@@ -299,7 +271,6 @@ public class SynchronizeFileField extends AbstractWorker {
 
         private final JButton ok = new JButton(Localization.lang("OK"));
         private final JButton cancel = new JButton(Localization.lang("Cancel"));
-        private boolean canceled = true;
         private final BibDatabaseContext databaseContext;
         private final JRadioButton autoSetUnset = new JRadioButton(
                 Localization.lang("Automatically set file links") + ". "
@@ -311,6 +282,7 @@ public class SynchronizeFileField extends AbstractWorker {
                 false);
         private final JRadioButton autoSetNone = new JRadioButton(Localization.lang("Do not automatically set"), false);
         private final JCheckBox checkLinks = new JCheckBox(Localization.lang("Check existing file links"), true);
+        private boolean canceled = true;
 
 
         public OptionsDialog(JFrame parent, BibDatabaseContext databaseContext) {
@@ -357,7 +329,7 @@ public class SynchronizeFileField extends AbstractWorker {
 
             description = new JLabel("<HTML>"
                     + Localization
-                            .lang("This makes JabRef look up each file link and check if the file exists. If not, you will be given options<BR>to resolve the problem.")
+                    .lang("This makes JabRef look up each file link and check if the file exists. If not, you will be given options<BR>to resolve the problem.")
                     + "</HTML>");
             builder.add(description).xy(1, 11);
             builder.add(checkLinks).xy(1, 13);

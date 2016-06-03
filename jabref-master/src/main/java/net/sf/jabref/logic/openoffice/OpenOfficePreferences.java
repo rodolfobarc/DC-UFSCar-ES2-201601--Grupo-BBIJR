@@ -15,11 +15,11 @@
  */
 package net.sf.jabref.logic.openoffice;
 
-import java.io.File;
-import java.util.List;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.l10n.Localization;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * The OpenOffice connection preferences are:
@@ -31,11 +31,9 @@ import net.sf.jabref.logic.l10n.Localization;
  * OO_USE_ALL_OPEN_DATABASES true if all databases should be used when citing
  * OO_BIBLIOGRAPHY_STYLE_FILE path to the used style file
  * OO_EXTERNAL_STYLE_FILES list with paths to external style files
- *
  */
 public class OpenOfficePreferences {
 
-    private final JabRefPreferences preferences;
     public static final String DEFAULT_WINDOWS_PATH = "C:\\Program Files\\OpenOffice.org 4";
     public static final String WINDOWS_EXECUTABLE_SUBPATH = "\\program\\";
     public static final String WINDOWS_EXECUTABLE = "soffice.exe";
@@ -45,6 +43,7 @@ public class OpenOfficePreferences {
     public static final String OSX_EXECUTABLE = "soffice.bin";
     public static final String OSX_JARS_SUBPATH = "/Contents/Resources/java";
     public static final String LINUX_EXECUTABLE = "soffice";
+    private final JabRefPreferences preferences;
 
 
     public OpenOfficePreferences(JabRefPreferences preferences) {

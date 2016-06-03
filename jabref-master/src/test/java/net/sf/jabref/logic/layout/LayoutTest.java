@@ -1,24 +1,30 @@
 package net.sf.jabref.logic.layout;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Collection;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Collection;
+
 import static org.mockito.Mockito.mock;
 
 public class LayoutTest {
+
+    public static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
+        ParserResult result = BibtexParser.parse(new StringReader(s));
+        Collection<BibEntry> c = result.getDatabase().getEntries();
+        Assert.assertEquals(1, c.size());
+        return c.iterator().next();
+    }
 
     /**
      * Initialize Preferences.
@@ -40,13 +46,6 @@ public class LayoutTest {
                 + "  owner = {oezbek},\n" + "  timestamp = {2006.05.29},\n"
                 + "  url = {http://james.howison.name/publications.html},\n" + "  abstract = {\\~{n}\n" + "\\~n\n"
                 + "\\'i\n" + "\\i\n" + "\\i}\n" + "}\n";
-    }
-
-    public static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
-        ParserResult result = BibtexParser.parse(new StringReader(s));
-        Collection<BibEntry> c = result.getDatabase().getEntries();
-        Assert.assertEquals(1, c.size());
-        return c.iterator().next();
     }
 
     public String layout(String layoutFile, String entry) throws IOException {

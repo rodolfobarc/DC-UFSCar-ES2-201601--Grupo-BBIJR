@@ -15,6 +15,10 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,21 +26,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.BibEntry;
-
 /**
  * Importer for COPAC format.
- *
+ * <p>
  * Documentation can be found online at:
- *
+ * <p>
  * http://copac.ac.uk/faq/#format
  */
 public class CopacImporter extends ImportFormat {
 
     private static final Pattern COPAC_PATTERN = Pattern.compile("^\\s*TI- ");
 
+    private static void setOrAppend(BibEntry b, String field, String value, String separator) {
+        if (b.hasField(field)) {
+            b.setField(field, b.getField(field) + separator + value);
+        } else {
+            b.setField(field, value);
+        }
+    }
 
     /**
      * Return the name of this import format.
@@ -55,8 +62,6 @@ public class CopacImporter extends ImportFormat {
     public String getCLIId() {
         return "cpc";
     }
-
-
 
     /**
      * Check whether the source is in the correct format for this importer.
@@ -167,13 +172,5 @@ public class CopacImporter extends ImportFormat {
         }
 
         return results;
-    }
-
-    private static void setOrAppend(BibEntry b, String field, String value, String separator) {
-        if (b.hasField(field)) {
-            b.setField(field, b.getField(field) + separator + value);
-        } else {
-            b.setField(field, value);
-        }
     }
 }

@@ -1,12 +1,5 @@
 package net.sf.jabref.external;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
@@ -14,31 +7,30 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.FileField;
 
+import java.util.*;
+
 public final class ExternalFileTypes {
 
     // This String is used in the encoded list in prefs of external file type
     // modifications, in order to indicate a removed default file type:
     private static final String FILE_TYPE_REMOVED_FLAG = "REMOVED";
-
+    // The only instance of this class:
+    private static ExternalFileTypes singleton;
     // Map containing all registered external file types:
     private final Set<ExternalFileType> externalFileTypes = new TreeSet<>();
-
     private final ExternalFileType HTML_FALLBACK_TYPE = new ExternalFileType("URL", "html", "text/html", "", "www",
             IconTheme.JabRefIcon.WWW.getSmallIcon());
 
-    // The only instance of this class:
-    private static ExternalFileTypes singleton;
 
+    private ExternalFileTypes() {
+        updateExternalFileTypes();
+    }
 
     public static ExternalFileTypes getInstance() {
         if (ExternalFileTypes.singleton == null) {
             ExternalFileTypes.singleton = new ExternalFileTypes();
         }
         return ExternalFileTypes.singleton;
-    }
-
-    private ExternalFileTypes() {
-        updateExternalFileTypes();
     }
 
     public static List<ExternalFileType> getDefaultExternalFileTypes() {
@@ -193,7 +185,7 @@ public final class ExternalFileTypes {
      *
      * @param mimeType The MIME type.
      * @return The ExternalFileType registered, or null if none. For the mime type "text/html", a valid file type is
-     *         guaranteed to be returned.
+     * guaranteed to be returned.
      */
     public Optional<ExternalFileType> getExternalFileTypeByMimeType(String mimeType) {
         for (ExternalFileType type : externalFileTypes) {
@@ -260,7 +252,7 @@ public final class ExternalFileTypes {
             i++;
         }
         for (ExternalFileType type : defTypes) {
-            array[i] = new String[] {type.getName(), FILE_TYPE_REMOVED_FLAG};
+            array[i] = new String[]{type.getName(), FILE_TYPE_REMOVED_FLAG};
             i++;
         }
         Globals.prefs.put("externalFileTypes", FileField.encodeStringArray(array));

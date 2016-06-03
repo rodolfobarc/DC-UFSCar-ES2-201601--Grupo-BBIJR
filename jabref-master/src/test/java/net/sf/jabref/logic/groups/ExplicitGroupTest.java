@@ -5,7 +5,6 @@ import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ public class ExplicitGroupTest {
     }
 
     @Test
-     public void testToStringSimple() {
+    public void testToStringSimple() {
         ExplicitGroup group = new ExplicitGroup("myExplicitGroup", GroupHierarchyType.INDEPENDENT);
         assertEquals("ExplicitGroup:myExplicitGroup;0;", group.toString());
     }

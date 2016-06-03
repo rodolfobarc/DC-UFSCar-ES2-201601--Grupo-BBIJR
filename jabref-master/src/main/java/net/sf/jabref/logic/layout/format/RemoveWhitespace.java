@@ -41,7 +41,7 @@ import net.sf.jabref.logic.layout.LayoutFormatter;
 
 /**
  * Remove non printable character formatter.
- *
+ * <p>
  * Based on the RemoveBrackets.java class (Revision 1.2) by mortenalver
  */
 public class RemoveWhitespace implements LayoutFormatter {

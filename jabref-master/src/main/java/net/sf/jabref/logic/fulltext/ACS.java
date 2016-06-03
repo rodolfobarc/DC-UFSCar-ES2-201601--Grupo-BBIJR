@@ -1,18 +1,17 @@
 package net.sf.jabref.logic.fulltext;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-
 import net.sf.jabref.logic.util.DOI;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * FullTextFinder implementation that attempts to find a PDF URL at ACS.
@@ -24,7 +23,7 @@ public class ACS implements FullTextFinder {
 
     /**
      * Tries to find a fulltext URL for a given BibTex entry.
-     *
+     * <p>
      * Currently only uses the DOI if found.
      *
      * @param entry The Bibtex entry
@@ -40,13 +39,13 @@ public class ACS implements FullTextFinder {
         // DOI search
         Optional<DOI> doi = DOI.build(entry.getField("doi"));
 
-        if(doi.isPresent()) {
+        if (doi.isPresent()) {
             String source = String.format(SOURCE, doi.get().getDOI());
             // Retrieve PDF link
             Document html = Jsoup.connect(source).ignoreHttpErrors(true).get();
             Element link = html.select(".pdf-high-res a").first();
 
-            if(link != null) {
+            if (link != null) {
                 LOGGER.info("Fulltext PDF found @ ACS.");
                 pdfLink = Optional.of(new URL(source.replaceFirst("/abs/", "/pdf/")));
             }

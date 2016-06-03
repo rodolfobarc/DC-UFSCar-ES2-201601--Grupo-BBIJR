@@ -1,5 +1,20 @@
 package net.sf.jabref.exporter;
 
+import com.google.common.base.Charsets;
+import net.sf.jabref.BibDatabaseContext;
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.MetaData;
+import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -8,22 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.MetaData;
-import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
-
-import com.google.common.base.Charsets;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,15 +34,24 @@ public class ExportFormatTest {
     public BibDatabaseContext databaseContext;
     public Charset charset;
     public List<BibEntry> entries;
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
 
     public ExportFormatTest(IExportFormat format, String name) {
         exportFormat = format;
         exportFormatName = name;
     }
 
-    @Rule
-    public TemporaryFolder testFolder = new TemporaryFolder();
-
+    @Parameterized.Parameters(name = "{index}: {1}")
+    public static Collection<Object[]> exportFormats() {
+        Collection<Object[]> result = new ArrayList<>();
+        Globals.prefs = JabRefPreferences.getInstance();
+        ExportFormats.initAllExports();
+        for (IExportFormat format : ExportFormats.getExportFormats().values()) {
+            result.add(new Object[]{format, format.getDisplayName()});
+        }
+        return result;
+    }
 
     @Before
     public void setUp() {
@@ -59,7 +67,7 @@ public class ExportFormatTest {
         String filename = tmpFile.getCanonicalPath();
         exportFormat.performExport(databaseContext, filename, charset, entries);
         try (FileInputStream stream = new FileInputStream(tmpFile);
-                InputStreamReader reader = new InputStreamReader(stream, charset)) {
+             InputStreamReader reader = new InputStreamReader(stream, charset)) {
             char[] buffer = new char[512];
             assertEquals(-1, reader.read(buffer)); // Empty file
         }
@@ -77,16 +85,5 @@ public class ExportFormatTest {
         File tmpFile = testFolder.newFile();
         String filename = tmpFile.getCanonicalPath();
         exportFormat.performExport(databaseContext, filename, charset, null);
-    }
-
-    @Parameterized.Parameters(name = "{index}: {1}")
-    public static Collection<Object[]> exportFormats() {
-        Collection<Object[]> result = new ArrayList<>();
-        Globals.prefs = JabRefPreferences.getInstance();
-        ExportFormats.initAllExports();
-        for (IExportFormat format : ExportFormats.getExportFormats().values()) {
-            result.add(new Object[] {format, format.getDisplayName()});
-        }
-        return result;
     }
 }

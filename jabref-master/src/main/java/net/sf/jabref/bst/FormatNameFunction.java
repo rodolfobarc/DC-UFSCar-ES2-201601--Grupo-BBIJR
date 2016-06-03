@@ -15,16 +15,16 @@
 */
 package net.sf.jabref.bst;
 
-import java.util.Stack;
-
 import net.sf.jabref.bst.VM.BstEntry;
 import net.sf.jabref.bst.VM.BstFunction;
 import net.sf.jabref.model.entry.Author;
 import net.sf.jabref.model.entry.AuthorList;
 
+import java.util.Stack;
+
 /**
  * From Bibtex:
- *
+ * <p>
  * "The |built_in| function {\.{format.name\$}} pops the
  * top three literals (they are a string, an integer, and a string
  * literal, in that order). The last string literal represents a
@@ -34,9 +34,8 @@ import net.sf.jabref.model.entry.AuthorList;
  * described in the \BibTeX\ documentation. Finally, this function
  * pushes the formatted name. If any of the types is incorrect, it
  * complains and pushes the null string."
- *
+ * <p>
  * All the pain is encapsulated in BibtexNameFormatter. :-)
- *
  */
 public class FormatNameFunction implements BstFunction {
 

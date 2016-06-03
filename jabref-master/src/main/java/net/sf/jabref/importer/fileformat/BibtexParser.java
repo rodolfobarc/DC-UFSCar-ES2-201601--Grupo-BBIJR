@@ -15,19 +15,6 @@
 */
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.MetaData;
 import net.sf.jabref.bibtex.FieldProperties;
@@ -38,14 +25,15 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.BibtexString;
-import net.sf.jabref.model.entry.CustomEntryType;
-import net.sf.jabref.model.entry.EntryType;
-import net.sf.jabref.model.entry.IdGenerator;
-
+import net.sf.jabref.model.entry.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.*;
 
 /**
  * Class for importing BibTeX-files.
@@ -64,16 +52,15 @@ import org.apache.commons.logging.LogFactory;
  */
 public class BibtexParser {
     private static final Log LOGGER = LogFactory.getLog(BibtexParser.class);
-
+    private static final Integer LOOKAHEAD = 64;
     private final PushbackReader pushbackReader;
+    private final FieldContentParser fieldContentParser = new FieldContentParser();
+    private final Deque<Character> pureTextFromFile = new LinkedList<>();
     private BibDatabase database;
     private Map<String, EntryType> entryTypes;
     private boolean eof;
     private int line = 1;
-    private final FieldContentParser fieldContentParser = new FieldContentParser();
     private ParserResult parserResult;
-    private static final Integer LOOKAHEAD = 64;
-    private final Deque<Character> pureTextFromFile = new LinkedList<>();
 
 
     public BibtexParser(Reader in) {
@@ -279,7 +266,7 @@ public class BibtexParser {
             // A custom entry type can also be stored in a
             // "@comment"
             CustomEntryType typ = CustomEntryTypesManager.parseEntryType(comment);
-            if(typ == null) {
+            if (typ == null) {
                 parserResult.addWarning(Localization.lang("Ill-formed entrytype comment in bib file") + ": " +
                         comment);
             } else {
@@ -331,13 +318,13 @@ public class BibtexParser {
                 runningIndex--;
             }
 
-            if(runningIndex > -1) {
+            if (runningIndex > -1) {
                 // We have to ignore some text at the beginning
                 // so we view the first line break as the end of the previous text and don't store it
-                if(result.charAt(runningIndex + 1) == '\r') {
+                if (result.charAt(runningIndex + 1) == '\r') {
                     runningIndex++;
                 }
-                if(result.charAt(runningIndex + 1) == '\n') {
+                if (result.charAt(runningIndex + 1) == '\n') {
                     runningIndex++;
                 }
             }
@@ -410,10 +397,10 @@ public class BibtexParser {
 
     private void skipOneNewline() throws IOException {
         skipSpace();
-        if(peek() == '\r') {
+        if (peek() == '\r') {
             read();
         }
-        if(peek() == '\n') {
+        if (peek() == '\n') {
             read();
         }
     }
@@ -457,7 +444,7 @@ public class BibtexParser {
     private int read() throws IOException {
         int character = pushbackReader.read();
 
-        if(! isEOFCharacter(character)) {
+        if (!isEOFCharacter(character)) {
             pureTextFromFile.offerLast((char) character);
         }
         if (character == '\n') {
@@ -471,7 +458,7 @@ public class BibtexParser {
             line--;
         }
         pushbackReader.unread(character);
-        if(pureTextFromFile.getLast() == character) {
+        if (pureTextFromFile.getLast() == character) {
             pureTextFromFile.pollLast();
         }
     }
@@ -802,7 +789,7 @@ public class BibtexParser {
     private StringBuffer parseBracketedText() throws IOException {
         StringBuffer value = new StringBuffer();
 
-        consume('{','(');
+        consume('{', '(');
 
         int brackets = 0;
 
@@ -837,18 +824,18 @@ public class BibtexParser {
             }
         }
 
-        consume('}',')');
+        consume('}', ')');
 
         return value;
     }
 
-    private boolean isClosingBracketNext () {
+    private boolean isClosingBracketNext() {
         try {
             int peek = peek();
             boolean isCurlyBracket = peek == '}';
             boolean isRoundBracket = peek == ')';
             return isCurlyBracket || isRoundBracket;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
     }

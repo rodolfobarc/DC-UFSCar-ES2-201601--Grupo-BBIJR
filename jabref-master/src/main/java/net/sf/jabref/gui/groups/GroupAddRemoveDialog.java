@@ -1,29 +1,6 @@
 package net.sf.jabref.gui.groups;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.actions.BaseAction;
@@ -32,7 +9,17 @@ import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -68,8 +55,8 @@ public class GroupAddRemoveDialog implements BaseAction {
 
         final JDialog diag = new JDialog(panel.frame(),
                 (add ? (move ? Localization.lang("Move to group") :
-                    Localization.lang("Add to group")) :
-                    Localization.lang("Remove from group")), true);
+                        Localization.lang("Add to group")) :
+                        Localization.lang("Remove from group")), true);
         ok = new JButton(Localization.lang("OK"));
         JButton cancel = new JButton(Localization.lang("Cancel"));
         tree = new JTree(new GroupTreeNodeViewModel(groups));
@@ -148,7 +135,7 @@ public class GroupAddRemoveDialog implements BaseAction {
         // walk through the children:
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
-            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
                 TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
                 expandAll(tree, path, expand);
@@ -161,17 +148,6 @@ public class GroupAddRemoveDialog implements BaseAction {
             tree.collapsePath(parent);
         }
     }
-
-
-    private class SelectionListener implements TreeSelectionListener {
-
-        @Override
-        public void valueChanged(TreeSelectionEvent e) {
-            GroupTreeNodeViewModel node = (GroupTreeNodeViewModel) e.getNewLeadSelectionPath().getLastPathComponent();
-            ok.setEnabled(checkGroupEnable(node));
-        }
-    }
-
 
     private boolean doAddOrRemove() {
         TreePath path = tree.getSelectionPath();
@@ -200,11 +176,21 @@ public class GroupAddRemoveDialog implements BaseAction {
      * Check if we can perform the action for this group. Determines whether
      * the group should be shown in an enabled state, and if selecting it should
      * leave the Ok button enabled.
+     *
      * @param node The group to check
      * @return true if this dialog's action can be performed on the group
      */
     private boolean checkGroupEnable(GroupTreeNodeViewModel node) {
         return (add ? node.canAddEntries(selection) : node.canRemoveEntries(selection));
+    }
+
+    private class SelectionListener implements TreeSelectionListener {
+
+        @Override
+        public void valueChanged(TreeSelectionEvent e) {
+            GroupTreeNodeViewModel node = (GroupTreeNodeViewModel) e.getNewLeadSelectionPath().getLastPathComponent();
+            ok.setEnabled(checkGroupEnable(node));
+        }
     }
 
 

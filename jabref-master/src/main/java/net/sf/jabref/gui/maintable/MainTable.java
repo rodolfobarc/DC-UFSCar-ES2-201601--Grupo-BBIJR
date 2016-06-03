@@ -15,29 +15,13 @@
 */
 package net.sf.jabref.gui.maintable;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JViewport;
-import javax.swing.TransferHandler;
-import javax.swing.plaf.TableUI;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
+import ca.odell.glazedlists.swing.TableComparatorChooser;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibtexSingleField;
@@ -60,76 +44,60 @@ import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.matchers.Matcher;
-import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
-import ca.odell.glazedlists.swing.GlazedListsSwing;
-import ca.odell.glazedlists.swing.TableComparatorChooser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.swing.plaf.TableUI;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * The central table which displays the bibtex entries.
- *
+ * <p>
  * User: alver
  * Date: Oct 12, 2005
  * Time: 10:29:39 PM
- *
  */
 public class MainTable extends JTable {
 
 
-
     private static final Log LOGGER = LogFactory.getLog(MainTable.class);
-
-    private final MainTableFormat tableFormat;
-    private final BasePanel panel;
-
-    private final boolean tableColorCodes;
-    private final DefaultEventSelectionModel<BibEntry> localSelectionModel;
-    private final TableComparatorChooser<BibEntry> comparatorChooser;
-    private final JScrollPane pane;
-
-    // needed to activate/deactivate the listener
-    private final PersistenceTableColumnListener tableColumnListener;
-    private final MainTableDataModel model;
-
-    public MainTableDataModel getTableModel() {
-        return model;
-    }
-
-    // Enum used to define how a cell should be rendered.
-    private enum CellRendererMode {
-        REQUIRED,
-        OPTIONAL,
-        OTHER
-    }
     private static GeneralRenderer defRenderer;
     private static GeneralRenderer reqRenderer;
     private static GeneralRenderer optRenderer;
     private static GeneralRenderer grayedOutRenderer;
     private static GeneralRenderer veryGrayedOutRenderer;
-
     private static List<GeneralRenderer> markedRenderers;
-
     private static IncompleteRenderer incRenderer;
     private static CompleteRenderer compRenderer;
     private static CompleteRenderer grayedOutNumberRenderer;
     private static CompleteRenderer veryGrayedOutNumberRenderer;
-
     private static List<CompleteRenderer> markedNumberRenderers;
-
 
     static {
         MainTable.updateRenderers();
     }
 
+    private final MainTableFormat tableFormat;
+    private final BasePanel panel;
+    private final boolean tableColorCodes;
+    private final DefaultEventSelectionModel<BibEntry> localSelectionModel;
+    private final TableComparatorChooser<BibEntry> comparatorChooser;
+    private final JScrollPane pane;
+    // needed to activate/deactivate the listener
+    private final PersistenceTableColumnListener tableColumnListener;
+    private final MainTableDataModel model;
 
     public MainTable(MainTableFormat tableFormat, MainTableDataModel model, JabRefFrame frame,
-            BasePanel panel) {
+                     BasePanel panel) {
         super();
         this.model = model;
 
@@ -180,6 +148,45 @@ public class MainTable extends JTable {
         setupComparatorChooser();
         model.updateMarkingState(Globals.prefs.getBoolean(JabRefPreferences.FLOAT_MARKED_ENTRIES));
         setWidths();
+    }
+
+    public static void updateRenderers() {
+
+        MainTable.defRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_BACKGROUND),
+                Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
+        Color sel = MainTable.defRenderer.getTableCellRendererComponent
+                (new JTable(), "", true, false, 0, 0).getBackground();
+        MainTable.reqRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_REQ_FIELD_BACKGROUND), Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
+        MainTable.optRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_OPT_FIELD_BACKGROUND), Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
+        MainTable.incRenderer = new IncompleteRenderer();
+        MainTable.compRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_BACKGROUND));
+        MainTable.grayedOutNumberRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND));
+        MainTable.veryGrayedOutNumberRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND));
+        MainTable.grayedOutRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND),
+                Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_TEXT), MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND),
+                sel));
+        MainTable.veryGrayedOutRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND),
+                Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_TEXT), MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND),
+                sel));
+
+        MainTable.markedRenderers = new ArrayList<>(EntryMarker.MARK_COLOR_LEVELS);
+        MainTable.markedNumberRenderers = new ArrayList<>(EntryMarker.MARK_COLOR_LEVELS);
+        for (int i = 0; i < EntryMarker.MARK_COLOR_LEVELS; i++) {
+            Color c = Globals.prefs.getColor(JabRefPreferences.MARKED_ENTRY_BACKGROUND + i);
+            MainTable.markedRenderers.add(new GeneralRenderer(c, Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT),
+                    MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.MARKED_ENTRY_BACKGROUND + i), sel)));
+            MainTable.markedNumberRenderers.add(new CompleteRenderer(c));
+        }
+
+    }
+
+    private static Color mixColors(Color one, Color two) {
+        return new Color((one.getRed() + two.getRed()) / 2, (one.getGreen() + two.getGreen()) / 2,
+                (one.getBlue() + two.getBlue()) / 2);
+    }
+
+    public MainTableDataModel getTableModel() {
+        return model;
     }
 
     public void addSelectionListener(ListEventListener<BibEntry> listener) {
@@ -234,17 +241,14 @@ public class MainTable extends JTable {
             } else {
                 renderer = MainTable.veryGrayedOutRenderer;
             }
-        }
-        else if (score == -1) {
+        } else if (score == -1) {
             if (column == 0) {
                 MainTable.grayedOutNumberRenderer.setNumber(row);
                 renderer = MainTable.grayedOutNumberRenderer;
             } else {
                 renderer = MainTable.grayedOutRenderer;
             }
-        }
-
-        else if (column == 0) {
+        } else if (column == 0) {
             if (isComplete(row)) {
                 MainTable.compRenderer.setNumber(row);
                 int marking = isMarked(row);
@@ -382,12 +386,12 @@ public class MainTable extends JTable {
         // Set initial sort columns:
 
         // Default sort order:
-        String[] sortFields = new String[] {
+        String[] sortFields = new String[]{
                 Globals.prefs.get(JabRefPreferences.TABLE_PRIMARY_SORT_FIELD),
                 Globals.prefs.get(JabRefPreferences.TABLE_SECONDARY_SORT_FIELD),
                 Globals.prefs.get(JabRefPreferences.TABLE_TERTIARY_SORT_FIELD)
         };
-        boolean[] sortDirections = new boolean[] {
+        boolean[] sortDirections = new boolean[]{
                 Globals.prefs.getBoolean(JabRefPreferences.TABLE_PRIMARY_SORT_DESCENDING),
                 Globals.prefs.getBoolean(JabRefPreferences.TABLE_SECONDARY_SORT_DESCENDING),
                 Globals.prefs.getBoolean(JabRefPreferences.TABLE_TERTIARY_SORT_DESCENDING)
@@ -451,7 +455,7 @@ public class MainTable extends JTable {
         try {
             BibEntry be = getEntryAt(row);
             Optional<EntryType> type = EntryTypes.getType(be.getType(), panel.getBibDatabaseContext().getMode());
-            if(type.isPresent()) {
+            if (type.isPresent()) {
                 String columnName = getColumnName(col).toLowerCase();
                 if (columnName.equals(BibEntry.KEY_FIELD) || type.get().getRequiredFieldsFlat().contains(columnName)) {
                     return CellRendererMode.REQUIRED;
@@ -468,10 +472,10 @@ public class MainTable extends JTable {
 
     /**
      * Use with caution! If you modify an entry in the table, the selection changes
-     *
+     * <p>
      * You can avoid it with
-     *   <code>.getSelected().getReadWriteLock().writeLock().lock()</code>
-     *   and then <code>.unlock()</code>
+     * <code>.getSelected().getReadWriteLock().writeLock().lock()</code>
+     * and then <code>.unlock()</code>
      */
     public EventList<BibEntry> getSelected() {
         return localSelectionModel.getSelected();
@@ -597,45 +601,8 @@ public class MainTable extends JTable {
         repaint();
     }
 
-
-
-    public static void updateRenderers() {
-
-        MainTable.defRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_BACKGROUND),
-                Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
-        Color sel = MainTable.defRenderer.getTableCellRendererComponent
-                (new JTable(), "", true, false, 0, 0).getBackground();
-        MainTable.reqRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_REQ_FIELD_BACKGROUND), Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
-        MainTable.optRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_OPT_FIELD_BACKGROUND), Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT));
-        MainTable.incRenderer = new IncompleteRenderer();
-        MainTable.compRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.TABLE_BACKGROUND));
-        MainTable.grayedOutNumberRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND));
-        MainTable.veryGrayedOutNumberRenderer = new CompleteRenderer(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND));
-        MainTable.grayedOutRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND),
-                Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_TEXT), MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.GRAYED_OUT_BACKGROUND),
-                        sel));
-        MainTable.veryGrayedOutRenderer = new GeneralRenderer(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND),
-                Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_TEXT), MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.VERY_GRAYED_OUT_BACKGROUND),
-                        sel));
-
-        MainTable.markedRenderers = new ArrayList<>(EntryMarker.MARK_COLOR_LEVELS);
-        MainTable.markedNumberRenderers = new ArrayList<>(EntryMarker.MARK_COLOR_LEVELS);
-        for (int i = 0; i < EntryMarker.MARK_COLOR_LEVELS; i++) {
-            Color c = Globals.prefs.getColor(JabRefPreferences.MARKED_ENTRY_BACKGROUND + i);
-            MainTable.markedRenderers.add(new GeneralRenderer(c, Globals.prefs.getColor(JabRefPreferences.TABLE_TEXT),
-                    MainTable.mixColors(Globals.prefs.getColor(JabRefPreferences.MARKED_ENTRY_BACKGROUND + i), sel)));
-            MainTable.markedNumberRenderers.add(new CompleteRenderer(c));
-        }
-
-    }
-
-    private static Color mixColors(Color one, Color two) {
-        return new Color((one.getRed() + two.getRed()) / 2, (one.getGreen() + two.getGreen()) / 2,
-                (one.getBlue() + two.getBlue()) / 2);
-    }
-
     private TableComparatorChooser<BibEntry> createTableComparatorChooser(JTable table, SortedList<BibEntry> list,
-                                                                             Object sortingStrategy) {
+                                                                          Object sortingStrategy) {
         return TableComparatorChooser.install(table, list, sortingStrategy);
     }
 
@@ -643,6 +610,7 @@ public class MainTable extends JTable {
      * Morten Alver: This override is a workaround NullPointerException when
      * dragging stuff into the table. I found this in a forum, but have no idea
      * why it works.
+     *
      * @param newUI
      */
     @Override
@@ -656,6 +624,7 @@ public class MainTable extends JTable {
 
     /**
      * Find out which column is set as sort column.
+     *
      * @param number The position in the sort hierarchy (primary, secondary, etc.)
      * @return The sort column number.
      */
@@ -674,5 +643,12 @@ public class MainTable extends JTable {
 
     public MainTableColumn getMainTableColumn(int modelIndex) {
         return tableFormat.getTableColumn(modelIndex);
+    }
+
+    // Enum used to define how a cell should be rendered.
+    private enum CellRendererMode {
+        REQUIRED,
+        OPTIONAL,
+        OTHER
     }
 }

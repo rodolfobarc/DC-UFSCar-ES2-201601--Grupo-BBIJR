@@ -1,19 +1,13 @@
 package net.sf.jabref.logic.l10n;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -40,34 +34,6 @@ public class LocalizationConsistencyTest {
         }
     }
 
-    private static class DuplicationDetectionProperties extends Properties {
-
-        private static final long serialVersionUID = 1L;
-
-        private final List<String> duplicates = new LinkedList<>();
-
-        public DuplicationDetectionProperties() {
-            super();
-        }
-
-        /**
-         * Overriding the HashTable put() so we can check for duplicates
-         */
-        @Override
-        public synchronized Object put(Object key, Object value) {
-            // Have we seen this key before?
-            if (containsKey(key)) {
-                duplicates.add(String.valueOf(key));
-            }
-
-            return super.put(key, value);
-        }
-
-        public List<String> getDuplicates() {
-            return duplicates;
-        }
-    }
-
     @Test
     public void ensureNoDuplicates() {
         for (String bundle : Arrays.asList("JabRef", "Menu")) {
@@ -77,7 +43,7 @@ public class LocalizationConsistencyTest {
                 // read in
                 DuplicationDetectionProperties properties = new DuplicationDetectionProperties();
                 try (InputStream is = LocalizationConsistencyTest.class.getResourceAsStream(propertyFilePath);
-                        InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                     InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
                     properties.load(reader);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -192,6 +158,34 @@ public class LocalizationConsistencyTest {
             result.add(String.format("%s=", key.getKey()));
         }
         return result.toString();
+    }
+
+    private static class DuplicationDetectionProperties extends Properties {
+
+        private static final long serialVersionUID = 1L;
+
+        private final List<String> duplicates = new LinkedList<>();
+
+        public DuplicationDetectionProperties() {
+            super();
+        }
+
+        /**
+         * Overriding the HashTable put() so we can check for duplicates
+         */
+        @Override
+        public synchronized Object put(Object key, Object value) {
+            // Have we seen this key before?
+            if (containsKey(key)) {
+                duplicates.add(String.valueOf(key));
+            }
+
+            return super.put(key, value);
+        }
+
+        public List<String> getDuplicates() {
+            return duplicates;
+        }
     }
 
 }

@@ -129,20 +129,17 @@ import java.util.stream.Collectors;
  */
 public class AuthorList {
 
+    private static final WeakHashMap<String, AuthorList> AUTHOR_CACHE = new WeakHashMap<>();
     private final List<Author> authors;
-
-    // Variables for storing computed strings, so they only need to be created once:
-    private String authorsNatbib;
-    private String authorsFirstFirstAnds;
-    private String authorsAlph;
-
     private final String[] authorsFirstFirst = new String[4];
     private final String[] authorsLastOnly = new String[2];
     private final String[] authorLastFirstAnds = new String[2];
     private final String[] authorsLastFirst = new String[4];
     private final String[] authorsLastFirstFirstLast = new String[2];
-
-    private static final WeakHashMap<String, AuthorList> AUTHOR_CACHE = new WeakHashMap<>();
+    // Variables for storing computed strings, so they only need to be created once:
+    private String authorsNatbib;
+    private String authorsFirstFirstAnds;
+    private String authorsAlph;
 
     /**
      * Creates a new list of authors.

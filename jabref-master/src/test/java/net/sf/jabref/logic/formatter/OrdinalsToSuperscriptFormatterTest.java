@@ -2,7 +2,6 @@ package net.sf.jabref.logic.formatter;
 
 
 import net.sf.jabref.logic.formatter.bibtexfields.OrdinalsToSuperscriptFormatter;
-
 import org.junit.Assert;
 import org.junit.Test;
 

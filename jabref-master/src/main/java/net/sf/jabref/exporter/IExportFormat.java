@@ -15,13 +15,12 @@
 */
 package net.sf.jabref.exporter;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
-import javax.swing.filechooser.FileFilter;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.filechooser.FileFilter;
+import java.nio.charset.Charset;
+import java.util.List;
 
 public interface IExportFormat {
 
@@ -45,13 +44,10 @@ public interface IExportFormat {
      * Perform the export.
      *
      * @param databaseContext the database to export from.
-     * @param file
-     *            The filename to write to.
-     * @param encoding
-     *            The encoding to use.
-     * @param entries
-     *            (may be null) A list containing all entries that
-     *            should be exported. If null, all entries will be exported.
+     * @param file            The filename to write to.
+     * @param encoding        The encoding to use.
+     * @param entries         (may be null) A list containing all entries that
+     *                        should be exported. If null, all entries will be exported.
      * @throws Exception
      */
     void performExport(BibDatabaseContext databaseContext, String file, Charset encoding, List<BibEntry> entries)

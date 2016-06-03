@@ -15,15 +15,6 @@
  */
 package net.sf.jabref.external.push;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
@@ -33,9 +24,13 @@ import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Mar 7, 2007 Time: 6:55:56 PM To change this template use File | Settings
@@ -95,10 +90,10 @@ public class PushToVim extends AbstractPushToApplication implements PushToApplic
         }
 
         try {
-            String[] com = new String[] {commandPath, "--servername",
+            String[] com = new String[]{commandPath, "--servername",
                     Globals.prefs.get(JabRefPreferences.VIM_SERVER), "--remote-send",
                     "<C-\\><C-N>a" + getCiteCommand() +
-                    "{" + keys + "}"};
+                            "{" + keys + "}"};
 
             final Process p = Runtime.getRuntime().exec(com);
 
@@ -137,7 +132,7 @@ public class PushToVim extends AbstractPushToApplication implements PushToApplic
                     "<HTML>" +
                             Localization.lang("Could not connect to Vim server. Make sure that "
                                     + "Vim is running<BR>with correct server name.")
-                    + "</HTML>",
+                            + "</HTML>",
                     Localization.lang("Error"), JOptionPane.ERROR_MESSAGE);
         } else if (couldNotCall) {
             JOptionPane.showMessageDialog(

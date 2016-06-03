@@ -15,14 +15,13 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 /**
  * This class represents a change in any field value. The relevant
@@ -39,7 +38,7 @@ public class UndoableFieldChange extends AbstractUndoableEdit {
 
 
     public UndoableFieldChange(BibEntry entry, String field,
-            String oldValue, String newValue) {
+                               String oldValue, String newValue) {
         this.entry = entry;
         this.field = field;
         this.oldValue = oldValue;

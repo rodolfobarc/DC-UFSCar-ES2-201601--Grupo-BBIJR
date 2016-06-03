@@ -15,34 +15,20 @@
 */
 package net.sf.jabref.gui.openoffice;
 
-import java.awt.BorderLayout;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.openoffice.OpenOfficeFileSearch;
 import net.sf.jabref.logic.openoffice.OpenOfficePreferences;
 import net.sf.jabref.logic.util.OS;
 
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Tools for automatically detecting jar and executable paths to OpenOffice and/or LibreOffice.
@@ -50,14 +36,11 @@ import com.jgoodies.forms.layout.FormLayout;
 public class AutoDetectPaths extends AbstractWorker {
 
     private final OpenOfficePreferences preferences;
-
+    private final JDialog parent;
+    private final OpenOfficeFileSearch fileSearch = new OpenOfficeFileSearch();
     private boolean foundPaths;
     private boolean fileSearchCanceled;
     private JDialog prog;
-    private final JDialog parent;
-
-
-    private final OpenOfficeFileSearch fileSearch = new OpenOfficeFileSearch();
 
 
     public AutoDetectPaths(JDialog parent, OpenOfficePreferences preferences) {

@@ -15,13 +15,13 @@
  */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.logic.layout.AbstractParamLayoutFormatter;
 import net.sf.jabref.model.entry.Author;
 import net.sf.jabref.model.entry.AuthorList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Versatile author name formatter that takes arguments to control the formatting style.
@@ -46,6 +46,17 @@ public class Authors extends AbstractParamLayoutFormatter {
     private static final List<String> LAST_SEPARATORS = new ArrayList<>();
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
+    private static final int
+            FIRST_FIRST = 0;
+    private static final int LAST_FIRST = 1;
+    private static final int LF_FF = 2;
+    private static final String
+            COMMA = ", ";
+    private static final String AMP = " & ";
+    private static final String COLON = ": ";
+    private static final String SEMICOLON = "; ";
+    private static final String AND = " and ";
+    private static final String OXFORD = ", and ";
 
     static {
         Authors.AUTHOR_ORDER.add("firstfirst");
@@ -79,23 +90,10 @@ public class Authors extends AbstractParamLayoutFormatter {
 
     }
 
-    private static final int
-    FIRST_FIRST = 0;
-    private static final int LAST_FIRST = 1;
-    private static final int LF_FF = 2;
-
-    private static final String
-    COMMA = ", ";
-    private static final String AMP = " & ";
-    private static final String COLON = ": ";
-    private static final String SEMICOLON = "; ";
-    private static final String AND = " and ";
-    private static final String OXFORD = ", and ";
-
     private int flMode;
 
     private boolean
-    abbreviate = true;
+            abbreviate = true;
     private boolean firstInitialOnly;
     private boolean middleInitial;
     private boolean lastNameOnly;
@@ -112,6 +110,17 @@ public class Authors extends AbstractParamLayoutFormatter {
     private String lastSeparator = Authors.AND;
     private String etAlString = " et al.";
 
+    /**
+     * Check for case-insensitive equality between two strings after removing
+     * white space at the beginning and end of the first string.
+     *
+     * @param one The first string - whitespace is trimmed
+     * @param two The second string
+     * @return true if the strings are deemed equal
+     */
+    private static boolean comp(String one, String two) {
+        return one.trim().equalsIgnoreCase(two);
+    }
 
     @Override
     public void setArgument(String arg) {
@@ -225,17 +234,6 @@ public class Authors extends AbstractParamLayoutFormatter {
                 setMaxAuthors = true;
             }
         }
-    }
-
-    /**
-     * Check for case-insensitive equality between two strings after removing
-     * white space at the beginning and end of the first string.
-     * @param one The first string - whitespace is trimmed
-     * @param two The second string
-     * @return true if the strings are deemed equal
-     */
-    private static boolean comp(String one, String two) {
-        return one.trim().equalsIgnoreCase(two);
     }
 
     @Override

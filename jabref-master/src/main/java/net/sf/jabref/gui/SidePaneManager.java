@@ -15,23 +15,14 @@
 */
 package net.sf.jabref.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.swing.SwingUtilities;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages visibility of SideShowComponents in a given newly constructed
@@ -62,6 +53,24 @@ public class SidePaneManager {
                 () -> setActiveBasePanel(SidePaneManager.this.frame.getCurrentBasePanel())));
         sidep = new SidePane();
         sidep.setVisible(false);
+    }
+
+    private static Map<String, Integer> getPreferredPositions() {
+        Map<String, Integer> preferredPositions = new HashMap<>();
+
+        List<String> componentNames = Globals.prefs.getStringList(JabRefPreferences.SIDE_PANE_COMPONENT_NAMES);
+        List<String> componentPositions = Globals.prefs
+                .getStringList(JabRefPreferences.SIDE_PANE_COMPONENT_PREFERRED_POSITIONS);
+
+        for (int i = 0; i < componentNames.size(); ++i) {
+            try {
+                preferredPositions.put(componentNames.get(i), Integer.parseInt(componentPositions.get(i)));
+            } catch (NumberFormatException e) {
+                LOGGER.info("Invalid number format for side pane component '" + componentNames.get(i) + "'.", e);
+            }
+        }
+
+        return preferredPositions;
     }
 
     public SidePane getPanel() {
@@ -153,24 +162,6 @@ public class SidePaneManager {
         }
     }
 
-    private static Map<String, Integer> getPreferredPositions() {
-        Map<String, Integer> preferredPositions = new HashMap<>();
-
-        List<String> componentNames = Globals.prefs.getStringList(JabRefPreferences.SIDE_PANE_COMPONENT_NAMES);
-        List<String> componentPositions = Globals.prefs
-                .getStringList(JabRefPreferences.SIDE_PANE_COMPONENT_PREFERRED_POSITIONS);
-
-        for (int i = 0; i < componentNames.size(); ++i) {
-            try {
-                preferredPositions.put(componentNames.get(i), Integer.parseInt(componentPositions.get(i)));
-            } catch (NumberFormatException e) {
-                LOGGER.info("Invalid number format for side pane component '" + componentNames.get(i) + "'.", e);
-            }
-        }
-
-        return preferredPositions;
-    }
-
     private void updatePreferredPositions() {
         Map<String, Integer> preferredPositions = getPreferredPositions();
 
@@ -190,26 +181,6 @@ public class SidePaneManager {
         Globals.prefs.putStringList(JabRefPreferences.SIDE_PANE_COMPONENT_NAMES, tmpComponentNames);
         Globals.prefs.putStringList(JabRefPreferences.SIDE_PANE_COMPONENT_PREFERRED_POSITIONS, componentPositions);
     }
-
-
-    // Helper class for sorting visible components based on their preferred position
-    private class PreferredIndexSort implements Comparator<SidePaneComponent> {
-
-        private final Map<String, Integer> preferredPositions;
-
-
-        public PreferredIndexSort() {
-            preferredPositions = getPreferredPositions();
-        }
-
-        @Override
-        public int compare(SidePaneComponent comp1, SidePaneComponent comp2) {
-            int pos1 = preferredPositions.getOrDefault(getComponentName(comp1), 0);
-            int pos2 = preferredPositions.getOrDefault(getComponentName(comp2), 0);
-            return Integer.valueOf(pos1).compareTo(pos2);
-        }
-    }
-
 
     public synchronized void moveUp(SidePaneComponent comp) {
         if (visible.contains(comp)) {
@@ -275,6 +246,24 @@ public class SidePaneManager {
                     frame.getSplitPane().setDividerLocation(getPanel().getPreferredSize().width);
                 }
             }
+        }
+    }
+
+    // Helper class for sorting visible components based on their preferred position
+    private class PreferredIndexSort implements Comparator<SidePaneComponent> {
+
+        private final Map<String, Integer> preferredPositions;
+
+
+        public PreferredIndexSort() {
+            preferredPositions = getPreferredPositions();
+        }
+
+        @Override
+        public int compare(SidePaneComponent comp1, SidePaneComponent comp2) {
+            int pos1 = preferredPositions.getOrDefault(getComponentName(comp1), 0);
+            int pos2 = preferredPositions.getOrDefault(getComponentName(comp2), 0);
+            return Integer.valueOf(pos1).compareTo(pos2);
         }
     }
 }

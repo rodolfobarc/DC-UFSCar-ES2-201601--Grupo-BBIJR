@@ -16,17 +16,17 @@
  */
 package net.sf.jabref.importer.fetcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.model.entry.BibEntry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class DBLPHelper {
 
-    private final DBLPQueryCleaner cleaner = new DBLPQueryCleaner();
     private static final String START_PATTERN = "<pre class=\"verbatim select-on-click\">";
     private static final String END_PATTERN = "</pre>";
+    private final DBLPQueryCleaner cleaner = new DBLPQueryCleaner();
 
 
     /*
@@ -36,22 +36,8 @@ class DBLPHelper {
      * use capitals. So, we better change the text to lower case.
      */
 
-    static class DBLPQueryCleaner {
-
-        public String cleanQuery(final String query) {
-            String cleaned = query;
-
-            cleaned = cleaned.replace("-", " ").replace(" ", "%20").replace(":", "").toLowerCase();
-
-            return cleaned;
-        }
-    }
-
-
     /**
-     *
-     * @param query
-     *            string with the user query
+     * @param query string with the user query
      * @return a string with the user query, but compatible with dblp.org
      */
     public String cleanDBLPQuery(String query) {
@@ -63,8 +49,7 @@ class DBLPHelper {
      * information. After that, it will convert it into a BibEntry and return
      * it (them).
      *
-     * @param page
-     *            page as String
+     * @param page page as String
      * @return list of BibEntry
      */
     public List<BibEntry> getBibTexFromPage(final String page) {
@@ -98,6 +83,17 @@ class DBLPHelper {
 
     private String cleanEntry(final String bibEntry) {
         return bibEntry.replaceFirst("<a href=\".*\">DBLP</a>", "DBLP");
+    }
+
+    static class DBLPQueryCleaner {
+
+        public String cleanQuery(final String query) {
+            String cleaned = query;
+
+            cleaned = cleaned.replace("-", " ").replace(" ", "%20").replace(":", "").toLowerCase();
+
+            return cleaned;
+        }
     }
 
 }

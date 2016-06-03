@@ -1,12 +1,11 @@
 package net.sf.jabref.gui.keyboard;
 
+import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.table.AbstractTableModel;
-
-import net.sf.jabref.logic.l10n.Localization;
 
 @SuppressWarnings("serial")
 public class KeyBindingTableModel extends AbstractTableModel {
@@ -40,7 +39,7 @@ public class KeyBindingTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Map.Entry<KeyBinding, String> row = getRowData(rowIndex);
-        if(columnIndex == 0) {
+        if (columnIndex == 0) {
             return row.getKey().getLocalization();
         } else {
             return row.getValue();
@@ -58,7 +57,7 @@ public class KeyBindingTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object o, int row, int col) {
-        if(col == 1) {
+        if (col == 1) {
             keyBindingRepository.put(getRowData(row).getKey(), String.valueOf(o));
         }
     }

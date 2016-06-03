@@ -15,49 +15,36 @@
 */
 package net.sf.jabref.exporter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.swing.filechooser.FileFilter;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.Layout;
 import net.sf.jabref.logic.layout.LayoutHelper;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.filechooser.FileFilter;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.*;
 
 /**
  * Base class for export formats based on templates.
  */
 public class ExportFormat implements IExportFormat {
 
+    private static final String LAYOUT_PREFIX = "/resource/layout/";
+    private static final Log LOGGER = LogFactory.getLog(ExportFormat.class);
     private String displayName;
     private String consoleName;
     private String lfFileName;
     private String directory;
+    // the default encoding for the getCurrentBasePanel.
     private String extension;
     private Charset encoding; // If this value is set, it will be used to override
-    // the default encoding for the getCurrentBasePanel.
-
     private FileFilter fileFilter;
     private boolean customExport;
-    private static final String LAYOUT_PREFIX = "/resource/layout/";
-
-    private static final Log LOGGER = LogFactory.getLog(ExportFormat.class);
 
     /**
      * Initialize another export format based on templates stored in dir with
@@ -82,6 +69,47 @@ public class ExportFormat implements IExportFormat {
      */
     ExportFormat() {
         // intentionally empty
+    }
+
+    /**
+     * See if there is a name formatter file bundled with this export format. If so, read
+     * all the name formatters so they can be used by the filter layouts.
+     *
+     * @param lfFileName The layout filename.
+     */
+    private static Map<String, String> readFormatterFile(String lfFileName) {
+        Map<String, String> formatters = new HashMap<>();
+        File formatterFile = new File(lfFileName + ".formatters");
+        if (formatterFile.exists()) {
+            try (Reader in = new FileReader(formatterFile)) {
+                // Ok, we found and opened the file. Read all contents:
+                StringBuilder sb = new StringBuilder();
+                int c;
+                while ((c = in.read()) != -1) {
+                    sb.append((char) c);
+                }
+                String[] lines = sb.toString().split("\n");
+                // Go through each line:
+                for (String line1 : lines) {
+                    String line = line1.trim();
+                    // Do not deal with empty lines:
+                    if (line.isEmpty()) {
+                        continue;
+                    }
+                    int index = line.indexOf(':'); // TODO: any need to accept escaped colons here?
+                    if ((index > 0) && ((index + 1) < line.length())) {
+                        String formatterName = line.substring(0, index);
+                        String contents = line.substring(index + 1);
+                        formatters.put(formatterName, contents);
+                    }
+                }
+
+            } catch (IOException ex) {
+                // TODO: show error message here?
+                LOGGER.warn("Problem opening formatter file.", ex);
+            }
+        }
+        return formatters;
     }
 
     /**
@@ -169,9 +197,9 @@ public class ExportFormat implements IExportFormat {
      * Perform the export of {@code database}.
      *
      * @param databaseContext the database to export from.
-     * @param file       the file to write the resulting export to
-     * @param encoding   The encoding of the database
-     * @param entries    Contains all entries that should be exported.
+     * @param file            the file to write the resulting export to
+     * @param encoding        The encoding of the database
+     * @param entries         Contains all entries that should be exported.
      * @throws IOException if a problem occurred while trying to write to {@code writer}
      *                     or read from required resources.
      * @throws Exception   if any other error occurred during export.
@@ -179,7 +207,7 @@ public class ExportFormat implements IExportFormat {
      */
     @Override
     public void performExport(final BibDatabaseContext databaseContext, final String file,
-            final Charset encoding, List<BibEntry> entries) throws Exception {
+                              final Charset encoding, List<BibEntry> entries) throws Exception {
         Objects.requireNonNull(databaseContext);
         Objects.requireNonNull(entries);
         if (entries.isEmpty()) { // Do not export if no entries to export -- avoids exports with only template text
@@ -308,47 +336,6 @@ public class ExportFormat implements IExportFormat {
             finalizeSaveSession(ss, outFile);
         }
 
-    }
-
-    /**
-     * See if there is a name formatter file bundled with this export format. If so, read
-     * all the name formatters so they can be used by the filter layouts.
-     *
-     * @param lfFileName The layout filename.
-     */
-    private static Map<String, String> readFormatterFile(String lfFileName) {
-        Map<String, String> formatters = new HashMap<>();
-        File formatterFile = new File(lfFileName + ".formatters");
-        if (formatterFile.exists()) {
-            try (Reader in = new FileReader(formatterFile)) {
-                // Ok, we found and opened the file. Read all contents:
-                StringBuilder sb = new StringBuilder();
-                int c;
-                while ((c = in.read()) != -1) {
-                    sb.append((char) c);
-                }
-                String[] lines = sb.toString().split("\n");
-                // Go through each line:
-                for (String line1 : lines) {
-                    String line = line1.trim();
-                    // Do not deal with empty lines:
-                    if (line.isEmpty()) {
-                        continue;
-                    }
-                    int index = line.indexOf(':'); // TODO: any need to accept escaped colons here?
-                    if ((index > 0) && ((index + 1) < line.length())) {
-                        String formatterName = line.substring(0, index);
-                        String contents = line.substring(index + 1);
-                        formatters.put(formatterName, contents);
-                    }
-                }
-
-            } catch (IOException ex) {
-                // TODO: show error message here?
-                LOGGER.warn("Problem opening formatter file.", ex);
-            }
-        }
-        return formatters;
     }
 
     /**

@@ -15,21 +15,16 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
+import com.jgoodies.looks.HeaderStyle;
+import com.jgoodies.looks.Options;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.util.OS;
 
-import com.jgoodies.looks.HeaderStyle;
-import com.jgoodies.looks.Options;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SpecialFieldDropDown {
 
@@ -57,11 +52,11 @@ public class SpecialFieldDropDown {
 
     private static class MenuButtonActionListener implements ActionListener {
 
-        private JPopupMenu popup;
         private final Dimension dim;
         private final JabRefFrame frame;
         private final SpecialField field;
         private final JButton button;
+        private JPopupMenu popup;
 
 
         public MenuButtonActionListener(SpecialField field, JabRefFrame frame, JButton button, Dimension dim) {

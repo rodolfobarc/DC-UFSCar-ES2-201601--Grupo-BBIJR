@@ -15,22 +15,6 @@
 */
 package net.sf.jabref;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
-
 import net.sf.jabref.exporter.FieldFormatterCleanups;
 import net.sf.jabref.logic.config.SaveOrderConfig;
 import net.sf.jabref.logic.groups.GroupTreeNode;
@@ -40,16 +24,20 @@ import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.migrations.VersionHandling;
 import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.sql.DBStrings;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.*;
+
 public class MetaData implements Iterable<String> {
 
-    private static final Log LOGGER = LogFactory.getLog(MetaData.class);
     public static final String META_FLAG = "jabref-meta: ";
+    public static final String SELECTOR_META_PREFIX = "selector_";
+    private static final Log LOGGER = LogFactory.getLog(MetaData.class);
     private static final String SAVE_ORDER_CONFIG = "saveOrderConfig";
-
     private static final String SAVE_ACTIONS = "saveActions";
     private static final String PREFIX_KEYPATTERN = "keypattern_";
     private static final String KEYPATTERNDEFAULT = "keypatterndefault";
@@ -58,7 +46,6 @@ public class MetaData implements Iterable<String> {
     private static final String GROUPSTREE = "groupstree";
     private static final String GROUPS = "groups";
     private static final String FILE_DIRECTORY = Globals.FILE_FIELD + Globals.DIR_SUFFIX;
-    public static final String SELECTOR_META_PREFIX = "selector_";
     private static final String PROTECTED_FLAG_META = "protectedFlag";
 
     private final Map<String, List<String>> metaData = new HashMap<>();
@@ -136,12 +123,42 @@ public class MetaData implements Iterable<String> {
         // No data
     }
 
+    /**
+     * Reads the next unit. Units are delimited by ';'.
+     */
+    private static String getNextUnit(Reader reader) throws IOException {
+        int c;
+        boolean escape = false;
+        StringBuilder res = new StringBuilder();
+        while ((c = reader.read()) != -1) {
+            if (escape) {
+                res.append((char) c);
+                escape = false;
+            } else if (c == '\\') {
+                escape = true;
+            } else if (c == ';') {
+                break;
+            } else {
+                res.append((char) c);
+            }
+        }
+        if (res.length() > 0) {
+            return res.toString();
+        }
+        return null;
+    }
+
     public Optional<SaveOrderConfig> getSaveOrderConfig() {
         List<String> storedSaveOrderConfig = getData(SAVE_ORDER_CONFIG);
-        if(storedSaveOrderConfig != null) {
+        if (storedSaveOrderConfig != null) {
             return Optional.of(new SaveOrderConfig(storedSaveOrderConfig));
         }
         return Optional.empty();
+    }
+
+    public void setSaveOrderConfig(SaveOrderConfig saveOrderConfig) {
+        List<String> serialized = saveOrderConfig.getConfigurationList();
+        putData(SAVE_ORDER_CONFIG, serialized);
     }
 
     /**
@@ -221,31 +238,6 @@ public class MetaData implements Iterable<String> {
     public void setGroups(GroupTreeNode root) {
         groupsRoot = root;
         groupTreeValid = true;
-    }
-
-    /**
-     * Reads the next unit. Units are delimited by ';'.
-     */
-    private static String getNextUnit(Reader reader) throws IOException {
-        int c;
-        boolean escape = false;
-        StringBuilder res = new StringBuilder();
-        while ((c = reader.read()) != -1) {
-            if (escape) {
-                res.append((char) c);
-                escape = false;
-            } else if (c == '\\') {
-                escape = true;
-            } else if (c == ';') {
-                break;
-            } else {
-                res.append((char) c);
-            }
-        }
-        if (res.length() > 0) {
-            return res.toString();
-        }
-        return null;
     }
 
     public DBStrings getDBStrings() {
@@ -335,12 +327,21 @@ public class MetaData implements Iterable<String> {
         }
     }
 
+    public void setSaveActions(FieldFormatterCleanups saveActions) {
+        List<String> actionsSerialized = saveActions.convertToString();
+        putData(SAVE_ACTIONS, actionsSerialized);
+    }
+
     public Optional<BibDatabaseMode> getMode() {
         List<String> data = getData(DATABASE_TYPE);
         if ((data == null) || data.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(BibDatabaseMode.valueOf(data.get(0).toUpperCase(Locale.ENGLISH)));
+    }
+
+    public void setMode(BibDatabaseMode mode) {
+        putData(DATABASE_TYPE, Collections.singletonList(mode.getFormattedName().toLowerCase(Locale.ENGLISH)));
     }
 
     public boolean isProtected() {
@@ -354,7 +355,7 @@ public class MetaData implements Iterable<String> {
 
     public List<String> getContentSelectors(String fieldName) {
         List<String> contentSelectors = getData(SELECTOR_META_PREFIX + fieldName);
-        if(contentSelectors == null) {
+        if (contentSelectors == null) {
             return Collections.emptyList();
         } else {
             return contentSelectors;
@@ -368,6 +369,10 @@ public class MetaData implements Iterable<String> {
         } else {
             return Optional.of(fileDirectory.get(0).trim());
         }
+    }
+
+    public void setDefaultFileDirectory(String path) {
+        putData(FILE_DIRECTORY, Collections.singletonList(path));
     }
 
     public Optional<String> getUserFileDirectory(String user) {
@@ -417,7 +422,7 @@ public class MetaData implements Iterable<String> {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(Globals.NEWLINE);
 
-            for(String groupNode : groupsRoot.getTreeAsString()) {
+            for (String groupNode : groupsRoot.getTreeAsString()) {
                 stringBuilder.append(StringUtil.quote(groupNode, ";", '\\'));
                 stringBuilder.append(";");
                 stringBuilder.append(Globals.NEWLINE);
@@ -428,30 +433,12 @@ public class MetaData implements Iterable<String> {
         return serializedMetaData;
     }
 
-    public void setSaveActions(FieldFormatterCleanups saveActions) {
-        List<String> actionsSerialized = saveActions.convertToString();
-        putData(SAVE_ACTIONS, actionsSerialized);
-    }
-
-    public void setSaveOrderConfig(SaveOrderConfig saveOrderConfig) {
-        List<String> serialized = saveOrderConfig.getConfigurationList();
-        putData(SAVE_ORDER_CONFIG, serialized);
-    }
-
-    public void setMode(BibDatabaseMode mode) {
-        putData(DATABASE_TYPE, Collections.singletonList(mode.getFormattedName().toLowerCase(Locale.ENGLISH)));
-    }
-
     public void markAsProtected() {
         putData(PROTECTED_FLAG_META, Collections.singletonList("true"));
     }
 
     public void setContentSelectors(String fieldName, List<String> contentSelectors) {
         putData(SELECTOR_META_PREFIX + fieldName, contentSelectors);
-    }
-
-    public void setDefaultFileDirectory(String path) {
-        putData(FILE_DIRECTORY, Collections.singletonList(path));
     }
 
     public void clearDefaultFileDirectory() {

@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.gui.util.comparator;
 
-import java.util.Comparator;
-
 import net.sf.jabref.gui.EntryMarker;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Comparator;
 
 public class IsMarkedComparator implements Comparator<BibEntry> {
 

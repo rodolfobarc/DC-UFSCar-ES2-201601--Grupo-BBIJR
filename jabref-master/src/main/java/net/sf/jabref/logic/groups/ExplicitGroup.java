@@ -15,15 +15,11 @@
  */
 package net.sf.jabref.logic.groups;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.QuotedStringTokenizer;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.*;
 
 /**
  * Select explicit bibtex entries. It is also known as static group.
@@ -46,34 +42,42 @@ public class ExplicitGroup extends KeywordGroup {
                     "Internal error: ExplicitGroup cannot be created from \""
                             + s
                             + "\". "
-                    + "Please report this on https://github.com/JabRef/jabref/issues");
+                            + "Please report this on https://github.com/JabRef/jabref/issues");
         }
         QuotedStringTokenizer tok = new QuotedStringTokenizer(s.substring(ExplicitGroup.ID
                 .length()), AbstractGroup.SEPARATOR, AbstractGroup.QUOTE_CHAR);
         switch (version) {
-        case 0:
-        case 1:
-        case 2: {
-            ExplicitGroup newGroup = new ExplicitGroup(tok.nextToken(), GroupHierarchyType.INDEPENDENT);
-            newGroup.addLegacyEntryKeys(tok);
-            return newGroup;
+            case 0:
+            case 1:
+            case 2: {
+                ExplicitGroup newGroup = new ExplicitGroup(tok.nextToken(), GroupHierarchyType.INDEPENDENT);
+                newGroup.addLegacyEntryKeys(tok);
+                return newGroup;
+            }
+            case 3: {
+                String name = tok.nextToken();
+                int context = Integer.parseInt(tok.nextToken());
+                ExplicitGroup newGroup = new ExplicitGroup(name, GroupHierarchyType.getByNumber(context));
+                newGroup.addLegacyEntryKeys(tok);
+                return newGroup;
+            }
+            default:
+                throw new UnsupportedVersionException("ExplicitGroup", version);
         }
-        case 3: {
-            String name = tok.nextToken();
-            int context = Integer.parseInt(tok.nextToken());
-            ExplicitGroup newGroup = new ExplicitGroup(name, GroupHierarchyType.getByNumber(context));
-            newGroup.addLegacyEntryKeys(tok);
-            return newGroup;
-        }
-        default:
-            throw new UnsupportedVersionException("ExplicitGroup", version);
-        }
+    }
+
+    public static String getDescriptionForPreview() {
+        return Localization.lang("This group contains entries based on manual assignment. "
+                + "Entries can be assigned to this group by selecting them "
+                + "then using either drag and drop or the context menu. "
+                + "Entries can be removed from this group by selecting them "
+                + "then using the context menu.");
     }
 
     /**
      * Called only when created fromString.
      * JabRef used to store the entries of an explicit group in the serialization, e.g.
-     *  ExplicitGroup:GroupName\;0\;Key1\;Key2\;;
+     * ExplicitGroup:GroupName\;0\;Key1\;Key2\;;
      * This method exists for backwards compatibility.
      */
     private void addLegacyEntryKeys(QuotedStringTokenizer tok) {
@@ -137,27 +141,19 @@ public class ExplicitGroup extends KeywordGroup {
         return ExplicitGroup.getDescriptionForPreview();
     }
 
-    public static String getDescriptionForPreview() {
-        return Localization.lang("This group contains entries based on manual assignment. "
-                + "Entries can be assigned to this group by selecting them "
-                + "then using either drag and drop or the context menu. "
-                + "Entries can be removed from this group by selecting them "
-                + "then using the context menu.");
-    }
-
     @Override
     public String getShortDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append("<b>").append(getName()).append("</b> -").append(Localization.lang("static group"));
         switch (getHierarchicalContext()) {
-        case INCLUDING:
-            sb.append(", ").append(Localization.lang("includes subgroups"));
-            break;
-        case REFINING:
-            sb.append(", ").append(Localization.lang("refines supergroup"));
-            break;
-        default:
-            break;
+            case INCLUDING:
+                sb.append(", ").append(Localization.lang("includes subgroups"));
+                break;
+            case REFINING:
+                sb.append(", ").append(Localization.lang("refines supergroup"));
+                break;
+            default:
+                break;
         }
         return sb.toString();
     }

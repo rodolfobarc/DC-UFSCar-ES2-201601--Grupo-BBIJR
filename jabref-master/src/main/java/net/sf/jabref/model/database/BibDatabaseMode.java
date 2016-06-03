@@ -4,8 +4,12 @@ public enum BibDatabaseMode {
     BIBTEX,
     BIBLATEX;
 
+    public static BibDatabaseMode fromPreference(boolean isBibLatex) {
+        return isBibLatex ? BIBLATEX : BIBTEX;
+    }
+
     public String getFormattedName() {
-        if(this == BIBTEX) {
+        if (this == BIBTEX) {
             return "BibTeX";
         } else {
             return "BibLaTeX";
@@ -13,14 +17,10 @@ public enum BibDatabaseMode {
     }
 
     public BibDatabaseMode getOppositeMode() {
-        if(this == BIBTEX) {
+        if (this == BIBTEX) {
             return BIBLATEX;
         } else {
             return BIBTEX;
         }
-    }
-
-    public static BibDatabaseMode fromPreference(boolean isBibLatex) {
-        return isBibLatex ? BIBLATEX : BIBTEX;
     }
 }

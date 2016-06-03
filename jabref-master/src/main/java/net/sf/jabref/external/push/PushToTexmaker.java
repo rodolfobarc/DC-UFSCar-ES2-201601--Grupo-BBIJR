@@ -16,10 +16,10 @@
 */
 package net.sf.jabref.external.push;
 
-import javax.swing.Icon;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
+
+import javax.swing.*;
 
 /**
  * Class for pushing entries into TexMaker.
@@ -38,7 +38,7 @@ public class PushToTexmaker extends AbstractPushToApplication implements PushToA
 
     @Override
     protected String[] getCommandLine(String keyString) {
-        return new String[] {commandPath, "-insert", getCiteCommand() + "{" + keyString + "}"};
+        return new String[]{commandPath, "-insert", getCiteCommand() + "{" + keyString + "}"};
     }
 
     @Override

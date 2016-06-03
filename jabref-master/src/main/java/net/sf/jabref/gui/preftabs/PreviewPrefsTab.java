@@ -15,50 +15,32 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.PreviewPanel;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 class PreviewPrefsTab extends JPanel implements PrefsTab {
 
     private static final Log LOGGER = LogFactory.getLog(PrefsTab.class);
-
+    private static BibEntry entry;
     private final JabRefPreferences prefs;
-
     private final JTextArea layout1 = new JTextArea("", 1, 1);
     private final JTextArea layout2 = new JTextArea("", 1, 1);
-
     private final JButton testButton = new JButton(Localization.lang("Test"));
     private final JButton defaultButton = new JButton(Localization.lang("Default"));
     private final JButton testButton2 = new JButton(Localization.lang("Test"));
     private final JButton defaultButton2 = new JButton(Localization.lang("Default"));
-
     private final JPanel firstPanel = new JPanel();
     private final JScrollPane firstScrollPane = new JScrollPane(layout1);
-
     private final JPanel secondPanel = new JPanel();
     private final JScrollPane secondScrollPane = new JScrollPane(layout2);
-
-    private static BibEntry entry;
 
 
     public PreviewPrefsTab(JabRefPreferences prefs) {

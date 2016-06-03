@@ -15,12 +15,10 @@
 */
 package net.sf.jabref.gui.help;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-import javax.swing.Icon;
-
 import net.sf.jabref.gui.actions.MnemonicAwareAction;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class AboutAction extends MnemonicAwareAction {
     private final AboutDialog dialog;

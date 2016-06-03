@@ -25,10 +25,9 @@ import net.sf.jabref.model.entry.AuthorList;
  * <li>Individual authors separated by comma.</li>
  * <li>There is no comma before the and of a list of three or more authors.</li>
  * </ul>
- * 
+ *
  * @author mkovtun
  * @author Christopher Oezbek <oezi@oezi.de>
- * 
  */
 public class AuthorFirstLastCommas implements LayoutFormatter {
 

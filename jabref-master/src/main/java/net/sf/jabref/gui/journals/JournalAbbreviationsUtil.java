@@ -15,13 +15,12 @@
 */
 package net.sf.jabref.gui.journals;
 
-import java.util.Collection;
+import net.sf.jabref.logic.journals.Abbreviation;
+import net.sf.jabref.logic.l10n.Localization;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-import net.sf.jabref.logic.journals.Abbreviation;
-import net.sf.jabref.logic.l10n.Localization;
+import java.util.Collection;
 
 public class JournalAbbreviationsUtil {
 
@@ -34,7 +33,7 @@ public class JournalAbbreviationsUtil {
             row++;
         }
 
-        return new DefaultTableModel(cells, new Object[] {Localization.lang("Full name"),
+        return new DefaultTableModel(cells, new Object[]{Localization.lang("Full name"),
                 Localization.lang("Abbreviation")}) {
 
             @Override

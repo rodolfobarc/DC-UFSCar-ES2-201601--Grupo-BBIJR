@@ -27,22 +27,21 @@ class Cookie {
 
     private final String name;
     private final String value;
-    private String domain;
-    private Date expires;
-    private String path;
-
     /**
      * DateFormats should not be reused among instances (or rather among threads), because they are not thread-safe.
      * If they are shared, their usage should be synchronized.
      */
     private final DateFormat whiteSpaceFormat = new SimpleDateFormat("E, dd MMM yyyy k:m:s 'GMT'", Locale.US);
     private final DateFormat hyphenFormat = new SimpleDateFormat("E, dd-MMM-yyyy k:m:s 'GMT'", Locale.US);
+    private String domain;
+    private Date expires;
+    private String path;
 
 
     /**
      * Construct a cookie from the URI and header fields
      *
-     * @param uri URI for cookie
+     * @param uri    URI for cookie
      * @param header Set of attributes in header
      */
     public Cookie(URI uri, String header) {

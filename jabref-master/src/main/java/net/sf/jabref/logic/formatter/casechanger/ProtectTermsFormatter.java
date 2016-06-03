@@ -15,12 +15,12 @@
 */
 package net.sf.jabref.logic.formatter.casechanger;
 
-import java.util.List;
-import java.util.Objects;
-
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringLengthComparator;
+
+import java.util.List;
+import java.util.Objects;
 
 public class ProtectTermsFormatter implements Formatter {
 

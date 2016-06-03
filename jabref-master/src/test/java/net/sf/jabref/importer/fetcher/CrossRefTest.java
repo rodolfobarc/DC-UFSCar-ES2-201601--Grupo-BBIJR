@@ -1,10 +1,9 @@
 package net.sf.jabref.importer.fetcher;
 
-import java.util.Locale;
-
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Test;
+
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 

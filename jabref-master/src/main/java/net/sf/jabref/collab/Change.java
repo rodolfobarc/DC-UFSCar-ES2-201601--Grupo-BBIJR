@@ -15,12 +15,12 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.model.database.BibDatabase;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 abstract class Change extends DefaultMutableTreeNode {
 
@@ -52,6 +52,7 @@ abstract class Change extends DefaultMutableTreeNode {
     /**
      * This method is used to disable the "accept" box if the parent has been set to "not accepted".
      * Thus the user can disable e.g. an entry change without having to disable all field changes.
+     *
      * @return boolean false if the parent overrides by not being accepted.
      */
     public boolean isAcceptable() {
@@ -64,6 +65,7 @@ abstract class Change extends DefaultMutableTreeNode {
 
     /**
      * This method returns a JComponent detailing the nature of the change.
+     *
      * @return JComponent
      */
     public abstract JComponent description();
@@ -71,10 +73,11 @@ abstract class Change extends DefaultMutableTreeNode {
     /**
      * Perform the change. This method is responsible for adding a proper undo edit to
      * the NamedCompound, so the change can be undone.
-     * @param panel BasePanel The tab where the database lives.
+     *
+     * @param panel     BasePanel The tab where the database lives.
      * @param secondary BibDatabase The "tmp" database for which the change
-     *   should also be made.
-     * @param undoEdit NamedCompound The compound to hold the undo edits.
+     *                  should also be made.
+     * @param undoEdit  NamedCompound The compound to hold the undo edits.
      * @return true if all changes were made, false if not all were accepted.
      */
     public abstract boolean makeChange(BasePanel panel, BibDatabase secondary, NamedCompound undoEdit);

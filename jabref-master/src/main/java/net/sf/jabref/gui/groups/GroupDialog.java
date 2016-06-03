@@ -15,38 +15,9 @@
 */
 package net.sf.jabref.gui.groups;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.event.CaretListener;
-import javax.swing.undo.AbstractUndoableEdit;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -54,21 +25,24 @@ import net.sf.jabref.gui.FieldContentSelector;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.fieldeditors.TextField;
 import net.sf.jabref.gui.keyboard.KeyBinding;
-import net.sf.jabref.logic.groups.AbstractGroup;
-import net.sf.jabref.logic.groups.EntriesGroupChange;
-import net.sf.jabref.logic.groups.ExplicitGroup;
-import net.sf.jabref.logic.groups.GroupHierarchyType;
-import net.sf.jabref.logic.groups.KeywordGroup;
-import net.sf.jabref.logic.groups.SearchGroup;
+import net.sf.jabref.logic.groups.*;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.search.SearchQuery;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.util.Util;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.event.CaretListener;
+import javax.swing.undo.AbstractUndoableEdit;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Dialog for creating or modifying groups. Operates directly on the Vector
@@ -117,18 +91,12 @@ class GroupDialog extends JDialog {
             return d;
         }
     };
-
-    private boolean mOkPressed;
-
     private final BasePanel m_basePanel;
-
-    private AbstractGroup mResultingGroup;
-
-    private AbstractUndoableEdit mUndoAddPreviousEntires;
-
     private final AbstractGroup m_editedGroup;
-
     private final CardLayout m_optionsLayout = new CardLayout();
+    private boolean mOkPressed;
+    private AbstractGroup mResultingGroup;
+    private AbstractUndoableEdit mUndoAddPreviousEntires;
 
     /**
      * Shows a group add/edit dialog.
@@ -139,7 +107,7 @@ class GroupDialog extends JDialog {
      *                    created.
      */
     public GroupDialog(JabRefFrame jabrefFrame, BasePanel basePanel,
-            AbstractGroup editedGroup) {
+                       AbstractGroup editedGroup) {
         super(jabrefFrame, Localization.lang("Edit group"), true);
         m_basePanel = basePanel;
         m_editedGroup = editedGroup;
@@ -191,7 +159,7 @@ class GroupDialog extends JDialog {
         m_optionsPanel.add(builderSG.getPanel(), String.valueOf(GroupDialog.INDEX_SEARCHGROUP));
         // ... for buttons panel
         FormLayout layoutBP = new FormLayout("pref, 4dlu, pref", "p");
-        layoutBP.setColumnGroups(new int[][] {{1, 3}});
+        layoutBP.setColumnGroups(new int[][]{{1, 3}});
         ButtonBarBuilder builderBP = new ButtonBarBuilder();
         builderBP.addGlue();
         builderBP.addButton(m_ok);
@@ -292,44 +260,44 @@ class GroupDialog extends JDialog {
         builderAll.getPanel().getActionMap().put("close", cancelAction);
 
         m_ok.addActionListener(e -> {
-                mOkPressed = true;
-                if (m_explicitRadioButton.isSelected()) {
-                    if (m_editedGroup instanceof ExplicitGroup) {
-                        // keep assignments from possible previous ExplicitGroup
-                        mResultingGroup = m_editedGroup.deepCopy();
-                        mResultingGroup.setName(m_name.getText().trim());
-                        mResultingGroup.setHierarchicalContext(getContext());
-                    } else {
-                        mResultingGroup = new ExplicitGroup(m_name.getText().trim(), getContext());
-                        if (m_editedGroup != null) {
-                            addPreviousEntries();
-                        }
-                    }
-                } else if (m_keywordsRadioButton.isSelected()) {
-                    // regex is correct, otherwise OK would have been disabled
-                    // therefore I don't catch anything here
-                    mResultingGroup = new KeywordGroup(
-                            m_name.getText().trim(), m_kgSearchField.getText()
-                            .trim(), m_kgSearchTerm.getText().trim(),
-                            m_kgCaseSensitive.isSelected(), m_kgRegExp
-                            .isSelected(), getContext());
-                    if (((m_editedGroup instanceof ExplicitGroup) || (m_editedGroup instanceof SearchGroup))
-                            && mResultingGroup.supportsAdd()) {
+            mOkPressed = true;
+            if (m_explicitRadioButton.isSelected()) {
+                if (m_editedGroup instanceof ExplicitGroup) {
+                    // keep assignments from possible previous ExplicitGroup
+                    mResultingGroup = m_editedGroup.deepCopy();
+                    mResultingGroup.setName(m_name.getText().trim());
+                    mResultingGroup.setHierarchicalContext(getContext());
+                } else {
+                    mResultingGroup = new ExplicitGroup(m_name.getText().trim(), getContext());
+                    if (m_editedGroup != null) {
                         addPreviousEntries();
                     }
-                } else if (m_searchRadioButton.isSelected()) {
-                    try {
-                        // regex is correct, otherwise OK would have been
-                        // disabled
-                        // therefore I don't catch anything here
-                        mResultingGroup = new SearchGroup(m_name.getText()
-                                .trim(), m_sgSearchExpression.getText().trim(),
-                                isCaseSensitive(), isRegex(), getContext());
-                    } catch (Exception e1) {
-                        // should never happen
-                    }
                 }
-                dispose();
+            } else if (m_keywordsRadioButton.isSelected()) {
+                // regex is correct, otherwise OK would have been disabled
+                // therefore I don't catch anything here
+                mResultingGroup = new KeywordGroup(
+                        m_name.getText().trim(), m_kgSearchField.getText()
+                        .trim(), m_kgSearchTerm.getText().trim(),
+                        m_kgCaseSensitive.isSelected(), m_kgRegExp
+                        .isSelected(), getContext());
+                if (((m_editedGroup instanceof ExplicitGroup) || (m_editedGroup instanceof SearchGroup))
+                        && mResultingGroup.supportsAdd()) {
+                    addPreviousEntries();
+                }
+            } else if (m_searchRadioButton.isSelected()) {
+                try {
+                    // regex is correct, otherwise OK would have been
+                    // disabled
+                    // therefore I don't catch anything here
+                    mResultingGroup = new SearchGroup(m_name.getText()
+                            .trim(), m_sgSearchExpression.getText().trim(),
+                            isCaseSensitive(), isRegex(), getContext());
+                } catch (Exception e1) {
+                    // should never happen
+                }
+            }
+            dispose();
         });
 
         CaretListener caretListener = e -> updateComponents();
@@ -370,6 +338,32 @@ class GroupDialog extends JDialog {
             m_explicitRadioButton.setSelected(true);
             setContext(GroupHierarchyType.INDEPENDENT);
         }
+    }
+
+    private static String formatRegExException(String regExp, Exception e) {
+        String[] sa = e.getMessage().split("\\n");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < sa.length; ++i) {
+            if (i > 0) {
+                sb.append("<br>");
+            }
+            sb.append(StringUtil.quoteForHTML(sa[i]));
+        }
+        String s = Localization.lang(
+                "The regular expression <b>%0</b> is invalid:",
+                StringUtil.quoteForHTML(regExp))
+                + "<p><tt>"
+                + sb
+                + "</tt>";
+        if (!(e instanceof PatternSyntaxException)) {
+            return s;
+        }
+        int lastNewline = s.lastIndexOf("<br>");
+        int hat = s.lastIndexOf('^');
+        if ((lastNewline >= 0) && (hat >= 0) && (hat > lastNewline)) {
+            return s.substring(0, lastNewline + 4) + s.substring(lastNewline + 4).replace(" ", "&nbsp;");
+        }
+        return s;
     }
 
     public boolean okPressed() {
@@ -488,7 +482,7 @@ class GroupDialog extends JDialog {
             // contained completely in the UndoableModifyGroup object.
             if (!(mResultingGroup instanceof ExplicitGroup) && mResultingGroup.supportsAdd()) {
                 Optional<EntriesGroupChange> addChange = mResultingGroup.add(list);
-                if(addChange.isPresent()) {
+                if (addChange.isPresent()) {
                     mUndoAddPreviousEntires = UndoableChangeEntriesOfGroup.getUndoableEdit(null, addChange.get());
                 }
             }
@@ -497,32 +491,6 @@ class GroupDialog extends JDialog {
 
     private void setDescription(String description) {
         m_description.setText("<html>" + description + "</html>");
-    }
-
-    private static String formatRegExException(String regExp, Exception e) {
-        String[] sa = e.getMessage().split("\\n");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < sa.length; ++i) {
-            if (i > 0) {
-                sb.append("<br>");
-            }
-            sb.append(StringUtil.quoteForHTML(sa[i]));
-        }
-        String s = Localization.lang(
-                "The regular expression <b>%0</b> is invalid:",
-                StringUtil.quoteForHTML(regExp))
-                + "<p><tt>"
-                + sb
-                + "</tt>";
-        if (!(e instanceof PatternSyntaxException)) {
-            return s;
-        }
-        int lastNewline = s.lastIndexOf("<br>");
-        int hat = s.lastIndexOf('^');
-        if ((lastNewline >= 0) && (hat >= 0) && (hat > lastNewline)) {
-            return s.substring(0, lastNewline + 4) + s.substring(lastNewline + 4).replace(" ", "&nbsp;");
-        }
-        return s;
     }
 
     /**

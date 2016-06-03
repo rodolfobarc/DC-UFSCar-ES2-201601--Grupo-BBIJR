@@ -15,11 +15,11 @@
  */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
 
 public class EntryFetchers {
 

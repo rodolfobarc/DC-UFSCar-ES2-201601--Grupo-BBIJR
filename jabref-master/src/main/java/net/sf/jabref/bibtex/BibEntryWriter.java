@@ -1,14 +1,6 @@
 package net.sf.jabref.bibtex;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Predicate;
-
+import com.google.common.base.Strings;
 import net.sf.jabref.Globals;
 import net.sf.jabref.exporter.LatexFieldFormatter;
 import net.sf.jabref.logic.TypedBibEntry;
@@ -18,7 +10,10 @@ import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class BibEntryWriter {
 
@@ -38,10 +33,10 @@ public class BibEntryWriter {
     /**
      * Writes the given BibEntry using the given writer
      *
-     * @param entry The entry to write
-     * @param out The writer to use
+     * @param entry           The entry to write
+     * @param out             The writer to use
      * @param bibDatabaseMode The database mode (bibtex or biblatex)
-     * @param reformat Should the entry be in any case, even if no change occurred?
+     * @param reformat        Should the entry be in any case, even if no change occurred?
      */
     public void write(BibEntry entry, Writer out, BibDatabaseMode bibDatabaseMode, Boolean reformat) throws IOException {
         // if the entry has not been modified, write it as it was
@@ -72,7 +67,7 @@ public class BibEntryWriter {
      * @throws IOException
      */
     private void writeRequiredFieldsFirstRemainingFieldsSecond(BibEntry entry, Writer out,
-            BibDatabaseMode bibDatabaseMode) throws IOException {
+                                                               BibDatabaseMode bibDatabaseMode) throws IOException {
         // Write header with type and bibtex-key.
         TypedBibEntry typedEntry = new TypedBibEntry(entry, Optional.empty(), bibDatabaseMode);
         out.write('@' + typedEntry.getTypeForDisplay() + '{');
@@ -128,9 +123,9 @@ public class BibEntryWriter {
     /**
      * Write a single field, if it has any content.
      *
-     * @param entry             the entry to write
-     * @param out               the target of the write
-     * @param name              The field name
+     * @param entry the entry to write
+     * @param out   the target of the write
+     * @param name  The field name
      * @throws IOException In case of an IO error
      */
     private void writeField(BibEntry entry, Writer out, String name, int indentation) throws IOException {

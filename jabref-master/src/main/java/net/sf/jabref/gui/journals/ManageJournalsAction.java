@@ -15,13 +15,12 @@
 */
 package net.sf.jabref.gui.journals;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.Action;
-
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.actions.MnemonicAwareAction;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class ManageJournalsAction extends MnemonicAwareAction {
 

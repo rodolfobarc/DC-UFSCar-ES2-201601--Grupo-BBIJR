@@ -1,12 +1,11 @@
 package net.sf.jabref.gui.net;
 
-import java.awt.Component;
+import net.sf.jabref.logic.net.URLDownload;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.InputStream;
 import java.net.URL;
-
-import javax.swing.ProgressMonitorInputStream;
-
-import net.sf.jabref.logic.net.URLDownload;
 
 public class MonitoredURLDownload {
 

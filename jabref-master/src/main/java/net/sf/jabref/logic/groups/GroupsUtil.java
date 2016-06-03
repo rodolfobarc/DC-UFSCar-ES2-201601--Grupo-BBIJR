@@ -1,14 +1,14 @@
 package net.sf.jabref.logic.groups;
 
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
 
 public class GroupsUtil {
 
@@ -31,8 +31,8 @@ public class GroupsUtil {
      * Returns a Set containing all words used in the database in the given field type. Characters in
      * <code>remove</code> are not included.
      *
-     * @param db a <code>BibDatabase</code> value
-     * @param field a <code>String</code> value
+     * @param db     a <code>BibDatabase</code> value
+     * @param field  a <code>String</code> value
      * @param remove a <code>String</code> value
      * @return a <code>Set</code> value
      */
@@ -52,7 +52,7 @@ public class GroupsUtil {
     /**
      * Finds all authors' last names in all the given fields for the given database.
      *
-     * @param db The database.
+     * @param db     The database.
      * @param fields The fields to look in.
      * @return a set containing the names.
      */

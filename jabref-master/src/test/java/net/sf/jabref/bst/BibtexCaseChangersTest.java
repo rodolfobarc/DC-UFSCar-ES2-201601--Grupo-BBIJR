@@ -1,7 +1,6 @@
 package net.sf.jabref.bst;
 
 import net.sf.jabref.bst.BibtexCaseChanger.FORMAT_MODE;
-
 import org.junit.Assert;
 import org.junit.Test;
 

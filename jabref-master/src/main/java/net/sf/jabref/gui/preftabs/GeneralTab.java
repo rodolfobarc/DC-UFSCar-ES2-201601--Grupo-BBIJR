@@ -15,23 +15,8 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.help.HelpAction;
@@ -40,8 +25,10 @@ import net.sf.jabref.logic.l10n.Encodings;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabaseMode;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 
 import static net.sf.jabref.logic.l10n.Languages.LANGUAGES;
 
@@ -70,17 +57,6 @@ class GeneralTab extends JPanel implements PrefsTab {
     private final JComboBox<String> language = new JComboBox<>(LANGUAGES.keySet().toArray(new String[LANGUAGES.keySet().size()]));
     private final JComboBox<Charset> encodings;
     private final JComboBox<BibDatabaseMode> biblatexMode;
-
-    public class DefaultBibModeRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            setText(((BibDatabaseMode) value).getFormattedName());
-            return this;
-        }
-    }
-
 
     public GeneralTab(JabRefPreferences prefs) {
         this.prefs = prefs;
@@ -207,7 +183,7 @@ class GeneralTab extends JPanel implements PrefsTab {
         inspectionWarnDupli.setSelected(prefs.getBoolean(JabRefPreferences.WARN_ABOUT_DUPLICATES_IN_INSPECTION));
         markImportedEntries.setSelected(prefs.getBoolean(JabRefPreferences.MARK_IMPORTED_ENTRIES));
         unmarkAllEntriesBeforeImporting.setSelected(prefs.getBoolean(JabRefPreferences.UNMARK_ALL_ENTRIES_BEFORE_IMPORTING));
-        if(Globals.prefs.getBoolean(JabRefPreferences.BIBLATEX_DEFAULT_MODE)) {
+        if (Globals.prefs.getBoolean(JabRefPreferences.BIBLATEX_DEFAULT_MODE)) {
             biblatexMode.setSelectedItem(BibDatabaseMode.BIBLATEX);
         } else {
             biblatexMode.setSelectedItem(BibDatabaseMode.BIBTEX);
@@ -293,5 +269,15 @@ class GeneralTab extends JPanel implements PrefsTab {
     @Override
     public String getTabName() {
         return Localization.lang("General");
+    }
+
+    public class DefaultBibModeRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                                                      boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            setText(((BibDatabaseMode) value).getFormattedName());
+            return this;
+        }
     }
 }

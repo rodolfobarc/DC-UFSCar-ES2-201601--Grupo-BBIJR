@@ -15,15 +15,8 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.GridBagConstraints;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -32,8 +25,8 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.labelpattern.GlobalLabelPattern;
 import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The Preferences panel for key generation.
@@ -63,7 +56,6 @@ class LabelPatternPrefTab extends LabelPatternPanel implements PrefsTab {
 
     /**
      * Store changes to table preferences. This method is called when the user clicks Ok.
-     *
      */
     @Override
     public void storeSettings() {
@@ -84,8 +76,7 @@ class LabelPatternPrefTab extends LabelPatternPanel implements PrefsTab {
         } else if (letterStartA.isSelected()) {
             Globals.prefs.putBoolean(JabRefPreferences.KEY_GEN_FIRST_LETTER_A, true);
             Globals.prefs.putBoolean(JabRefPreferences.KEY_GEN_ALWAYS_ADD_LETTER, false);
-        }
-        else {
+        } else {
             Globals.prefs.putBoolean(JabRefPreferences.KEY_GEN_FIRST_LETTER_A, false);
             Globals.prefs.putBoolean(JabRefPreferences.KEY_GEN_ALWAYS_ADD_LETTER, false);
         }
@@ -146,8 +137,8 @@ class LabelPatternPrefTab extends LabelPatternPanel implements PrefsTab {
         add(builder.getPanel());
 
         dontOverwrite.addChangeListener(e ->
-        // Warning before overwriting is only relevant if overwriting can happen:
-        warnBeforeOverwriting.setEnabled(!dontOverwrite.isSelected()));
+                // Warning before overwriting is only relevant if overwriting can happen:
+                warnBeforeOverwriting.setEnabled(!dontOverwrite.isSelected()));
     }
 
     @Override

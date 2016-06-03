@@ -15,43 +15,23 @@
 */
 package net.sf.jabref.gui.menus;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.InternalBibtexFields;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.EntryMarker;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.actions.Actions;
 import net.sf.jabref.gui.worker.MarkEntriesAction;
 import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.specialfields.Printed;
-import net.sf.jabref.specialfields.Priority;
-import net.sf.jabref.specialfields.Quality;
-import net.sf.jabref.specialfields.Rank;
-import net.sf.jabref.specialfields.ReadStatus;
-import net.sf.jabref.specialfields.Relevance;
-import net.sf.jabref.specialfields.SpecialField;
-import net.sf.jabref.specialfields.SpecialFieldValue;
-import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
+import net.sf.jabref.specialfields.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import java.awt.event.ActionEvent;
 
 public class RightClickMenu extends JPopupMenu implements PopupMenuListener {
     private static final Log LOGGER = LogFactory.getLog(RightClickMenu.class);
@@ -171,7 +151,7 @@ public class RightClickMenu extends JPopupMenu implements PopupMenuListener {
 
         add(new GeneralAction(Actions.OPEN_URL, Localization.lang("Open URL or DOI"), IconTheme.JabRefIcon.WWW.getSmallIcon()) {
             {
-                if(!(isFieldSetForSelectedEntry("url") || isFieldSetForSelectedEntry("doi"))) {
+                if (!(isFieldSetForSelectedEntry("url") || isFieldSetForSelectedEntry("doi"))) {
                     this.setEnabled(false);
                 }
             }
@@ -217,14 +197,6 @@ public class RightClickMenu extends JPopupMenu implements PopupMenuListener {
         frame.createDisabledIconsForMenuEntries(this);
     }
 
-    private boolean areMultipleEntriesSelected() {
-        return panel.mainTable.getSelectedRowCount() > 1;
-    }
-
-    private boolean areExactlyTwoEntriesSelected() {
-        return panel.mainTable.getSelectedRowCount() == 2;
-    }
-
     /**
      * Remove all types from the menu.
      * Then cycle through all available values, and add them.
@@ -235,6 +207,14 @@ public class RightClickMenu extends JPopupMenu implements PopupMenuListener {
         for (SpecialFieldValue val : field.getValues()) {
             menu.add(val.getMenuAction(frame));
         }
+    }
+
+    private boolean areMultipleEntriesSelected() {
+        return panel.mainTable.getSelectedRowCount() > 1;
+    }
+
+    private boolean areExactlyTwoEntriesSelected() {
+        return panel.mainTable.getSelectedRowCount() == 2;
     }
 
     /**
@@ -278,7 +258,7 @@ public class RightClickMenu extends JPopupMenu implements PopupMenuListener {
     private Icon getFileIconForSelectedEntry() {
         if (panel.mainTable.getSelectedRowCount() == 1) {
             BibEntry entry = panel.mainTable.getSelected().get(0);
-            if(entry.hasField(Globals.FILE_FIELD)) {
+            if (entry.hasField(Globals.FILE_FIELD)) {
                 JLabel label = FileListTableModel.getFirstLabel(entry.getField(Globals.FILE_FIELD));
                 if (label != null) {
                     return label.getIcon();

@@ -2,7 +2,9 @@ package net.sf.jabref.logic.groups;
 
 public enum GroupHierarchyType {
 
-    /** Group's contents are independent of its hierarchical position. */
+    /**
+     * Group's contents are independent of its hierarchical position.
+     */
     INDEPENDENT,
 
     /**
@@ -19,7 +21,7 @@ public enum GroupHierarchyType {
 
     public static GroupHierarchyType getByNumber(int type) {
         GroupHierarchyType[] types = values();
-        if(type >= 0 && type < types.length) {
+        if (type >= 0 && type < types.length) {
             return types[type];
         } else {
             return null;

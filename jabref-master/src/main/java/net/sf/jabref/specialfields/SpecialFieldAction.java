@@ -15,19 +15,19 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.util.List;
-
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.actions.BaseAction;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.List;
+
 public class SpecialFieldAction implements BaseAction {
 
+    private static final Log LOGGER = LogFactory.getLog(SpecialFieldAction.class);
     private final JabRefFrame frame;
     private final String doneTextPattern;
     private final SpecialField c;
@@ -35,13 +35,10 @@ public class SpecialFieldAction implements BaseAction {
     private final boolean nullFieldIfValueIsTheSame;
     private final String undoText;
 
-    private static final Log LOGGER = LogFactory.getLog(SpecialFieldAction.class);
-
 
     /**
-     *
      * @param nullFieldIfValueIsTheSame - false also causes that doneTextPattern has two place holders %0 for the value and %1 for the sum of entries
-     * @param doneTextPattern - the pattern to use to update status information shown in MainFrame
+     * @param doneTextPattern           - the pattern to use to update status information shown in MainFrame
      */
     public SpecialFieldAction(
             JabRefFrame frame,

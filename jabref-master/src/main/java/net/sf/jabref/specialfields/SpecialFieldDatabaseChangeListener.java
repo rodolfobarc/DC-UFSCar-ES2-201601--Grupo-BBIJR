@@ -12,6 +12,12 @@ public class SpecialFieldDatabaseChangeListener implements
 
     private static SpecialFieldDatabaseChangeListener INSTANCE;
 
+    public static SpecialFieldDatabaseChangeListener getInstance() {
+        if (SpecialFieldDatabaseChangeListener.INSTANCE == null) {
+            SpecialFieldDatabaseChangeListener.INSTANCE = new SpecialFieldDatabaseChangeListener();
+        }
+        return SpecialFieldDatabaseChangeListener.INSTANCE;
+    }
 
     @Override
     public void databaseChanged(DatabaseChangeEvent e) {
@@ -24,13 +30,6 @@ public class SpecialFieldDatabaseChangeListener implements
             nc.end();
             JabRefGUI.getMainFrame().getCurrentBasePanel().undoManager.addEdit(nc);
         }
-    }
-
-    public static SpecialFieldDatabaseChangeListener getInstance() {
-        if (SpecialFieldDatabaseChangeListener.INSTANCE == null) {
-            SpecialFieldDatabaseChangeListener.INSTANCE = new SpecialFieldDatabaseChangeListener();
-        }
-        return SpecialFieldDatabaseChangeListener.INSTANCE;
     }
 
 }

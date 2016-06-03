@@ -10,8 +10,7 @@ public enum SearchMode {
     FLOAT(Localization.lang("Float"),
             Localization.lang("Gray out non-hits")),
     FILTER(Localization.lang("Filter"),
-            Localization.lang("Hide non-hits"))
-    ;
+            Localization.lang("Hide non-hits"));
 
     private final String displayName;
     private final String toolTipText;

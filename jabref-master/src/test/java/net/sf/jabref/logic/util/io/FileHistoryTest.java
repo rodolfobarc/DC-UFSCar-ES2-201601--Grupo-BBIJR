@@ -1,12 +1,11 @@
 package net.sf.jabref.logic.util.io;
 
-import java.util.List;
-
 import net.sf.jabref.JabRefPreferences;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -64,7 +63,7 @@ public class FileHistoryTest {
         fh.removeItem("cc");
         fh.removeItem("aa");
         fh.storeHistory();
-        assertArrayEquals(new String[] {"ii", "hh", "gg"},
+        assertArrayEquals(new String[]{"ii", "hh", "gg"},
                 prefs.getStringList(JabRefPreferences.RECENT_FILES).toArray(new String[0]));
     }
 

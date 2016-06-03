@@ -1,11 +1,10 @@
 package net.sf.jabref.logic.search;
 
-import java.util.Collections;
-
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 

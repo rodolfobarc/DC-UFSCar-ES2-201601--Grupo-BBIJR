@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.bst;
 
-import java.util.Stack;
-
 import net.sf.jabref.bst.VM.BstEntry;
 import net.sf.jabref.bst.VM.BstFunction;
+
+import java.util.Stack;
 
 /**
  * The |built_in| function {\.{width\$}} pops the top (string) literal and
@@ -28,7 +28,6 @@ import net.sf.jabref.bst.VM.BstFunction;
  * whether the character has a special meaning to \TeX, except that special
  * characters (even without their |right_brace|s) are handled specially. If the
  * literal isn't a string, it complains and pushes~0.
- *
  */
 public class WidthFunction implements BstFunction {
 

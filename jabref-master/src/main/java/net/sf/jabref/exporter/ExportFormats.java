@@ -15,22 +15,6 @@
 */
 package net.sf.jabref.exporter;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.JabRefFrame;
@@ -38,15 +22,21 @@ import net.sf.jabref.gui.actions.MnemonicAwareAction;
 import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 /**
  * User: alver
- *
+ * <p>
  * Date: Oct 18, 2006
- *
+ * <p>
  * Time: 9:35:08 PM
  */
 public class ExportFormats {
@@ -103,15 +93,13 @@ public class ExportFormats {
     /**
      * Build a string listing of all available export formats.
      *
-     * @param maxLineLength
-     *            The max line length before a line break must be added.
-     * @param linePrefix
-     *            If a line break is added, this prefix will be inserted at the
-     *            beginning of the next line.
+     * @param maxLineLength The max line length before a line break must be added.
+     * @param linePrefix    If a line break is added, this prefix will be inserted at the
+     *                      beginning of the next line.
      * @return The string describing available formats.
      */
     public static String getConsoleExportList(int maxLineLength, int firstLineSubtr,
-            String linePrefix) {
+                                              String linePrefix) {
         StringBuilder sb = new StringBuilder();
         int lastBreak = -firstLineSubtr;
 
@@ -131,6 +119,7 @@ public class ExportFormats {
 
     /**
      * Get a Map of all export formats.
+     *
      * @return A Map containing all export formats, mapped to their console names.
      */
     public static Map<String, IExportFormat> getExportFormats() {
@@ -141,10 +130,9 @@ public class ExportFormats {
     /**
      * Look up the named export format.
      *
-     * @param consoleName
-     *            The export name given in the JabRef console help information.
+     * @param consoleName The export name given in the JabRef console help information.
      * @return The ExportFormat, or null if no exportformat with that name is
-     *         registered.
+     * registered.
      */
     public static IExportFormat getExportFormat(String consoleName) {
         return ExportFormats.EXPORT_FORMATS.get(consoleName);
@@ -153,11 +141,9 @@ public class ExportFormats {
     /**
      * Create an AbstractAction for performing an export operation.
      *
-     * @param frame
-     *            The JabRefFrame of this JabRef instance.
-     * @param selectedOnly
-     *            true indicates that only selected entries should be exported,
-     *            false indicates that all entries should be exported.
+     * @param frame        The JabRefFrame of this JabRef instance.
+     * @param selectedOnly true indicates that only selected entries should be exported,
+     *                     false indicates that all entries should be exported.
      * @return The action.
      */
     public static AbstractAction getExportAction(JabRefFrame frame, boolean selectedOnly) {
@@ -173,7 +159,7 @@ public class ExportFormats {
                 this.frame = frame;
                 this.selectedOnly = selectedOnly;
                 putValue(Action.NAME, selectedOnly ? Localization.menuTitle("Export selected entries") :
-                    Localization.menuTitle("Export"));
+                        Localization.menuTitle("Export"));
             }
 
             @Override
@@ -258,7 +244,7 @@ public class ExportFormats {
                                         + " - " + errorMessage);
                                 // Need to warn the user that saving failed!
                                 JOptionPane.showMessageDialog(frame, Localization.lang("Could not save file.")
-                                        + "\n" + errorMessage, Localization.lang("Save database"),
+                                                + "\n" + errorMessage, Localization.lang("Save database"),
                                         JOptionPane.ERROR_MESSAGE);
                             }
                         }

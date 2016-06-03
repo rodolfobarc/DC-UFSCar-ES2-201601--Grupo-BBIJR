@@ -20,10 +20,9 @@ import net.sf.jabref.model.entry.AuthorList;
 
 /**
  * Duplicate of AuthorLastFirstAbbreviator.
- * 
- * @see AuthorLastFirstAbbreviator
- * 
+ *
  * @author Carlos Silla
+ * @see AuthorLastFirstAbbreviator
  */
 public class AuthorAbbreviator implements LayoutFormatter {
 

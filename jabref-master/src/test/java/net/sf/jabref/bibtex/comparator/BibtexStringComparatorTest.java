@@ -2,7 +2,6 @@ package net.sf.jabref.bibtex.comparator;
 
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

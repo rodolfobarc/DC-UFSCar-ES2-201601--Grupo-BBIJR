@@ -1,6 +1,6 @@
 package net.sf.jabref.gui.keyboard;
 
-import javax.swing.JTable;
+import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class KeyBindingTable extends JTable {

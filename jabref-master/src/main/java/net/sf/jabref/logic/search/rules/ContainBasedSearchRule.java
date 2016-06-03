@@ -15,11 +15,11 @@
 */
 package net.sf.jabref.logic.search.rules;
 
-import java.util.Iterator;
-import java.util.List;
-
 import net.sf.jabref.logic.layout.format.RemoveLatexCommands;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Search rule for contain-based search.
@@ -62,12 +62,12 @@ public class ContainBasedSearchRule implements SearchRule {
             Iterator<String> unmatchedWordsIterator = unmatchedWords.iterator();
             while (unmatchedWordsIterator.hasNext()) {
                 String word = unmatchedWordsIterator.next();
-                if(formattedFieldContent.contains(word)) {
+                if (formattedFieldContent.contains(word)) {
                     unmatchedWordsIterator.remove();
                 }
             }
 
-            if(unmatchedWords.isEmpty()) {
+            if (unmatchedWords.isEmpty()) {
                 return true;
             }
         }

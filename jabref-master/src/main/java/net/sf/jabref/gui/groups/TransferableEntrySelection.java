@@ -15,6 +15,8 @@
 */
 package net.sf.jabref.gui.groups;
 
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -23,17 +25,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.sf.jabref.model.entry.BibEntry;
-
 class TransferableEntrySelection implements Transferable {
 
     public static final DataFlavor FLAVOR_INTERNAL;
     private static final DataFlavor FLAVOR_EXTERNAL;
     private static final DataFlavor[] FLAVORS;
-    private final List<BibEntry> selectedEntries;
-    private final String selectedEntriesCiteKeys;
-
-    private boolean includeCiteKeyword;
 
     static {
         DataFlavor df1 = null;
@@ -47,8 +43,12 @@ class TransferableEntrySelection implements Transferable {
         }
         FLAVOR_INTERNAL = df1;
         FLAVOR_EXTERNAL = df2;
-        FLAVORS = new DataFlavor[] {TransferableEntrySelection.FLAVOR_INTERNAL, TransferableEntrySelection.FLAVOR_EXTERNAL};
+        FLAVORS = new DataFlavor[]{TransferableEntrySelection.FLAVOR_INTERNAL, TransferableEntrySelection.FLAVOR_EXTERNAL};
     }
+
+    private final List<BibEntry> selectedEntries;
+    private final String selectedEntriesCiteKeys;
+    private boolean includeCiteKeyword;
 
 
     public TransferableEntrySelection(List<BibEntry> list) {
