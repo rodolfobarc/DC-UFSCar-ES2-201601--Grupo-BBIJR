@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.model.entry.BibEntry;
 
 public class CasodeTesteBook {
@@ -43,7 +44,7 @@ public class CasodeTesteBook {
 
     @Test
     public void testeComCamposAdcionais() {
-        List<BibEntry> teste3 = BibtexParser.fromString("@book{2, title = {As crônicas de Bruno},\n"
+        List<BibEntry> teste3 = BibtexParser.fromString("@book{2, title = {As crï¿½nicas de Bruno},\n"
                 + "publisher = {compufscar},\n year = {2017},\n author={Jorge},\n editor = {Abril},\n "
                 + "volume = {2},\n series = {two},\n edition = {4},\n note = {nothing}, number = {4},\n"
                 + "address = {Rodovia Washington Luis},\n month = {april}}");
@@ -51,7 +52,7 @@ public class CasodeTesteBook {
         BibEntry esperado = new BibEntry();
         esperado.setType("book");
         esperado.setCiteKey("2");
-        esperado.setField("title", "As crônicas de Bruno");
+        esperado.setField("title", "As crï¿½nicas de Bruno");
         esperado.setField("publisher", "compufscar");
         esperado.setField("year", "2017");
         esperado.setField("author", "Jorge");
