@@ -15,13 +15,15 @@
 */
 package net.sf.jabref.logic.mods;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import net.sf.jabref.logic.layout.LayoutFormatter;
+import net.sf.jabref.logic.layout.format.XMLChars;
+import net.sf.jabref.logic.util.strings.StringUtil;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,53 +32,34 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import net.sf.jabref.logic.layout.LayoutFormatter;
-import net.sf.jabref.logic.layout.format.XMLChars;
-import net.sf.jabref.logic.util.strings.StringUtil;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * @author Michael Wrighton
- *
  */
 class MODSEntry {
 
+    private static final String BIBTEX = "bibtex_";
+    private static final boolean CHARFORMAT = false;
+    private static final Log LOGGER = LogFactory.getLog(MODSEntry.class);
+    private final Set<String> handledExtensions;
+    private final Map<String, String> extensionFields;
+    private final LayoutFormatter chars = new XMLChars();
     private String entryType = "mods"; // could also be relatedItem
     private String id;
     private List<PersonName> authors;
-
     // should really be handled with an enum
     private String issuance = "monographic";
     private PageNumbers pages;
-
     private String publisher;
     private String date;
-
     private String title;
-
     private String number;
     private String volume;
     private String genre;
     private String place;
-    private final Set<String> handledExtensions;
-
     private MODSEntry host;
-    private final Map<String, String> extensionFields;
-
-    private static final String BIBTEX = "bibtex_";
-
-    private static final boolean CHARFORMAT = false;
-
-    private static final Log LOGGER = LogFactory.getLog(MODSEntry.class);
-
-    private final LayoutFormatter chars = new XMLChars();
 
 
     private MODSEntry() {
@@ -92,6 +75,23 @@ class MODSEntry {
         handledExtensions.add(MODSEntry.BIBTEX + BibEntry.KEY_FIELD);
         handledExtensions.add(MODSEntry.BIBTEX + "author");
         populateFromBibtex(bibtex);
+    }
+
+    /* construct a MODS date object */
+    private static String getDate(BibEntry bibtex) {
+        StringBuilder result = new StringBuilder();
+        bibtex.getFieldOptional("year").ifPresent(result::append);
+        bibtex.getFieldOptional("month").ifPresent(result.append('-')::append);
+        return result.toString();
+    }
+
+    // must be from http://www.loc.gov/marc/sourcecode/genre/genrelist.html
+    private static String getMODSgenre(BibEntry bibtex) {
+        /**
+         * <pre> String result; if (bibtexType.equals("Mastersthesis")) result =
+         * "theses"; else result = "conference publication"; // etc... </pre>
+         */
+        return bibtex.getType();
     }
 
     private void populateFromBibtex(BibEntry bibtex) {
@@ -174,23 +174,6 @@ class MODSEntry {
             }
         }
         return result;
-    }
-
-    /* construct a MODS date object */
-    private static String getDate(BibEntry bibtex) {
-        StringBuilder result = new StringBuilder();
-        bibtex.getFieldOptional("year").ifPresent(result::append);
-        bibtex.getFieldOptional("month").ifPresent(result.append('-')::append);
-        return result.toString();
-    }
-
-    // must be from http://www.loc.gov/marc/sourcecode/genre/genrelist.html
-    private static String getMODSgenre(BibEntry bibtex) {
-        /**
-         * <pre> String result; if (bibtexType.equals("Mastersthesis")) result =
-         * "theses"; else result = "conference publication"; // etc... </pre>
-         */
-        return bibtex.getType();
     }
 
     private Node getDOMrepresentation() {

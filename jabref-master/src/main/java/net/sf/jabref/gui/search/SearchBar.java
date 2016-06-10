@@ -15,23 +15,6 @@
  */
 package net.sf.jabref.gui.search;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -50,9 +33,16 @@ import net.sf.jabref.logic.search.SearchQuery;
 import net.sf.jabref.logic.search.SearchQueryHighlightObservable;
 import net.sf.jabref.logic.util.OS;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The search bar at the top of the screen allowing the user to search his database.
@@ -74,16 +64,12 @@ public class SearchBar extends JPanel {
     private final SearchQueryHighlightObservable searchQueryHighlightObservable;
     private final JTextFieldWithUnfocusedText searchField = new JTextFieldWithUnfocusedText(
             Localization.lang("Search") + "...");
-
-    private SearchMode searchMode = getSearchModeFromSettings();
-
     private final JToggleButton caseSensitive;
     private final JToggleButton regularExp;
-
     private final JLabel currentResults = new JLabel("");
-
-    private AutoCompleteSupport<String> autoCompleteSupport;
     private final JLabel searchIcon;
+    private SearchMode searchMode = getSearchModeFromSettings();
+    private AutoCompleteSupport<String> autoCompleteSupport;
     private SearchWorker searchWorker;
 
 
@@ -180,6 +166,16 @@ public class SearchBar extends JPanel {
         paintBackgroundWhite(this);
     }
 
+    private static SearchMode getSearchModeFromSettings() {
+        if (Globals.prefs.getBoolean(JabRefPreferences.SEARCH_MODE_FILTER)) {
+            return SearchMode.FILTER;
+        } else if (Globals.prefs.getBoolean(JabRefPreferences.SEARCH_MODE_FLOAT)) {
+            return SearchMode.FLOAT;
+        } else {
+            return SearchMode.FILTER;
+        }
+    }
+
     private void paintBackgroundWhite(Container container) {
         container.setBackground(Color.WHITE);
         for (Component component : container.getComponents()) {
@@ -188,16 +184,6 @@ public class SearchBar extends JPanel {
             if (component instanceof Container) {
                 paintBackgroundWhite((Container) component);
             }
-        }
-    }
-
-    private static SearchMode getSearchModeFromSettings() {
-        if (Globals.prefs.getBoolean(JabRefPreferences.SEARCH_MODE_FILTER)) {
-            return SearchMode.FILTER;
-        } else if (Globals.prefs.getBoolean(JabRefPreferences.SEARCH_MODE_FLOAT)) {
-            return SearchMode.FLOAT;
-        } else {
-            return SearchMode.FILTER;
         }
     }
 

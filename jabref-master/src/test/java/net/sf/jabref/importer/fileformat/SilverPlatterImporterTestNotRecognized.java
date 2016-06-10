@@ -1,15 +1,14 @@
 package net.sf.jabref.importer.fileformat;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class SilverPlatterImporterTestNotRecognized {
 

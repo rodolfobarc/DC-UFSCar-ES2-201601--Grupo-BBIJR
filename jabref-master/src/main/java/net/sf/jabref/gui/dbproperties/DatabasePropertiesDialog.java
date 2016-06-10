@@ -15,27 +15,9 @@
  */
 package net.sf.jabref.gui.dbproperties;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.nio.charset.Charset;
-import java.util.Optional;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.MetaData;
 import net.sf.jabref.exporter.FieldFormatterCleanups;
@@ -48,9 +30,12 @@ import net.sf.jabref.logic.config.SaveOrderConfig;
 import net.sf.jabref.logic.l10n.Encodings;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.charset.Charset;
+import java.util.Optional;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,24 +46,22 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class DatabasePropertiesDialog extends JDialog {
 
-    private MetaData metaData;
-    private BasePanel panel;
     private final JComboBox<Charset> encoding;
     private final JButton ok;
     private final JButton cancel;
     private final JTextField fileDir = new JTextField(40);
     private final JTextField fileDirIndv = new JTextField(40);
+    private final JCheckBox protect = new JCheckBox(
+            Localization.lang("Refuse to save the database before external changes have been reviewed."));
+    private MetaData metaData;
+    private BasePanel panel;
     private String oldFileVal = "";
     private String oldFileIndvVal = "";
     private SaveOrderConfig oldSaveOrderConfig;
     private SaveOrderConfig defaultSaveOrderConfig;
-
     /* The code for "Save sort order" is copied from FileSortTab and slightly updated to fit storing at metadata */
     private JRadioButton saveInOriginalOrder;
     private JRadioButton saveInSpecifiedOrder;
-
-    private final JCheckBox protect = new JCheckBox(
-            Localization.lang("Refuse to save the database before external changes have been reviewed."));
     private boolean oldProtectVal;
     private SaveOrderConfigDisplay saveOrderPanel;
 

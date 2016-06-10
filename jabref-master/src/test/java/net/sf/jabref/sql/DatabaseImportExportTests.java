@@ -1,9 +1,5 @@
 package net.sf.jabref.sql;
 
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.List;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -18,10 +14,13 @@ import net.sf.jabref.sql.exporter.DatabaseExporter;
 import net.sf.jabref.sql.importer.DBImporterResult;
 import net.sf.jabref.sql.importer.DatabaseImporter;
 import net.sf.jabref.support.DevEnvironment;
-
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 

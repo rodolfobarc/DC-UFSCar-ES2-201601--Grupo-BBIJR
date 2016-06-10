@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 
 public class RtfCharMap extends HashMap<String, String> {
-    public RtfCharMap () {
+    public RtfCharMap() {
 
 
         put("`a", "\\'e0");
@@ -59,7 +59,7 @@ public class RtfCharMap extends HashMap<String, String> {
         put("\"A", "\\u196A"); // "Auml"
         put("AA", "\\u197A"); // "Aring"
         // RTFCHARS.put("AE", "{\\uc2\\u198AE}"); // "AElig"
-put("AE", "{\\u198A}"); // "AElig"
+        put("AE", "{\\u198A}"); // "AElig"
         put("cC", "\\u199C"); // "Ccedil"
         put("`E", "\\u200E"); // "Egrave"
         put("'E", "\\u201E"); // "Eacute"
@@ -97,7 +97,7 @@ put("AE", "{\\u198A}"); // "AElig"
         put("\"a", "\\u228a"); // "auml"
         put("aa", "\\u229a"); // "aring"
         //  RTFCHARS.put("ae", "{\\uc2\\u230ae}"); // "aelig" \\u230e6
-put("ae", "{\\u230a}"); // "aelig" \\u230e6
+        put("ae", "{\\u230a}"); // "aelig" \\u230e6
         put("cc", "\\u231c"); // "ccedil"
         put("`e", "\\u232e"); // "egrave"
         put("'e", "\\u233e"); // "eacute"

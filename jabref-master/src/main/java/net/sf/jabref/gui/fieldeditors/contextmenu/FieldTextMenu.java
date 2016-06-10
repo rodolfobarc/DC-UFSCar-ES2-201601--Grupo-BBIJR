@@ -1,14 +1,5 @@
 package net.sf.jabref.gui.fieldeditors.contextmenu;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JPopupMenu;
-import javax.swing.text.JTextComponent;
-
 import net.sf.jabref.gui.ClipBoardManager;
 import net.sf.jabref.gui.actions.CopyAction;
 import net.sf.jabref.gui.actions.PasteAction;
@@ -17,13 +8,18 @@ import net.sf.jabref.logic.formatter.bibtexfields.NormalizeNamesFormatter;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringUtil;
 
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 public class FieldTextMenu implements MouseListener {
+    private static final int MAX_PASTE_PREVIEW_LENGTH = 20;
     private final FieldEditor field;
     private final JPopupMenu inputMenu = new JPopupMenu();
     private final CopyAction copyAction;
     private final PasteAction pasteAction;
-
-    private static final int MAX_PASTE_PREVIEW_LENGTH = 20;
 
 
     public FieldTextMenu(FieldEditor fieldComponent) {

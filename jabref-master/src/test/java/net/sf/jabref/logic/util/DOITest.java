@@ -1,9 +1,9 @@
 package net.sf.jabref.logic.util;
 
-import java.util.Optional;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Optional;
 
 
 public class DOITest {
@@ -20,12 +20,12 @@ public class DOITest {
         Assert.assertEquals("10.1006/jmbi.1998.2354", new DOI("  10.1006/jmbi.1998.2354 ").getDOI());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void rejectEmbeddedDoi() {
         new DOI("other stuff 10.1006/jmbi.1998.2354 end");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void rejectInvalidDirectoryIndicator() {
         // wrong directory indicator
         new DOI("12.1006/jmbi.1998.2354 end");
@@ -36,7 +36,7 @@ public class DOITest {
         new DOI("https://thisisnouri");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void rejectMissingDivider() {
         // missing divider
         new DOI("10.1006jmbi.1998.2354 end");

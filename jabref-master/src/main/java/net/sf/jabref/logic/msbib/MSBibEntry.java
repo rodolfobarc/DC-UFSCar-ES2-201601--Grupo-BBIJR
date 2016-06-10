@@ -15,25 +15,6 @@
 */
 package net.sf.jabref.logic.msbib;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import net.sf.jabref.importer.fileformat.ImportFormat;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.layout.format.RemoveBrackets;
@@ -44,13 +25,30 @@ import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.EntryType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Date: May 15, 2007; May 03, 2007
@@ -73,14 +71,25 @@ import org.w3c.dom.NodeList;
  */
 class MSBibEntry {
     private static final Log LOGGER = LogFactory.getLog(MSBibEntry.class);
-
+    private static final String GUID = null;
+    private static final String BIBTEX = "BIBTEX_";
+    private static final String MSBIB = "msbib-";
+    private static final String B_COLON = "b:";
+    // reduced subset, supports only "CITY , STATE, COUNTRY"
+    // \b(\w+)\s?[,]?\s?(\w+)\s?[,]?\s?(\w+)\b
+    // WORD SPACE , SPACE WORD SPACE , SPACE WORD
+    // tested using http://www.javaregex.com/test.html
+    private static final Pattern ADDRESS_PATTERN = Pattern.compile("\\b(\\w+)\\s*[,]?\\s*(\\w+)\\s*[,]?\\s*(\\w+)\\b");
+    // Allows 20.3-2007|||20/3-  2007 etc.
+    // (\d{1,2})\s?[.,-/]\s?(\d{1,2})\s?[.,-/]\s?(\d{2,4})
+    // 1-2 DIGITS SPACE SEPERATOR SPACE 1-2 DIGITS SPACE SEPERATOR SPACE 2-4 DIGITS
+    // tested using http://www.javaregex.com/test.html
+    private static final Pattern DATE_PATTERN = Pattern
+            .compile("(\\d{1,2})\\s*[.,-/]\\s*(\\d{1,2})\\s*[.,-/]\\s*(\\d{2,4})");
     private String sourceType = "Misc";
     private String bibTexEntry;
-
     private String tag;
-    private static final String GUID = null;
     private int LCID = -1;
-
     private List<PersonName> authors;
     private List<PersonName> bookAuthors;
     private List<PersonName> editors;
@@ -96,22 +105,18 @@ class MSBibEntry {
     private List<PersonName> interviewees;
     private List<PersonName> inventors;
     private List<PersonName> counsels;
-
     private String title;
     private String year;
     private String month;
     private String day;
-
     private String shortTitle;
     private String comments;
-
     private PageNumbers pages;
     private String volume;
     private String numberOfVolumes;
     private String edition;
     private String standardNumber;
     private String publisher;
-
     private String address;
     private String bookTitle;
     private String chapterNumber;
@@ -151,28 +156,9 @@ class MSBibEntry {
     private String bibTexCopyright;
     private String bibTexPrice;
     private String bibTexSize;
-
     /* SM 2010.10 intype, paper support */
     private String bibTexInType;
     private String bibTexPaper;
-
-    private static final String BIBTEX = "BIBTEX_";
-    private static final String MSBIB = "msbib-";
-
-    private static final String B_COLON = "b:";
-
-    // reduced subset, supports only "CITY , STATE, COUNTRY"
-    // \b(\w+)\s?[,]?\s?(\w+)\s?[,]?\s?(\w+)\b
-    // WORD SPACE , SPACE WORD SPACE , SPACE WORD
-    // tested using http://www.javaregex.com/test.html
-    private static final Pattern ADDRESS_PATTERN = Pattern.compile("\\b(\\w+)\\s*[,]?\\s*(\\w+)\\s*[,]?\\s*(\\w+)\\b");
-
-    // Allows 20.3-2007|||20/3-  2007 etc.
-    // (\d{1,2})\s?[.,-/]\s?(\d{1,2})\s?[.,-/]\s?(\d{2,4})
-    // 1-2 DIGITS SPACE SEPERATOR SPACE 1-2 DIGITS SPACE SEPERATOR SPACE 2-4 DIGITS
-    // tested using http://www.javaregex.com/test.html
-    private static final Pattern DATE_PATTERN = Pattern
-            .compile("(\\d{1,2})\\s*[.,-/]\\s*(\\d{1,2})\\s*[.,-/]\\s*(\\d{2,4})");
 
 
     public MSBibEntry(BibEntry bibtex) {
@@ -913,35 +899,35 @@ class MSBibEntry {
     private EntryType mapMSBibToBibtexType(String msbib) {
         EntryType bibtex;
         switch (msbib) {
-        case "Book":
-            bibtex = BibtexEntryTypes.BOOK;
-            break;
-        case "BookSection":
-            bibtex = BibtexEntryTypes.INBOOK;
-            break;
-        case "JournalArticle":
-        case "ArticleInAPeriodical":
-            bibtex = BibtexEntryTypes.ARTICLE;
-            break;
-        case "ConferenceProceedings":
-            bibtex = BibtexEntryTypes.CONFERENCE;
-            break;
-        case "Report":
-            bibtex = BibtexEntryTypes.TECHREPORT;
-            break;
-        case "InternetSite":
-        case "DocumentFromInternetSite":
-        case "ElectronicSource":
-        case "Art":
-        case "SoundRecording":
-        case "Performance":
-        case "Film":
-        case "Interview":
-        case "Patent":
-        case "Case":
-        default:
-            bibtex = BibtexEntryTypes.MISC;
-            break;
+            case "Book":
+                bibtex = BibtexEntryTypes.BOOK;
+                break;
+            case "BookSection":
+                bibtex = BibtexEntryTypes.INBOOK;
+                break;
+            case "JournalArticle":
+            case "ArticleInAPeriodical":
+                bibtex = BibtexEntryTypes.ARTICLE;
+                break;
+            case "ConferenceProceedings":
+                bibtex = BibtexEntryTypes.CONFERENCE;
+                break;
+            case "Report":
+                bibtex = BibtexEntryTypes.TECHREPORT;
+                break;
+            case "InternetSite":
+            case "DocumentFromInternetSite":
+            case "ElectronicSource":
+            case "Art":
+            case "SoundRecording":
+            case "Performance":
+            case "Film":
+            case "Interview":
+            case "Patent":
+            case "Case":
+            default:
+                bibtex = BibtexEntryTypes.MISC;
+                break;
         }
 
         return bibtex;

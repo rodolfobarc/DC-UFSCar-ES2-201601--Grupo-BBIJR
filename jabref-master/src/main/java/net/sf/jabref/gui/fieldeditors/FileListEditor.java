@@ -15,10 +15,28 @@
 */
 package net.sf.jabref.gui.fieldeditors;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Insets;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import net.sf.jabref.BibDatabaseContext;
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefExecutorService;
+import net.sf.jabref.external.*;
+import net.sf.jabref.gui.*;
+import net.sf.jabref.gui.actions.Actions;
+import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
+import net.sf.jabref.gui.desktop.JabRefDesktop;
+import net.sf.jabref.gui.entryeditor.EntryEditor;
+import net.sf.jabref.gui.keyboard.KeyBinding;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.logic.util.io.FileUtil;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.EntryUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -33,49 +51,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-import javax.swing.table.TableCellRenderer;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefExecutorService;
-import net.sf.jabref.external.AutoSetLinks;
-import net.sf.jabref.external.DownloadExternalFile;
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypes;
-import net.sf.jabref.external.MoveFileAction;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListEntryEditor;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.actions.Actions;
-import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
-import net.sf.jabref.gui.desktop.JabRefDesktop;
-import net.sf.jabref.gui.entryeditor.EntryEditor;
-import net.sf.jabref.gui.keyboard.KeyBinding;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.logic.util.io.FileUtil;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.EntryUtil;
-
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Created by Morten O. Alver 2007.02.22
  */
@@ -84,7 +59,6 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
     private static final Log LOGGER = LogFactory.getLog(FileListEditor.class);
 
     private final FieldNameLabel label;
-    private FileListEntryEditor editor;
     private final JabRefFrame frame;
     private final BibDatabaseContext databaseContext;
     private final String fieldName;
@@ -93,6 +67,7 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
     private final FileListTableModel tableModel;
     private final JButton auto;
     private final JPopupMenu menu = new JPopupMenu();
+    private FileListEntryEditor editor;
 
     public FileListEditor(JabRefFrame frame, BibDatabaseContext databaseContext, String fieldName, String content,
                           EntryEditor entryEditor) {
@@ -130,7 +105,7 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
 
         FormBuilder builder = FormBuilder.create()
                 .layout(new FormLayout
-                ("fill:pref,1dlu,fill:pref,1dlu,fill:pref", "fill:pref,fill:pref"));
+                        ("fill:pref,1dlu,fill:pref,1dlu,fill:pref", "fill:pref,fill:pref"));
         builder.add(up).xy(1, 1);
         builder.add(add).xy(3, 1);
         builder.add(auto).xy(5, 1);
@@ -457,7 +432,7 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
                     }
                     // reset
                     auto.setEnabled(true);
-                } , dialog));
+                }, dialog));
     }
 
     /**
@@ -498,45 +473,6 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
         adjustColumnWidth();
     }
 
-
-    class TableClickListener extends MouseAdapter {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
-                int row = rowAtPoint(e.getPoint());
-                if (row >= 0) {
-                    FileListEntry entry = tableModel.getEntry(row);
-                    editListEntry(entry, false);
-                }
-            } else if (e.isPopupTrigger()) {
-                processPopupTrigger(e);
-            }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                processPopupTrigger(e);
-            }
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                processPopupTrigger(e);
-            }
-        }
-
-        private void processPopupTrigger(MouseEvent e) {
-            int row = rowAtPoint(e.getPoint());
-            if (row >= 0) {
-                setRowSelectionInterval(row, row);
-                menu.show(FileListEditor.this, e.getX(), e.getY());
-            }
-        }
-    }
-
     @Override
     public void undo() {
         // Do nothing
@@ -575,5 +511,43 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
     @Override
     public void updateFontColor() {
         // Do nothing
+    }
+
+    class TableClickListener extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
+                int row = rowAtPoint(e.getPoint());
+                if (row >= 0) {
+                    FileListEntry entry = tableModel.getEntry(row);
+                    editListEntry(entry, false);
+                }
+            } else if (e.isPopupTrigger()) {
+                processPopupTrigger(e);
+            }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                processPopupTrigger(e);
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                processPopupTrigger(e);
+            }
+        }
+
+        private void processPopupTrigger(MouseEvent e) {
+            int row = rowAtPoint(e.getPoint());
+            if (row >= 0) {
+                setRowSelectionInterval(row, row);
+                menu.show(FileListEditor.this, e.getX(), e.getY());
+            }
+        }
     }
 }

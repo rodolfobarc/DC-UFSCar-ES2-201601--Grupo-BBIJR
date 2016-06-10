@@ -1,12 +1,12 @@
 package net.sf.jabref.gui.desktop.os;
 
-import java.awt.Desktop;
+import net.sf.jabref.external.ExternalFileType;
+import net.sf.jabref.external.ExternalFileTypes;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypes;
 
 public class OSX implements NativeDesktop {
 
@@ -24,8 +24,8 @@ public class OSX implements NativeDesktop {
     @Override
     public void openFileWithApplication(String filePath, String application) throws IOException {
         // Use "-a <application>" if the app is specified, and just "open <filename>" otherwise:
-        String[] cmd = (application != null) && !application.isEmpty() ? new String[] {"/usr/bin/open", "-a",
-                application, filePath} : new String[] {"/usr/bin/open", filePath};
+        String[] cmd = (application != null) && !application.isEmpty() ? new String[]{"/usr/bin/open", "-a",
+                application, filePath} : new String[]{"/usr/bin/open", filePath};
         Runtime.getRuntime().exec(cmd);
     }
 

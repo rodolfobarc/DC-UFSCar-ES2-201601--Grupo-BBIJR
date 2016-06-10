@@ -15,19 +15,16 @@
  */
 package net.sf.jabref.gui.menus;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileHistory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class FileHistoryMenu extends JMenu implements ActionListener {
 

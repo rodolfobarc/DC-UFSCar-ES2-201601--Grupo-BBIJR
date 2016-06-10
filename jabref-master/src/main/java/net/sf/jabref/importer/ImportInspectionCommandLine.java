@@ -15,32 +15,18 @@
 */
 package net.sf.jabref.importer;
 
+import net.sf.jabref.importer.fetcher.EntryFetcher;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.sf.jabref.importer.fetcher.EntryFetcher;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
-
 public class ImportInspectionCommandLine implements ImportInspector {
 
     private final List<BibEntry> entries = new LinkedList<>();
-
-
-    @Override
-    public void addEntry(BibEntry entry) {
-        entries.add(entry);
-    }
-
-    @Override
-    public void setProgress(int current, int max) {
-        status.setStatus(Localization.lang("Progress: %0 of %1", String.valueOf(current), String
-                .valueOf(max)));
-    }
-
-
     private final OutputPrinter status = new OutputPrinter() {
 
         @Override
@@ -59,6 +45,16 @@ public class ImportInspectionCommandLine implements ImportInspector {
         }
     };
 
+    @Override
+    public void addEntry(BibEntry entry) {
+        entries.add(entry);
+    }
+
+    @Override
+    public void setProgress(int current, int max) {
+        status.setStatus(Localization.lang("Progress: %0 of %1", String.valueOf(current), String
+                .valueOf(max)));
+    }
 
     public Collection<BibEntry> query(String query, EntryFetcher fetcher) {
         entries.clear();

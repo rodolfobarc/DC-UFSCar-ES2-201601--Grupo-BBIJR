@@ -26,29 +26,23 @@
  */
 package net.sf.jabref.gui;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.entryeditor.EntryEditor;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.gui.net.MonitoredURLDownload;
 import net.sf.jabref.logic.l10n.Localization;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * @author Erik Putrycz erik.putrycz-at-nrc-cnrc.gc.ca
@@ -111,37 +105,6 @@ public class UrlDragDrop implements DropTargetListener {
         // Do nothing
     }
 
-
-    private static class JOptionChoice {
-
-        private final String label;
-
-        private final int id;
-
-
-        public JOptionChoice(final String label, final int id) {
-            this.label = label;
-            this.id = id;
-        }
-
-        @Override
-        public String toString() {
-            return label;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-    }
-
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.awt.dnd.DropTargetListener#drop(java.awt.dnd.DropTargetDropEvent)
-     */
-
     @Override
     public void drop(DropTargetDropEvent dtde) {
         Transferable tsf = dtde.getTransferable();
@@ -159,7 +122,7 @@ public class UrlDragDrop implements DropTargetListener {
                     .showInputDialog(editor, "",
                             Localization.lang("Select action"),
                             JOptionPane.QUESTION_MESSAGE, null,
-                            new JOptionChoice[] {
+                            new JOptionChoice[]{
                                     new JOptionChoice(
                                             Localization.lang("Insert URL"), 0),
                                     new JOptionChoice(
@@ -167,33 +130,33 @@ public class UrlDragDrop implements DropTargetListener {
                             new JOptionChoice(Localization.lang("Insert URL"), 0));
             if (res != null) {
                 switch (res.getId()) {
-                //insert URL
-                case 0:
-                    feditor.setText(url.toString());
-                    editor.updateField(feditor);
-                    break;
-                //download file
-                case 1:
-                    try {
-                        //auto filename:
-                        File file = new File(new File(Globals.prefs.get("pdfDirectory")),
-                                editor.getEntry().getCiteKey() + ".pdf");
-                        frame.output(Localization.lang("Downloading..."));
-                        MonitoredURLDownload.buildMonitoredDownload(editor, url).downloadToFile(file);
-                        frame.output(Localization.lang("Download completed"));
-                        feditor.setText(file.toURI().toURL().toString());
+                    //insert URL
+                    case 0:
+                        feditor.setText(url.toString());
                         editor.updateField(feditor);
+                        break;
+                    //download file
+                    case 1:
+                        try {
+                            //auto filename:
+                            File file = new File(new File(Globals.prefs.get("pdfDirectory")),
+                                    editor.getEntry().getCiteKey() + ".pdf");
+                            frame.output(Localization.lang("Downloading..."));
+                            MonitoredURLDownload.buildMonitoredDownload(editor, url).downloadToFile(file);
+                            frame.output(Localization.lang("Download completed"));
+                            feditor.setText(file.toURI().toURL().toString());
+                            editor.updateField(feditor);
 
-                    } catch (IOException ioex) {
-                        LOGGER.error("Error while downloading file.", ioex);
-                        JOptionPane.showMessageDialog(editor, Localization.lang("File download"),
-                                Localization.lang("Error while downloading file:" + ioex.getMessage()),
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                    break;
-                default:
-                    LOGGER.warn("Unknown selection (should not happen)");
-                    break;
+                        } catch (IOException ioex) {
+                            LOGGER.error("Error while downloading file.", ioex);
+                            JOptionPane.showMessageDialog(editor, Localization.lang("File download"),
+                                    Localization.lang("Error while downloading file:" + ioex.getMessage()),
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                    default:
+                        LOGGER.warn("Unknown selection (should not happen)");
+                        break;
                 }
             }
             return;
@@ -228,6 +191,36 @@ public class UrlDragDrop implements DropTargetListener {
             LOGGER.warn("Could not perform drag and drop.", nfe);
         } catch (IOException ioex) {
             LOGGER.warn("Could not perform drag and drop.", ioex);
+        }
+
+    }
+
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.awt.dnd.DropTargetListener#drop(java.awt.dnd.DropTargetDropEvent)
+     */
+
+    private static class JOptionChoice {
+
+        private final String label;
+
+        private final int id;
+
+
+        public JOptionChoice(final String label, final int id) {
+            this.label = label;
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+
+        public int getId() {
+            return id;
         }
 
     }

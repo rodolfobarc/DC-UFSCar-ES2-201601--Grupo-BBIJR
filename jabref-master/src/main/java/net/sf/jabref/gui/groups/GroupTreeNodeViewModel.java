@@ -15,6 +15,21 @@
  */
 package net.sf.jabref.gui.groups;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefGUI;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.gui.BasePanel;
+import net.sf.jabref.gui.IconTheme;
+import net.sf.jabref.gui.undo.CountingUndoManager;
+import net.sf.jabref.logic.groups.*;
+import net.sf.jabref.logic.util.strings.StringUtil;
+import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.UndoManager;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -25,38 +40,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import javax.swing.Icon;
-import javax.swing.JTree;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.UndoManager;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefGUI;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.undo.CountingUndoManager;
-import net.sf.jabref.logic.groups.AbstractGroup;
-import net.sf.jabref.logic.groups.AllEntriesGroup;
-import net.sf.jabref.logic.groups.EntriesGroupChange;
-import net.sf.jabref.logic.groups.ExplicitGroup;
-import net.sf.jabref.logic.groups.GroupTreeNode;
-import net.sf.jabref.logic.groups.KeywordGroup;
-import net.sf.jabref.logic.groups.MoveGroupChange;
-import net.sf.jabref.logic.groups.SearchGroup;
-import net.sf.jabref.logic.util.strings.StringUtil;
-import net.sf.jabref.model.entry.BibEntry;
-
 public class GroupTreeNodeViewModel implements Transferable, TreeNode {
 
+    public static final DataFlavor FLAVOR;
     private static final int MAX_DISPLAYED_LETTERS = 35;
     private static final Icon GROUP_REFINING_ICON = IconTheme.JabRefIcon.GROUP_REFINING.getSmallIcon();
     private static final Icon GROUP_INCLUDING_ICON = IconTheme.JabRefIcon.GROUP_INCLUDING.getSmallIcon();
     private static final Icon GROUP_REGULAR_ICON = null;
-
-    public static final DataFlavor FLAVOR;
     private static final DataFlavor[] FLAVORS;
 
     static {
@@ -68,10 +58,14 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
             // never happens
         }
         FLAVOR = df;
-        FLAVORS = new DataFlavor[] {GroupTreeNodeViewModel.FLAVOR};
+        FLAVORS = new DataFlavor[]{GroupTreeNodeViewModel.FLAVOR};
     }
 
     private final GroupTreeNode node;
+
+    public GroupTreeNodeViewModel(GroupTreeNode node) {
+        this.node = node;
+    }
 
     @Override
     public String toString() {
@@ -79,10 +73,6 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
         sb.append("node=").append(node);
         sb.append('}');
         return sb.toString();
-    }
-
-    public GroupTreeNodeViewModel(GroupTreeNode node) {
-        this.node = node;
     }
 
     @Override
@@ -121,11 +111,11 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
 
     @Override
     public int getIndex(TreeNode child) {
-        if(! (child instanceof GroupTreeNodeViewModel)) {
+        if (!(child instanceof GroupTreeNodeViewModel)) {
             return -1;
         }
 
-        GroupTreeNodeViewModel childViewModel = (GroupTreeNodeViewModel)child;
+        GroupTreeNodeViewModel childViewModel = (GroupTreeNodeViewModel) child;
         return node.getIndexOfChild(childViewModel.getNode()).orElse(-1);
     }
 
@@ -160,34 +150,38 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
         return node;
     }
 
-    /** Collapse this node and all its children. */
+    /**
+     * Collapse this node and all its children.
+     */
     public void collapseSubtree(JTree tree) {
         tree.collapsePath(this.getTreePath());
 
-        for(GroupTreeNodeViewModel child : getChildren()) {
+        for (GroupTreeNodeViewModel child : getChildren()) {
             child.collapseSubtree(tree);
         }
     }
 
-    /** Expand this node and all its children. */
+    /**
+     * Expand this node and all its children.
+     */
     public void expandSubtree(JTree tree) {
         tree.expandPath(this.getTreePath());
 
-        for(GroupTreeNodeViewModel child : getChildren()) {
+        for (GroupTreeNodeViewModel child : getChildren()) {
             child.expandSubtree(tree);
         }
     }
 
     public List<GroupTreeNodeViewModel> getChildren() {
         List<GroupTreeNodeViewModel> children = new ArrayList<>();
-        for(GroupTreeNode child : node.getChildren()) {
+        for (GroupTreeNode child : node.getChildren()) {
             children.add(new GroupTreeNodeViewModel(child));
         }
         return children;
     }
 
     protected boolean printInItalics() {
-        return Globals.prefs.getBoolean(JabRefPreferences.GROUP_SHOW_DYNAMIC) &&  node.getGroup().isDynamic();
+        return Globals.prefs.getBoolean(JabRefPreferences.GROUP_SHOW_DYNAMIC) && node.getGroup().isDynamic();
     }
 
     public String getText() {
@@ -202,7 +196,7 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
             } else if ((group instanceof KeywordGroup) || (group instanceof SearchGroup)) {
                 int hits = 0;
                 BasePanel currentBasePanel = JabRefGUI.getMainFrame().getCurrentBasePanel();
-                if(currentBasePanel != null) {
+                if (currentBasePanel != null) {
                     for (BibEntry entry : currentBasePanel.getDatabase().getEntries()) {
                         if (group.contains(entry)) {
                             hits++;
@@ -223,12 +217,12 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
     public Icon getIcon() {
         if (Globals.prefs.getBoolean(JabRefPreferences.GROUP_SHOW_ICONS)) {
             switch (node.getGroup().getHierarchicalContext()) {
-            case REFINING:
-                return GROUP_REFINING_ICON;
-            case INCLUDING:
-                return GROUP_INCLUDING_ICON;
-            default:
-                return GROUP_REGULAR_ICON;
+                case REFINING:
+                    return GROUP_REFINING_ICON;
+                case INCLUDING:
+                    return GROUP_INCLUDING_ICON;
+                default:
+                    return GROUP_REGULAR_ICON;
             }
         } else {
             return null;
@@ -383,7 +377,7 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
         final Optional<GroupTreeNode> grandParent = parent.getParent();
         final int index = node.getPositionInParent();
 
-        if (! grandParent.isPresent()) {
+        if (!grandParent.isPresent()) {
             return Optional.empty();
         }
         final int indexOfParent = grandParent.get().getIndexOfChild(parent).get();
@@ -408,10 +402,9 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
      * Adds the given entries to this node's group.
      */
     public Optional<EntriesGroupChange> addEntriesToGroup(List<BibEntry> entries) {
-        if(node.getGroup().supportsAdd()) {
+        if (node.getGroup().supportsAdd()) {
             return node.getGroup().add(entries);
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }
@@ -420,10 +413,9 @@ public class GroupTreeNodeViewModel implements Transferable, TreeNode {
      * Removes the given entries from this node's group.
      */
     public Optional<EntriesGroupChange> removeEntriesFromGroup(List<BibEntry> entries) {
-        if(node.getGroup().supportsRemove()) {
+        if (node.getGroup().supportsRemove()) {
             return node.getGroup().remove(entries);
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }

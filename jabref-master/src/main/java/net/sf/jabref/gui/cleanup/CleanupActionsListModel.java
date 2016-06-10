@@ -1,20 +1,19 @@
 package net.sf.jabref.gui.cleanup;
 
+import net.sf.jabref.exporter.FieldFormatterCleanups;
+import net.sf.jabref.logic.cleanup.FieldFormatterCleanup;
+
+import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
-import net.sf.jabref.exporter.FieldFormatterCleanups;
-import net.sf.jabref.logic.cleanup.FieldFormatterCleanup;
-
 public class CleanupActionsListModel implements ListModel<FieldFormatterCleanup> {
 
-    private List<FieldFormatterCleanup> cleanupActions;
     private final List<ListDataListener> listeners = new ArrayList<>();
+    private List<FieldFormatterCleanup> cleanupActions;
 
 
     public CleanupActionsListModel(List<FieldFormatterCleanup> cleanupAction) {
@@ -36,6 +35,7 @@ public class CleanupActionsListModel implements ListModel<FieldFormatterCleanup>
     /**
      * Removes the action at the specified index from the list.
      * Removal is only done when index {@code >=0} and index {@code<=} list size
+     *
      * @param index The index to remove
      */
     public void removeAtIndex(int index) {

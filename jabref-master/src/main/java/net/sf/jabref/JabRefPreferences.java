@@ -15,36 +15,6 @@
  */
 package net.sf.jabref;
 
-import java.awt.Color;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.InvalidPreferencesFormatException;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
-
-import javax.swing.JTable;
-import javax.swing.UIManager;
-
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.exporter.CustomExportList;
 import net.sf.jabref.exporter.ExportComparator;
@@ -75,19 +45,25 @@ import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.CustomEntryType;
 import net.sf.jabref.model.entry.EntryUtil;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.InvalidPreferencesFormatException;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+
 public class JabRefPreferences {
-    private static final Log LOGGER = LogFactory.getLog(JabRefPreferences.class);
     public static final String EXTERNAL_FILE_TYPES = "externalFileTypes";
-
-    /**
-     * HashMap that contains all preferences which are set by default
-     */
-    public final Map<String, Object> defaults = new HashMap<>();
-
     /* contents of the defaults HashMap that are defined in this class.
      * There are more default parameters in this map which belong to separate preference classes.
     */
@@ -264,7 +240,6 @@ public class JabRefPreferences {
     public static final String ACTIVE_PREVIEW = "activePreview";
     public static final String PREVIEW_ENABLED = "previewEnabled";
     public static final String MERGE_ENTRIES_DIFF_MODE = "mergeEntriesDiffMode";
-
     public static final String CUSTOM_EXPORT_FORMAT = "customExportFormat";
     public static final String CUSTOM_IMPORT_FORMAT = "customImportFormat";
     public static final String BINDINGS = "bindings";
@@ -272,11 +247,9 @@ public class JabRefPreferences {
     public static final String MARKED_ENTRY_BACKGROUND = "markedEntryBackground";
     public static final String KEY_PATTERN_REGEX = "KeyPatternRegex";
     public static final String KEY_PATTERN_REPLACEMENT = "KeyPatternReplacement";
-
     // Currently, it is not possible to specify defaults for specific entry types
     // When this should be made possible, the code to inspect is net.sf.jabref.gui.preftabs.LabelPatternPrefTab.storeSettings() -> LabelPattern keypatterns = getLabelPattern(); etc
     public static final String DEFAULT_LABEL_PATTERN = "defaultLabelPattern";
-
     public static final String SEARCH_MODE_FLOAT = "floatSearch";
     public static final String GRAY_OUT_NON_HITS = "grayOutNonHits";
     public static final String CONFIRM_DELETE = "confirmDelete";
@@ -330,7 +303,6 @@ public class JabRefPreferences {
     public static final String USE_CASE_KEEPER_ON_SEARCH = "useCaseKeeperOnSearch";
     public static final String USE_CONVERT_TO_EQUATION = "useConvertToEquation";
     public static final String USE_IEEE_ABRV = "useIEEEAbrv";
-
     public static final String AKS_AUTO_NAMING_PDFS_AGAIN = "AskAutoNamingPDFsAgain";
     public static final String CLEANUP_DOI = "CleanUpDOI";
     public static final String CLEANUP_MOVE_PDF = "CleanUpMovePDF";
@@ -344,31 +316,10 @@ public class JabRefPreferences {
     public static final String CLEANUP_FIX_FILE_LINKS = "CleanUpFixFileLinks";
     public static final String CLEANUP_FORMATTERS = "CleanUpFormatters";
     public static final CleanupPreset CLEANUP_DEFAULT_PRESET;
-    static {
-        EnumSet<CleanupPreset.CleanupStep> deactivedJobs = EnumSet.of(
-                CleanupPreset.CleanupStep.CLEAN_UP_UPGRADE_EXTERNAL_LINKS,
-                CleanupPreset.CleanupStep.RENAME_PDF_ONLY_RELATIVE_PATHS,
-                CleanupPreset.CleanupStep.CONVERT_TO_BIBLATEX);
-
-        List<FieldFormatterCleanup> activeFormatterCleanups = new ArrayList<>();
-        activeFormatterCleanups.add(new FieldFormatterCleanup("pages", BibtexFieldFormatters.NORMALIZE_PAGES));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("date", BibtexFieldFormatters.NORMALIZE_DATE));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("month", new NormalizeMonthFormatter()));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new ProtectTermsFormatter()));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new UnitsToLatexFormatter()));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new LatexCleanupFormatter()));
-        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new HtmlToLatexFormatter()));
-        FieldFormatterCleanups formatterCleanups = new FieldFormatterCleanups(true, activeFormatterCleanups);
-        CLEANUP_DEFAULT_PRESET = new CleanupPreset(EnumSet.complementOf(deactivedJobs), formatterCleanups);
-    }
-
     public static final String PREF_IMPORT_DEFAULT_PDF_IMPORT_STYLE = "importDefaultPDFimportStyle";
     public static final String PREF_IMPORT_ALWAYSUSE = "importAlwaysUsePDFImportStyle";
     public static final String PREF_IMPORT_FILENAMEPATTERN = "importFileNamePattern";
-
-
     public static final String PUSH_TO_APPLICATION = "pushToApplication";
-
     /**
      * The OpenOffice/LibreOffice connection preferences are:
      * OO_PATH main directory for OO/LO installation, used to detect location on Win/OS X when using manual connect
@@ -393,61 +344,65 @@ public class JabRefPreferences {
     public static final String STYLES_SIZE_X = "stylesSizeX";
     public static final String STYLES_POS_Y = "stylesPosY";
     public static final String STYLES_POS_X = "stylesPosX";
-
+    private static final Log LOGGER = LogFactory.getLog(JabRefPreferences.class);
     //non-default preferences
     private static final String CUSTOM_TYPE_NAME = "customTypeName_";
     private static final String CUSTOM_TYPE_REQ = "customTypeReq_";
     private static final String CUSTOM_TYPE_OPT = "customTypeOpt_";
     private static final String CUSTOM_TYPE_PRIOPT = "customTypePriOpt_";
-
-    private static final char[][] VALUE_DELIMITERS = new char[][] { {'"', '"'}, {'{', '}'}};
-
-
-    public String WRAPPED_USERNAME;
-    public final String MARKING_WITH_NUMBER_PATTERN;
-
-    private final Preferences prefs;
-
-    private final Set<String> putBracesAroundCapitalsFields = new HashSet<>(4);
-    private final Set<String> nonWrappableFields = new HashSet<>(5);
-    private GlobalLabelPattern keyPattern;
-
-    // Object containing custom export formats:
-    public final CustomExportList customExports;
-
+    private static final char[][] VALUE_DELIMITERS = new char[][]{{'"', '"'}, {'{', '}'}};
     // Helper string
     private static final String USER_HOME = System.getProperty("user.home");
+    // The only instance of this class:
+    private static JabRefPreferences singleton;
 
+    static {
+        EnumSet<CleanupPreset.CleanupStep> deactivedJobs = EnumSet.of(
+                CleanupPreset.CleanupStep.CLEAN_UP_UPGRADE_EXTERNAL_LINKS,
+                CleanupPreset.CleanupStep.RENAME_PDF_ONLY_RELATIVE_PATHS,
+                CleanupPreset.CleanupStep.CONVERT_TO_BIBLATEX);
+
+        List<FieldFormatterCleanup> activeFormatterCleanups = new ArrayList<>();
+        activeFormatterCleanups.add(new FieldFormatterCleanup("pages", BibtexFieldFormatters.NORMALIZE_PAGES));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("date", BibtexFieldFormatters.NORMALIZE_DATE));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("month", new NormalizeMonthFormatter()));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new ProtectTermsFormatter()));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new UnitsToLatexFormatter()));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new LatexCleanupFormatter()));
+        activeFormatterCleanups.add(new FieldFormatterCleanup("title", new HtmlToLatexFormatter()));
+        FieldFormatterCleanups formatterCleanups = new FieldFormatterCleanups(true, activeFormatterCleanups);
+        CLEANUP_DEFAULT_PRESET = new CleanupPreset(EnumSet.complementOf(deactivedJobs), formatterCleanups);
+    }
+
+    /**
+     * HashMap that contains all preferences which are set by default
+     */
+    public final Map<String, Object> defaults = new HashMap<>();
+    public final String MARKING_WITH_NUMBER_PATTERN;
+    // Object containing custom export formats:
+    public final CustomExportList customExports;
     /**
      * Set with all custom {@link ImportFormat}s
      */
     public final CustomImportList customImports;
-
-    // Object containing info about customized entry editor tabs.
-    private EntryEditorTabList tabList;
-
+    private final Preferences prefs;
+    private final Set<String> putBracesAroundCapitalsFields = new HashSet<>(4);
+    private final Set<String> nonWrappableFields = new HashSet<>(5);
+    public String WRAPPED_USERNAME;
     // The following field is used as a global variable during the export of a database.
     // By setting this field to the path of the database's default file directory, formatters
     // that should resolve external file paths can access this field. This is an ugly hack
     // to solve the problem of formatters not having access to any context except for the
     // string to be formatted and possible formatter arguments.
     public List<String> fileDirForDatabase;
-
     // The following field is used as a global variable during the export of a database.
     // It is used to hold custom name formatters defined by a custom export filter.
     // It is set before the export starts:
     public Map<String, String> customExportNameFormatters;
+    private GlobalLabelPattern keyPattern;
+    // Object containing info about customized entry editor tabs.
+    private EntryEditorTabList tabList;
 
-    // The only instance of this class:
-    private static JabRefPreferences singleton;
-
-
-    public static JabRefPreferences getInstance() {
-        if (JabRefPreferences.singleton == null) {
-            JabRefPreferences.singleton = new JabRefPreferences();
-        }
-        return JabRefPreferences.singleton;
-    }
 
     // The constructor is made private to enforce this as a singleton class:
     private JabRefPreferences() {
@@ -725,42 +680,42 @@ public class JabRefPreferences {
         defaults.put(ACTIVE_PREVIEW, 0);
         defaults.put(PREVIEW_0,
                 "<font face=\"sans-serif\">"
-                + "<b><i>\\bibtextype</i><a name=\"\\bibtexkey\">\\begin{bibtexkey} (\\bibtexkey)</a>"
-                + "\\end{bibtexkey}</b><br>__NEWLINE__"
-                + "\\begin{author} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\author}<BR>\\end{author}__NEWLINE__"
-                + "\\begin{editor} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\editor} "
-                + "<i>(\\format[IfPlural(Eds.,Ed.)]{\\editor})</i><BR>\\end{editor}__NEWLINE__"
-                + "\\begin{title} \\format[HTMLChars]{\\title} \\end{title}<BR>__NEWLINE__"
-                + "\\begin{chapter} \\format[HTMLChars]{\\chapter}<BR>\\end{chapter}__NEWLINE__"
-                + "\\begin{journal} <em>\\format[HTMLChars]{\\journal}, </em>\\end{journal}__NEWLINE__"
-                // Include the booktitle field for @inproceedings, @proceedings, etc.
-                + "\\begin{booktitle} <em>\\format[HTMLChars]{\\booktitle}, </em>\\end{booktitle}__NEWLINE__"
-                + "\\begin{school} <em>\\format[HTMLChars]{\\school}, </em>\\end{school}__NEWLINE__"
-                + "\\begin{institution} <em>\\format[HTMLChars]{\\institution}, </em>\\end{institution}__NEWLINE__"
-                + "\\begin{publisher} <em>\\format[HTMLChars]{\\publisher}, </em>\\end{publisher}__NEWLINE__"
-                + "\\begin{year}<b>\\year</b>\\end{year}\\begin{volume}<i>, \\volume</i>\\end{volume}"
-                + "\\begin{pages}, \\format[FormatPagesForHTML]{\\pages} \\end{pages}__NEWLINE__"
-                + "\\begin{abstract}<BR><BR><b>Abstract: </b> \\format[HTMLChars]{\\abstract} \\end{abstract}__NEWLINE__"
-                + "\\begin{review}<BR><BR><b>Review: </b> \\format[HTMLChars]{\\review} \\end{review}"
-                + "</dd>__NEWLINE__<p></p></font>");
+                        + "<b><i>\\bibtextype</i><a name=\"\\bibtexkey\">\\begin{bibtexkey} (\\bibtexkey)</a>"
+                        + "\\end{bibtexkey}</b><br>__NEWLINE__"
+                        + "\\begin{author} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\author}<BR>\\end{author}__NEWLINE__"
+                        + "\\begin{editor} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\editor} "
+                        + "<i>(\\format[IfPlural(Eds.,Ed.)]{\\editor})</i><BR>\\end{editor}__NEWLINE__"
+                        + "\\begin{title} \\format[HTMLChars]{\\title} \\end{title}<BR>__NEWLINE__"
+                        + "\\begin{chapter} \\format[HTMLChars]{\\chapter}<BR>\\end{chapter}__NEWLINE__"
+                        + "\\begin{journal} <em>\\format[HTMLChars]{\\journal}, </em>\\end{journal}__NEWLINE__"
+                        // Include the booktitle field for @inproceedings, @proceedings, etc.
+                        + "\\begin{booktitle} <em>\\format[HTMLChars]{\\booktitle}, </em>\\end{booktitle}__NEWLINE__"
+                        + "\\begin{school} <em>\\format[HTMLChars]{\\school}, </em>\\end{school}__NEWLINE__"
+                        + "\\begin{institution} <em>\\format[HTMLChars]{\\institution}, </em>\\end{institution}__NEWLINE__"
+                        + "\\begin{publisher} <em>\\format[HTMLChars]{\\publisher}, </em>\\end{publisher}__NEWLINE__"
+                        + "\\begin{year}<b>\\year</b>\\end{year}\\begin{volume}<i>, \\volume</i>\\end{volume}"
+                        + "\\begin{pages}, \\format[FormatPagesForHTML]{\\pages} \\end{pages}__NEWLINE__"
+                        + "\\begin{abstract}<BR><BR><b>Abstract: </b> \\format[HTMLChars]{\\abstract} \\end{abstract}__NEWLINE__"
+                        + "\\begin{review}<BR><BR><b>Review: </b> \\format[HTMLChars]{\\review} \\end{review}"
+                        + "</dd>__NEWLINE__<p></p></font>");
         defaults.put(PREVIEW_1,
                 "<font face=\"sans-serif\">"
-                + "<b><i>\\bibtextype</i><a name=\"\\bibtexkey\">\\begin{bibtexkey} (\\bibtexkey)</a>"
-                + "\\end{bibtexkey}</b><br>__NEWLINE__"
-                + "\\begin{author} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\author}<BR>\\end{author}__NEWLINE__"
-                + "\\begin{editor} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\editor} "
-                + "<i>(\\format[IfPlural(Eds.,Ed.)]{\\editor})</i><BR>\\end{editor}__NEWLINE__"
-                + "\\begin{title} \\format[HTMLChars]{\\title} \\end{title}<BR>__NEWLINE__"
-                + "\\begin{chapter} \\format[HTMLChars]{\\chapter}<BR>\\end{chapter}__NEWLINE__"
-                + "\\begin{journal} <em>\\format[HTMLChars]{\\journal}, </em>\\end{journal}__NEWLINE__"
-                // Include the booktitle field for @inproceedings, @proceedings, etc.
-                + "\\begin{booktitle} <em>\\format[HTMLChars]{\\booktitle}, </em>\\end{booktitle}__NEWLINE__"
-                + "\\begin{school} <em>\\format[HTMLChars]{\\school}, </em>\\end{school}__NEWLINE__"
-                + "\\begin{institution} <em>\\format[HTMLChars]{\\institution}, </em>\\end{institution}__NEWLINE__"
-                + "\\begin{publisher} <em>\\format[HTMLChars]{\\publisher}, </em>\\end{publisher}__NEWLINE__"
-                + "\\begin{year}<b>\\year</b>\\end{year}\\begin{volume}<i>, \\volume</i>\\end{volume}"
-                + "\\begin{pages}, \\format[FormatPagesForHTML]{\\pages} \\end{pages}"
-                + "</dd>__NEWLINE__<p></p></font>");
+                        + "<b><i>\\bibtextype</i><a name=\"\\bibtexkey\">\\begin{bibtexkey} (\\bibtexkey)</a>"
+                        + "\\end{bibtexkey}</b><br>__NEWLINE__"
+                        + "\\begin{author} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\author}<BR>\\end{author}__NEWLINE__"
+                        + "\\begin{editor} \\format[Authors(LastFirst,Initials,Semicolon,Amp),HTMLChars]{\\editor} "
+                        + "<i>(\\format[IfPlural(Eds.,Ed.)]{\\editor})</i><BR>\\end{editor}__NEWLINE__"
+                        + "\\begin{title} \\format[HTMLChars]{\\title} \\end{title}<BR>__NEWLINE__"
+                        + "\\begin{chapter} \\format[HTMLChars]{\\chapter}<BR>\\end{chapter}__NEWLINE__"
+                        + "\\begin{journal} <em>\\format[HTMLChars]{\\journal}, </em>\\end{journal}__NEWLINE__"
+                        // Include the booktitle field for @inproceedings, @proceedings, etc.
+                        + "\\begin{booktitle} <em>\\format[HTMLChars]{\\booktitle}, </em>\\end{booktitle}__NEWLINE__"
+                        + "\\begin{school} <em>\\format[HTMLChars]{\\school}, </em>\\end{school}__NEWLINE__"
+                        + "\\begin{institution} <em>\\format[HTMLChars]{\\institution}, </em>\\end{institution}__NEWLINE__"
+                        + "\\begin{publisher} <em>\\format[HTMLChars]{\\publisher}, </em>\\end{publisher}__NEWLINE__"
+                        + "\\begin{year}<b>\\year</b>\\end{year}\\begin{volume}<i>, \\volume</i>\\end{volume}"
+                        + "\\begin{pages}, \\format[FormatPagesForHTML]{\\pages} \\end{pages}"
+                        + "</dd>__NEWLINE__<p></p></font>");
 
         // TODO: Currently not possible to edit this setting:
         defaults.put(PREVIEW_PRINT_BUTTON, Boolean.FALSE);
@@ -862,6 +817,98 @@ public class JabRefPreferences {
         defaults.put(USE_UNIT_FORMATTER_ON_SEARCH, Boolean.TRUE);
     }
 
+    public static JabRefPreferences getInstance() {
+        if (JabRefPreferences.singleton == null) {
+            JabRefPreferences.singleton = new JabRefPreferences();
+        }
+        return JabRefPreferences.singleton;
+    }
+
+    private static String convertListToString(List<String> value) {
+        return value.stream().map(val -> StringUtil.quote(val, ";", '\\')).collect(Collectors.joining(";"));
+    }
+
+    /**
+     * Looks up a color definition in preferences, and returns an array containing the RGB values.
+     *
+     * @param value The key for this setting.
+     * @return The RGB values corresponding to this color setting.
+     */
+    private static int[] getRgb(String value) {
+        int[] values = new int[3];
+
+        if ((value != null) && !value.isEmpty()) {
+            String[] elements = value.split(":");
+            values[0] = Integer.parseInt(elements[0]);
+            values[1] = Integer.parseInt(elements[1]);
+            values[2] = Integer.parseInt(elements[2]);
+        } else {
+            values[0] = 0;
+            values[1] = 0;
+            values[2] = 0;
+        }
+        return values;
+    }
+
+    private static String getNextUnit(Reader data) throws IOException {
+        // character last read
+        // -1 if end of stream
+        // initialization necessary, because of Java compiler
+        int c = -1;
+
+        // last character was escape symbol
+        boolean escape = false;
+
+        // true if a ";" is found
+        boolean done = false;
+
+        StringBuilder res = new StringBuilder();
+        while (!done && ((c = data.read()) != -1)) {
+            if (c == '\\') {
+                if (escape) {
+                    escape = false;
+                    res.append('\\');
+                } else {
+                    escape = true;
+                }
+            } else {
+                if (c == ';') {
+                    if (escape) {
+                        res.append(';');
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    res.append((char) c);
+                }
+                escape = false;
+            }
+        }
+        if (res.length() > 0) {
+            return res.toString();
+        } else if (c == -1) {
+            // end of stream
+            return null;
+        } else {
+            return "";
+        }
+    }
+
+    private static void insertCleanupPreset(Map<String, Object> storage, CleanupPreset preset) {
+
+        storage.put(CLEANUP_SUPERSCRIPTS, preset.isCleanUpSuperscripts());
+        storage.put(CLEANUP_DOI, preset.isCleanUpDOI());
+        storage.put(CLEANUP_MOVE_PDF, preset.isMovePDF());
+        storage.put(CLEANUP_MAKE_PATHS_RELATIVE, preset.isMakePathsRelative());
+        storage.put(CLEANUP_RENAME_PDF, preset.isRenamePDF());
+        storage.put(CLEANUP_RENAME_PDF_ONLY_RELATIVE_PATHS, preset.isRenamePdfOnlyRelativePaths());
+        storage.put(CLEANUP_UPGRADE_EXTERNAL_LINKS, preset.isCleanUpUpgradeExternalLinks());
+        storage.put(CLEANUP_UNICODE, preset.isConvertUnicodeToLatex());
+        storage.put(CLEANUP_CONVERT_TO_BIBLATEX, preset.isConvertToBiblatex());
+        storage.put(CLEANUP_FIX_FILE_LINKS, preset.isFixFileLinks());
+        storage.put(CLEANUP_FORMATTERS, convertListToString(preset.getFormatterCleanups().convertToString()));
+    }
+
     public String getUser() {
         try {
             return get(DEFAULT_OWNER) + '-' + InetAddress.getLocalHost().getHostName();
@@ -875,11 +922,11 @@ public class JabRefPreferences {
         List<String> customFields = new ArrayList<>();
 
         int defNumber = 0;
-        while(true) {
+        while (true) {
             // saved as CUSTOMTABNAME_def{number} and ; separated
             String fields = (String) defaults.get(CUSTOM_TAB_FIELDS + "_def" + defNumber);
 
-            if((fields == null) || fields.isEmpty()) {
+            if ((fields == null) || fields.isEmpty()) {
                 break;
             }
 
@@ -1005,10 +1052,6 @@ public class JabRefPreferences {
         put(key, convertListToString(value));
     }
 
-    private static String convertListToString(List<String> value) {
-        return value.stream().map(val -> StringUtil.quote(val, ";", '\\')).collect(Collectors.joining(";"));
-    }
-
     /**
      * Returns a List of Strings containing the chosen columns.
      */
@@ -1053,7 +1096,7 @@ public class JabRefPreferences {
      * Set the default value for a key. This is useful for plugins that need to add default values for the prefs keys
      * they use.
      *
-     * @param key The preferences key.
+     * @param key   The preferences key.
      * @param value The default value.
      */
     public void putDefaultValue(String key, Object value) {
@@ -1063,34 +1106,12 @@ public class JabRefPreferences {
     /**
      * Stores a color in preferences.
      *
-     * @param key The key for this setting.
+     * @param key   The key for this setting.
      * @param color The Color to store.
      */
     public void putColor(String key, Color color) {
         String rgb = String.valueOf(color.getRed()) + ':' + color.getGreen() + ':' + color.getBlue();
         put(key, rgb);
-    }
-
-    /**
-     * Looks up a color definition in preferences, and returns an array containing the RGB values.
-     *
-     * @param value The key for this setting.
-     * @return The RGB values corresponding to this color setting.
-     */
-    private static int[] getRgb(String value) {
-        int[] values = new int[3];
-
-        if ((value != null) && !value.isEmpty()) {
-            String[] elements = value.split(":");
-            values[0] = Integer.parseInt(elements[0]);
-            values[1] = Integer.parseInt(elements[1]);
-            values[2] = Integer.parseInt(elements[2]);
-        } else {
-            values[0] = 0;
-            values[1] = 0;
-            values[2] = 0;
-        }
-        return values;
     }
 
     /**
@@ -1176,7 +1197,7 @@ public class JabRefPreferences {
     public Map<String, Object> getPreferences() {
         Map<String, Object> prefs = new HashMap<>();
         try {
-            for(String key : this.prefs.keys()){
+            for (String key : this.prefs.keys()) {
                 Object value = getObject(key);
                 prefs.put(key, value);
             }
@@ -1195,51 +1216,6 @@ public class JabRefPreferences {
             } catch (ClassCastException e2) {
                 return this.getInt(key);
             }
-        }
-    }
-
-
-    private static String getNextUnit(Reader data) throws IOException {
-        // character last read
-        // -1 if end of stream
-        // initialization necessary, because of Java compiler
-        int c = -1;
-
-        // last character was escape symbol
-        boolean escape = false;
-
-        // true if a ";" is found
-        boolean done = false;
-
-        StringBuilder res = new StringBuilder();
-        while (!done && ((c = data.read()) != -1)) {
-            if (c == '\\') {
-                if (escape) {
-                    escape = false;
-                    res.append('\\');
-                } else {
-                    escape = true;
-                }
-            } else {
-                if (c == ';') {
-                    if (escape) {
-                        res.append(';');
-                    } else {
-                        done = true;
-                    }
-                } else {
-                    res.append((char) c);
-                }
-                escape = false;
-            }
-        }
-        if (res.length() > 0) {
-            return res.toString();
-        } else if (c == -1) {
-            // end of stream
-            return null;
-        } else {
-            return "";
         }
     }
 
@@ -1278,7 +1254,6 @@ public class JabRefPreferences {
 
     }
 
-
     /**
      * Removes all information about custom entry types with tags of
      *
@@ -1293,11 +1268,11 @@ public class JabRefPreferences {
 
     public void purgeCustomEntryTypes() {
         int number = 0;
-        if(getCustomEntryType(number) != null) {
+        if (getCustomEntryType(number) != null) {
             number++;
         }
 
-        for(int i = 0; i < number; i++) {
+        for (int i = 0; i < number; i++) {
             purgeCustomEntryTypes(i);
         }
     }
@@ -1359,7 +1334,7 @@ public class JabRefPreferences {
 
     /**
      * ONLY FOR TESTING!
-     *
+     * <p>
      * Do not use in production code. Otherwise the singleton pattern is broken and preferences might get lost.
      *
      * @param owPrefs
@@ -1374,21 +1349,6 @@ public class JabRefPreferences {
 
     public void setDefaultEncoding(Charset encoding) {
         put(JabRefPreferences.DEFAULT_ENCODING, encoding.name());
-    }
-
-    private static void insertCleanupPreset(Map<String, Object> storage, CleanupPreset preset) {
-
-        storage.put(CLEANUP_SUPERSCRIPTS, preset.isCleanUpSuperscripts());
-        storage.put(CLEANUP_DOI, preset.isCleanUpDOI());
-        storage.put(CLEANUP_MOVE_PDF, preset.isMovePDF());
-        storage.put(CLEANUP_MAKE_PATHS_RELATIVE, preset.isMakePathsRelative());
-        storage.put(CLEANUP_RENAME_PDF, preset.isRenamePDF());
-        storage.put(CLEANUP_RENAME_PDF_ONLY_RELATIVE_PATHS, preset.isRenamePdfOnlyRelativePaths());
-        storage.put(CLEANUP_UPGRADE_EXTERNAL_LINKS, preset.isCleanUpUpgradeExternalLinks());
-        storage.put(CLEANUP_UNICODE, preset.isConvertUnicodeToLatex());
-        storage.put(CLEANUP_CONVERT_TO_BIBLATEX, preset.isConvertToBiblatex());
-        storage.put(CLEANUP_FIX_FILE_LINKS, preset.isFixFileLinks());
-        storage.put(CLEANUP_FORMATTERS, convertListToString(preset.getFormatterCleanups().convertToString()));
     }
 
 }

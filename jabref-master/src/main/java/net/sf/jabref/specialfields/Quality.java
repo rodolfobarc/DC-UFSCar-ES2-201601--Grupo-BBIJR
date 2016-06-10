@@ -15,13 +15,12 @@
  */
 package net.sf.jabref.specialfields;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
-
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Quality extends SpecialField {
 
@@ -38,16 +37,16 @@ public class Quality extends SpecialField {
         TEXT_DONE_PATTERN = "Toggled quality for %0 entries";
     }
 
-    @Override
-    public String getFieldName() {
-        return SpecialFieldsUtils.FIELDNAME_QUALITY;
-    }
-
     public static Quality getInstance() {
         if (Quality.INSTANCE == null) {
             Quality.INSTANCE = new Quality();
         }
         return Quality.INSTANCE;
+    }
+
+    @Override
+    public String getFieldName() {
+        return SpecialFieldsUtils.FIELDNAME_QUALITY;
     }
 
     @Override

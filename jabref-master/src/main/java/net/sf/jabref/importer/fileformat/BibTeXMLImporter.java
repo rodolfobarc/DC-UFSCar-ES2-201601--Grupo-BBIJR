@@ -15,6 +15,14 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,19 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Importer for the Refer/Endnote format.
- *
+ * <p>
  * check here for details on the format
  * http://www.ecst.csuchico.edu/~jacobsd/bib/formats/endnote.html
  */

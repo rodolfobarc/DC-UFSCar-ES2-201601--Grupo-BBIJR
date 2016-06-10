@@ -15,6 +15,12 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.logic.formatter.CaseChangers;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.MonthUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.logic.formatter.CaseChangers;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.MonthUtil;
 
 /**
  * Importer for the ISI Web of Science, INSPEC and Medline format.
@@ -55,58 +55,6 @@ public class IsiImporter extends ImportFormat {
     // 2006.09.05: Modified pattern to avoid false positives for other files due to an
     // extra | at the end:
     private static final Pattern ISI_PATTERN = Pattern.compile("FN ISI Export Format|VR 1.|PY \\d{4}");
-
-
-    /**
-     * Return the name of this import format.
-     */
-    @Override
-    public String getFormatName() {
-        return "ISI";
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see net.sf.jabref.imports.ImportFormat#getCLIId()
-     */
-    @Override
-    public String getCLIId() {
-        return "isi";
-    }
-
-
-
-    /**
-     * Check whether the source is in the correct format for this importer.
-     */
-    @Override
-    public boolean isRecognizedFormat(InputStream stream) throws IOException {
-
-        try (BufferedReader in = new BufferedReader(ImportFormatReader.getReaderDefaultEncoding(stream))) {
-
-            String str;
-            int i = 0;
-            while (((str = in.readLine()) != null) && (i < 50)) {
-
-                /**
-                 * The following line gives false positives for RIS files, so it
-                 * should not be uncommented. The hypen is a characteristic of the
-                 * RIS format.
-                 *
-                 * str = str.replace(" - ", "")
-                 */
-                if (IsiImporter.ISI_PATTERN.matcher(str).find()) {
-                    return true;
-                }
-
-                i++;
-            }
-        }
-        return false;
-    }
-
-
 
     public static void processSubSup(Map<String, String> map) {
 
@@ -154,6 +102,144 @@ public class IsiImporter extends ImportFormat {
                 }
             }
         }
+    }
+
+    private static String parsePages(String value) {
+        int lastDash = value.lastIndexOf('-');
+        return value.substring(0, lastDash) + "--" + value.substring(lastDash + 1);
+    }
+
+    public static String parseMonth(String value) {
+
+        String[] parts = value.split("\\s|\\-");
+        for (String part1 : parts) {
+            MonthUtil.Month month = MonthUtil.getMonthByShortName(part1.toLowerCase());
+            if (month.isValid()) {
+                return month.bibtexFormat;
+            }
+        }
+
+        // Try two digit month
+        for (String part : parts) {
+            try {
+                int number = Integer.parseInt(part);
+                MonthUtil.Month month = MonthUtil.getMonthByNumber(number);
+                if (month.isValid()) {
+                    return month.bibtexFormat;
+                }
+            } catch (NumberFormatException ignored) {
+                // Ignored
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Will expand ISI first names.
+     * <p>
+     * Fixed bug from:
+     * http://sourceforge.net/tracker/index.php?func=detail&aid=1542552&group_id=92314&atid=600306
+     */
+    public static String isiAuthorConvert(String author) {
+
+        String[] s = author.split(",");
+        if (s.length != 2) {
+            return author;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        String last = s[0].trim();
+        sb.append(last).append(", ");
+
+        String first = s[1].trim();
+
+        String[] firstParts = first.split("\\s+");
+
+        for (int i = 0; i < firstParts.length; i++) {
+
+            first = firstParts[i];
+
+            // Do we have only uppercase chars?
+            if (first.toUpperCase().equals(first)) {
+                first = first.replace(".", "");
+                for (int j = 0; j < first.length(); j++) {
+                    sb.append(first.charAt(j)).append('.');
+
+                    if (j < (first.length() - 1)) {
+                        sb.append(' ');
+                    }
+                }
+            } else {
+                sb.append(first);
+            }
+            if (i < (firstParts.length - 1)) {
+                sb.append(' ');
+            }
+        }
+        return sb.toString();
+
+    }
+
+    private static String[] isiAuthorsConvert(String[] authors) {
+
+        String[] result = new String[authors.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = IsiImporter.isiAuthorConvert(authors[i]);
+        }
+        return result;
+    }
+
+    public static String isiAuthorsConvert(String authors) {
+        String[] s = IsiImporter.isiAuthorsConvert(authors.split(" and |;"));
+        return String.join(" and ", s);
+    }
+
+    /**
+     * Return the name of this import format.
+     */
+    @Override
+    public String getFormatName() {
+        return "ISI";
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see net.sf.jabref.imports.ImportFormat#getCLIId()
+     */
+    @Override
+    public String getCLIId() {
+        return "isi";
+    }
+
+    /**
+     * Check whether the source is in the correct format for this importer.
+     */
+    @Override
+    public boolean isRecognizedFormat(InputStream stream) throws IOException {
+
+        try (BufferedReader in = new BufferedReader(ImportFormatReader.getReaderDefaultEncoding(stream))) {
+
+            String str;
+            int i = 0;
+            while (((str = in.readLine()) != null) && (i < 50)) {
+
+                /**
+                 * The following line gives false positives for RIS files, so it
+                 * should not be uncommented. The hypen is a characteristic of the
+                 * RIS format.
+                 *
+                 * str = str.replace(" - ", "")
+                 */
+                if (IsiImporter.ISI_PATTERN.matcher(str).find()) {
+                    return true;
+                }
+
+                i++;
+            }
+        }
+        return false;
     }
 
     /**
@@ -356,97 +442,6 @@ public class IsiImporter extends ImportFormat {
             bibitems.add(b);
         }
         return bibitems;
-    }
-
-    private static String parsePages(String value) {
-        int lastDash = value.lastIndexOf('-');
-        return value.substring(0, lastDash) + "--" + value.substring(lastDash + 1);
-    }
-
-    public static String parseMonth(String value) {
-
-        String[] parts = value.split("\\s|\\-");
-        for (String part1 : parts) {
-            MonthUtil.Month month = MonthUtil.getMonthByShortName(part1.toLowerCase());
-            if (month.isValid()) {
-                return month.bibtexFormat;
-            }
-        }
-
-        // Try two digit month
-        for (String part : parts) {
-            try {
-                int number = Integer.parseInt(part);
-                MonthUtil.Month month = MonthUtil.getMonthByNumber(number);
-                if (month.isValid()) {
-                    return month.bibtexFormat;
-                }
-            } catch (NumberFormatException ignored) {
-                // Ignored
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Will expand ISI first names.
-     * <p>
-     * Fixed bug from:
-     * http://sourceforge.net/tracker/index.php?func=detail&aid=1542552&group_id=92314&atid=600306
-     */
-    public static String isiAuthorConvert(String author) {
-
-        String[] s = author.split(",");
-        if (s.length != 2) {
-            return author;
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        String last = s[0].trim();
-        sb.append(last).append(", ");
-
-        String first = s[1].trim();
-
-        String[] firstParts = first.split("\\s+");
-
-        for (int i = 0; i < firstParts.length; i++) {
-
-            first = firstParts[i];
-
-            // Do we have only uppercase chars?
-            if (first.toUpperCase().equals(first)) {
-                first = first.replace(".", "");
-                for (int j = 0; j < first.length(); j++) {
-                    sb.append(first.charAt(j)).append('.');
-
-                    if (j < (first.length() - 1)) {
-                        sb.append(' ');
-                    }
-                }
-            } else {
-                sb.append(first);
-            }
-            if (i < (firstParts.length - 1)) {
-                sb.append(' ');
-            }
-        }
-        return sb.toString();
-
-    }
-
-    private static String[] isiAuthorsConvert(String[] authors) {
-
-        String[] result = new String[authors.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = IsiImporter.isiAuthorConvert(authors[i]);
-        }
-        return result;
-    }
-
-    public static String isiAuthorsConvert(String authors) {
-        String[] s = IsiImporter.isiAuthorsConvert(authors.split(" and |;"));
-        return String.join(" and ", s);
     }
 
 }

@@ -15,23 +15,7 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Collection;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.keyboard.KeyBinding;
@@ -41,41 +25,26 @@ import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.IEEETranEntryTypes;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.jdesktop.swingx.VerticalLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Collection;
 
 /**
  * Dialog that prompts the user to choose a type for an entry.
  * Returns null if canceled.
  */
 public class EntryTypeDialog extends JDialog implements ActionListener {
-    private EntryType type;
     private static final int COLUMN = 3;
     private final boolean biblatexMode;
-
     private final CancelAction cancelAction = new CancelAction();
     private final BibDatabaseContext bibDatabaseContext;
-
-    static class TypeButton extends JButton implements Comparable<TypeButton> {
-
-        private final EntryType type;
-
-
-        public TypeButton(String label, EntryType type) {
-            super(label);
-            this.type = type;
-        }
-
-        @Override
-        public int compareTo(TypeButton o) {
-            return type.getName().compareTo(o.type.getName());
-        }
-
-        public EntryType getType() {
-            return type;
-        }
-    }
+    private EntryType type;
 
     public EntryTypeDialog(JabRefFrame frame) {
         // modal dialog
@@ -106,7 +75,7 @@ public class EntryTypeDialog extends JDialog implements ActionListener {
         JPanel panel = new JPanel();
         panel.setLayout(new VerticalLayout());
 
-        if(biblatexMode) {
+        if (biblatexMode) {
             panel.add(createEntryGroupPanel("BibLateX", EntryTypes.getAllValues(bibDatabaseContext.getMode())));
         } else {
             panel.add(createEntryGroupPanel("BibTeX", BibtexEntryTypes.ALL));
@@ -175,6 +144,25 @@ public class EntryTypeDialog extends JDialog implements ActionListener {
         return type;
     }
 
+    static class TypeButton extends JButton implements Comparable<TypeButton> {
+
+        private final EntryType type;
+
+
+        public TypeButton(String label, EntryType type) {
+            super(label);
+            this.type = type;
+        }
+
+        @Override
+        public int compareTo(TypeButton o) {
+            return type.getName().compareTo(o.type.getName());
+        }
+
+        public EntryType getType() {
+            return type;
+        }
+    }
 
     class CancelAction extends AbstractAction {
         public CancelAction() {

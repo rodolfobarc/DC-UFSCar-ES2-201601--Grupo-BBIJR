@@ -15,11 +15,6 @@
 */
 package net.sf.jabref.logic.groups;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.FieldChange;
@@ -27,9 +22,13 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.QuotedStringTokenizer;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * @author jzieren
@@ -37,14 +36,12 @@ import org.apache.commons.logging.LogFactory;
 public class KeywordGroup extends AbstractGroup {
 
     public static final String ID = "KeywordGroup:";
-
+    private static final Log LOGGER = LogFactory.getLog(KeywordGroup.class);
     private final String searchField;
     private final String searchExpression;
     private final boolean caseSensitive;
     private final boolean regExp;
     private Pattern pattern;
-
-    private static final Log LOGGER = LogFactory.getLog(KeywordGroup.class);
 
 
     /**
@@ -63,11 +60,6 @@ public class KeywordGroup extends AbstractGroup {
         }
     }
 
-    private void compilePattern() throws IllegalArgumentException {
-        pattern = caseSensitive ? Pattern.compile("\\b" + searchExpression + "\\b")
-                : Pattern.compile("\\b" + searchExpression + "\\b", Pattern.CASE_INSENSITIVE);
-    }
-
     /**
      * Parses s and recreates the KeywordGroup from it.
      *
@@ -80,7 +72,7 @@ public class KeywordGroup extends AbstractGroup {
                     "Internal error: KeywordGroup cannot be created from \""
                             + s
                             + "\". "
-                    + "Please report this on https://github.com/JabRef/jabref/issues");
+                            + "Please report this on https://github.com/JabRef/jabref/issues");
         }
         QuotedStringTokenizer tok = new QuotedStringTokenizer(s.substring(KeywordGroup.ID
                 .length()), AbstractGroup.SEPARATOR, AbstractGroup.QUOTE_CHAR);
@@ -120,6 +112,61 @@ public class KeywordGroup extends AbstractGroup {
             default:
                 throw new UnsupportedVersionException("KeywordGroup", version);
         }
+    }
+
+    /**
+     * Look for the given non-regexp string in another string, but check whether a
+     * match concerns a complete word, not part of a word.
+     *
+     * @param word The word to look for.
+     * @param text The string to look in.
+     * @return true if the word was found, false otherwise.
+     */
+    private static boolean containsWord(String word, String text) {
+        int piv = 0;
+        while (piv < text.length()) {
+            int index = text.indexOf(word, piv);
+            if (index < 0) {
+                return false;
+            }
+            // Found a match. See if it is a complete word:
+            if (((index == 0) || !Character.isLetterOrDigit(text.charAt(index - 1))) &&
+                    (((index + word.length()) == text.length())
+                            || !Character.isLetterOrDigit(text.charAt(index + word.length())))) {
+                return true;
+            } else {
+                piv = index + 1;
+            }
+        }
+        return false;
+    }
+
+    public static String getDescriptionForPreview(String field, String expr, boolean caseSensitive, boolean regExp) {
+        String header = regExp ? Localization.lang("This group contains entries whose <b>%0</b> field contains the regular expression <b>%1</b>",
+                field, StringUtil.quoteForHTML(expr))
+                : Localization.lang("This group contains entries whose <b>%0</b> field contains the keyword <b>%1</b>",
+                field, StringUtil.quoteForHTML(expr));
+        String caseSensitiveText = caseSensitive ? Localization.lang("case sensitive") :
+                Localization.lang("case insensitive");
+        String footer = regExp ?
+                Localization.lang("Entries cannot be manually assigned to or removed from this group.")
+                : Localization.lang(
+                "Additionally, entries whose <b>%0</b> field does not contain "
+                        + "<b>%1</b> can be assigned manually to this group by selecting them "
+                        + "then using either drag and drop or the context menu. "
+                        + "This process adds the term <b>%1</b> to "
+                        + "each entry's <b>%0</b> field. "
+                        + "Entries can be removed manually from this group by selecting them "
+                        + "then using the context menu. "
+                        + "This process removes the term <b>%1</b> from "
+                        + "each entry's <b>%0</b> field.",
+                field, StringUtil.quoteForHTML(expr));
+        return String.format("%s (%s). %s", header, caseSensitiveText, footer);
+    }
+
+    private void compilePattern() throws IllegalArgumentException {
+        pattern = caseSensitive ? Pattern.compile("\\b" + searchExpression + "\\b")
+                : Pattern.compile("\\b" + searchExpression + "\\b", Pattern.CASE_INSENSITIVE);
     }
 
     /**
@@ -234,33 +281,6 @@ public class KeywordGroup extends AbstractGroup {
     }
 
     /**
-     * Look for the given non-regexp string in another string, but check whether a
-     * match concerns a complete word, not part of a word.
-     *
-     * @param word The word to look for.
-     * @param text The string to look in.
-     * @return true if the word was found, false otherwise.
-     */
-    private static boolean containsWord(String word, String text) {
-        int piv = 0;
-        while (piv < text.length()) {
-            int index = text.indexOf(word, piv);
-            if (index < 0) {
-                return false;
-            }
-            // Found a match. See if it is a complete word:
-            if (((index == 0) || !Character.isLetterOrDigit(text.charAt(index - 1))) &&
-                    (((index + word.length()) == text.length())
-                            || !Character.isLetterOrDigit(text.charAt(index + word.length())))) {
-                return true;
-            } else {
-                piv = index + 1;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Removes matches of searchString in the entry's field. This is only
      * possible if the search expression is not a regExp.
      */
@@ -340,29 +360,6 @@ public class KeywordGroup extends AbstractGroup {
     @Override
     public String getDescription() {
         return KeywordGroup.getDescriptionForPreview(searchField, searchExpression, caseSensitive, regExp);
-    }
-
-    public static String getDescriptionForPreview(String field, String expr, boolean caseSensitive, boolean regExp) {
-        String header = regExp ? Localization.lang("This group contains entries whose <b>%0</b> field contains the regular expression <b>%1</b>",
-                field, StringUtil.quoteForHTML(expr))
-                : Localization.lang("This group contains entries whose <b>%0</b> field contains the keyword <b>%1</b>",
-                field, StringUtil.quoteForHTML(expr));
-        String caseSensitiveText = caseSensitive ? Localization.lang("case sensitive") :
-            Localization.lang("case insensitive");
-        String footer = regExp ?
-                Localization.lang("Entries cannot be manually assigned to or removed from this group.")
-                : Localization.lang(
-                "Additionally, entries whose <b>%0</b> field does not contain "
-                        + "<b>%1</b> can be assigned manually to this group by selecting them "
-                        + "then using either drag and drop or the context menu. "
-                        + "This process adds the term <b>%1</b> to "
-                        + "each entry's <b>%0</b> field. "
-                        + "Entries can be removed manually from this group by selecting them "
-                        + "then using the context menu. "
-                        + "This process removes the term <b>%1</b> from "
-                        + "each entry's <b>%0</b> field.",
-                field, StringUtil.quoteForHTML(expr));
-        return String.format("%s (%s). %s", header, caseSensitiveText, footer);
     }
 
     @Override

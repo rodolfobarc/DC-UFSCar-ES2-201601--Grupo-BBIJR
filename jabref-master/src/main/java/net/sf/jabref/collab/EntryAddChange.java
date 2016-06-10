@@ -15,9 +15,6 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -28,6 +25,8 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
+
+import javax.swing.*;
 
 class EntryAddChange extends Change {
 

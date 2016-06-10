@@ -1,18 +1,9 @@
 package net.sf.jabref.importer.fileformat;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.importer.OutputPrinterToNull;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,21 +12,26 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 @RunWith(Parameterized.class)
 public class BibTeXMLImporterTestTypes {
 
-    private BibTeXMLImporter bibteXMLImporter;
-
     @Parameter(value = 0)
     public String bibteXMLType;
-
     @Parameter(value = 1)
     public String expectedBibType;
-
+    private BibTeXMLImporter bibteXMLImporter;
 
     @Parameters
     public static Collection<String[]> types() {
-        return Arrays.asList(new String[][] {{"journal", "article"}, {"book section", "inbook"}, {"book", "book"},
+        return Arrays.asList(new String[][]{{"journal", "article"}, {"book section", "inbook"}, {"book", "book"},
                 {"conference", "inproceedings"}, {"proceedings", "inproceedings"}, {"report", "techreport"},
                 {"master thesis", "mastersthesis"}, {"thesis", "phdthesis"}, {"master", "misc"}});
     }

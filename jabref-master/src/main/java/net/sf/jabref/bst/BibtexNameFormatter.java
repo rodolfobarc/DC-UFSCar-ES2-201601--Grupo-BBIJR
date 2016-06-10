@@ -15,15 +15,15 @@
 */
 package net.sf.jabref.bst;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import net.sf.jabref.model.entry.Author;
 import net.sf.jabref.model.entry.AuthorList;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * From Bibtex:
- *
+ * <p>
  * "The |built_in| function {\.{format.name\$}} pops the
  * top three literals (they are a string, an integer, and a string
  * literal, in that order). The last string literal represents a
@@ -33,9 +33,8 @@ import net.sf.jabref.model.entry.AuthorList;
  * described in the \BibTeX\ documentation. Finally, this function
  * pushes the formatted name. If any of the types is incorrect, it
  * complains and pushes the null string."
- *
+ * <p>
  * Sounds easy - is a nightmare... X-(
- *
  */
 public class BibtexNameFormatter {
 
@@ -50,10 +49,9 @@ public class BibtexNameFormatter {
     }
 
     /**
-     *
      * @param author
      * @param format
-     * @param warn may-be-null
+     * @param warn   may-be-null
      * @return
      */
     public static String formatName(Author author, String format, Warn warn) {
@@ -113,20 +111,20 @@ public class BibtexNameFormatter {
 
                 String tokenS;
                 switch (type) {
-                case 'f':
-                    tokenS = author.getFirst();
-                    break;
-                case 'v':
-                    tokenS = author.getVon();
-                    break;
-                case 'l':
-                    tokenS = author.getLast();
-                    break;
-                case 'j':
-                    tokenS = author.getJr();
-                    break;
-                default:
-                    throw new VMException("Internal error");
+                    case 'f':
+                        tokenS = author.getFirst();
+                        break;
+                    case 'v':
+                        tokenS = author.getVon();
+                        break;
+                    case 'l':
+                        tokenS = author.getLast();
+                        break;
+                    case 'j':
+                        tokenS = author.getJr();
+                        break;
+                    default:
+                        throw new VMException("Internal error");
                 }
 
                 if (tokenS == null) {
@@ -220,7 +218,7 @@ public class BibtexNameFormatter {
                     boolean noDisTie = false;
                     if ((sb.charAt(sb.length() - 1) == '~') &&
                             ((BibtexNameFormatter.numberOfChars(sb.substring(groupStart, sb.length()), 4) >= 4) ||
-                            ((sb.length() > 1) && (noDisTie = sb.charAt(sb.length() - 2) == '~')))) {
+                                    ((sb.length() > 1) && (noDisTie = sb.charAt(sb.length() - 2) == '~')))) {
                         sb.deleteCharAt(sb.length() - 1);
                         if (!noDisTie) {
                             sb.append(' ');

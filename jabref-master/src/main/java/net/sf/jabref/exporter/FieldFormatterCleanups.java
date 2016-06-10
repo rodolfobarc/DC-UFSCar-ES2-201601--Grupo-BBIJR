@@ -1,13 +1,5 @@
 package net.sf.jabref.exporter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.cleanup.FieldFormatterCleanup;
@@ -21,15 +13,12 @@ import net.sf.jabref.logic.formatter.bibtexfields.OrdinalsToSuperscriptFormatter
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.BibEntry;
 
+import java.util.*;
+
 public class FieldFormatterCleanups {
 
-    private final List<FieldFormatterCleanup> actions;
-
-    private static List<Formatter> availableFormatters;
-
-    private boolean enabled;
-
     public static final FieldFormatterCleanups DEFAULT_SAVE_ACTIONS;
+    private static List<Formatter> availableFormatters;
 
     static {
         availableFormatters = new ArrayList<>();
@@ -43,6 +32,9 @@ public class FieldFormatterCleanups {
         DEFAULT_SAVE_ACTIONS = new FieldFormatterCleanups(false, defaultFormatters);
     }
 
+    private final List<FieldFormatterCleanup> actions;
+    private boolean enabled;
+
     public FieldFormatterCleanups(boolean enabled, String formatterString) {
         this(enabled, parse(formatterString));
     }
@@ -50,41 +42,6 @@ public class FieldFormatterCleanups {
     public FieldFormatterCleanups(boolean enabled, List<FieldFormatterCleanup> actions) {
         this.enabled = enabled;
         this.actions = Objects.requireNonNull(actions);
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public List<FieldFormatterCleanup> getConfiguredActions() {
-        return Collections.unmodifiableList(actions);
-    }
-
-    public List<Formatter> getAvailableFormatters() {
-        return Collections.unmodifiableList(availableFormatters);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if ((o == null) || (getClass() != o.getClass())) {
-            return false;
-        }
-
-        FieldFormatterCleanups that = (FieldFormatterCleanups) o;
-
-        if (enabled != that.enabled) {
-            return false;
-        }
-        return actions.equals(that.actions);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(actions, enabled);
     }
 
     private static List<FieldFormatterCleanup> parse(String formatterString) {
@@ -107,7 +64,7 @@ public class FieldFormatterCleanups {
             while (startIndex < formatterString.length()) {
                 // read the field name
                 int currentIndex = remainingString.indexOf('[');
-                        String fieldKey = remainingString.substring(0, currentIndex);
+                String fieldKey = remainingString.substring(0, currentIndex);
                 int endIndex = remainingString.indexOf(']');
                 startIndex += endIndex + 1;
 
@@ -140,24 +97,6 @@ public class FieldFormatterCleanups {
             return actions;
         }
         return actions;
-    }
-
-    public List<FieldChange> applySaveActions(BibEntry entry) {
-        if (enabled) {
-            return applyAllActions(entry);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    private List<FieldChange> applyAllActions(BibEntry entry) {
-        List<FieldChange> result = new ArrayList<>();
-
-        for (FieldFormatterCleanup action : actions) {
-            result.addAll(action.cleanup(entry));
-        }
-
-        return result;
     }
 
     private static Formatter getFormatterFromString(String formatterName) {
@@ -200,6 +139,72 @@ public class FieldFormatterCleanups {
         return result.toString();
     }
 
+    public static FieldFormatterCleanups parseFromString(List<String> formatterMetaList) {
+
+        if (formatterMetaList != null && formatterMetaList.size() >= 2) {
+            boolean enablementStatus = "enabled".equals(formatterMetaList.get(0));
+            String formatterString = formatterMetaList.get(1);
+            return new FieldFormatterCleanups(enablementStatus, formatterString);
+        } else {
+            // return default actions
+            return FieldFormatterCleanups.DEFAULT_SAVE_ACTIONS;
+        }
+
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public List<FieldFormatterCleanup> getConfiguredActions() {
+        return Collections.unmodifiableList(actions);
+    }
+
+    public List<Formatter> getAvailableFormatters() {
+        return Collections.unmodifiableList(availableFormatters);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
+
+        FieldFormatterCleanups that = (FieldFormatterCleanups) o;
+
+        if (enabled != that.enabled) {
+            return false;
+        }
+        return actions.equals(that.actions);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(actions, enabled);
+    }
+
+    public List<FieldChange> applySaveActions(BibEntry entry) {
+        if (enabled) {
+            return applyAllActions(entry);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<FieldChange> applyAllActions(BibEntry entry) {
+        List<FieldChange> result = new ArrayList<>();
+
+        for (FieldFormatterCleanup action : actions) {
+            result.addAll(action.cleanup(entry));
+        }
+
+        return result;
+    }
+
     public List<String> convertToString() {
         List<String> stringRepresentation = new ArrayList<>();
 
@@ -212,18 +217,5 @@ public class FieldFormatterCleanups {
         String formatterString = FieldFormatterCleanups.getMetaDataString(actions);
         stringRepresentation.add(formatterString);
         return stringRepresentation;
-    }
-
-    public static FieldFormatterCleanups parseFromString(List<String> formatterMetaList) {
-
-        if (formatterMetaList != null && formatterMetaList.size() >= 2) {
-            boolean enablementStatus = "enabled".equals(formatterMetaList.get(0));
-            String formatterString = formatterMetaList.get(1);
-            return new FieldFormatterCleanups(enablementStatus, formatterString);
-        } else {
-            // return default actions
-            return FieldFormatterCleanups.DEFAULT_SAVE_ACTIONS;
-        }
-
     }
 }

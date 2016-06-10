@@ -15,16 +15,15 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibtexString;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 public class UndoableInsertString extends AbstractUndoableEdit {
 
@@ -36,7 +35,7 @@ public class UndoableInsertString extends AbstractUndoableEdit {
 
 
     public UndoableInsertString(BasePanel panel, BibDatabase base,
-            BibtexString string) {
+                                BibtexString string) {
         this.base = base;
         this.panel = panel;
         this.string = string;

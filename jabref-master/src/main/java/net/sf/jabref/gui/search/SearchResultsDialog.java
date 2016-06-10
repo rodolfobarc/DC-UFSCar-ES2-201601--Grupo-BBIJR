@@ -15,61 +15,6 @@
 */
 package net.sf.jabref.gui.search;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableColumnModel;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.bibtex.FieldProperties;
-import net.sf.jabref.bibtex.InternalBibtexFields;
-import net.sf.jabref.bibtex.comparator.EntryComparator;
-import net.sf.jabref.bibtex.comparator.FieldComparator;
-import net.sf.jabref.external.ExternalFileMenuItem;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.GUIGlobals;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.PreviewPanel;
-import net.sf.jabref.gui.TransferableBibtexEntry;
-import net.sf.jabref.gui.desktop.JabRefDesktop;
-import net.sf.jabref.gui.keyboard.KeyBinding;
-import net.sf.jabref.gui.maintable.MainTableNameFormatter;
-import net.sf.jabref.gui.renderer.GeneralRenderer;
-import net.sf.jabref.gui.util.comparator.IconComparator;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.EntryUtil;
-
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -81,8 +26,32 @@ import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
 import ca.odell.glazedlists.swing.DefaultEventTableModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.bibtex.FieldProperties;
+import net.sf.jabref.bibtex.InternalBibtexFields;
+import net.sf.jabref.bibtex.comparator.EntryComparator;
+import net.sf.jabref.bibtex.comparator.FieldComparator;
+import net.sf.jabref.external.ExternalFileMenuItem;
+import net.sf.jabref.gui.*;
+import net.sf.jabref.gui.desktop.JabRefDesktop;
+import net.sf.jabref.gui.keyboard.KeyBinding;
+import net.sf.jabref.gui.maintable.MainTableNameFormatter;
+import net.sf.jabref.gui.renderer.GeneralRenderer;
+import net.sf.jabref.gui.util.comparator.IconComparator;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.EntryUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 /**
  * Dialog to display search results, potentially from more than one BasePanel, with
@@ -91,25 +60,20 @@ import org.apache.commons.logging.LogFactory;
 public class SearchResultsDialog {
 
     private static final Log LOGGER = LogFactory.getLog(SearchResultsDialog.class);
-
-    private final JabRefFrame frame;
-
-    private JDialog diag;
-    private static final String[] FIELDS = new String[] {
+    private static final String[] FIELDS = new String[]{
             "author", "title", "year", "journal"
     };
     private static final int FILE_COL = 0;
     private static final int URL_COL = 1;
     private static final int PAD = 2;
+    private final JabRefFrame frame;
     private final JLabel fileLabel = new JLabel(IconTheme.JabRefIcon.FILE.getSmallIcon());
     private final JLabel urlLabel = new JLabel(IconTheme.JabRefIcon.WWW.getSmallIcon());
-
     private final JSplitPane contentPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
     private final Rectangle toRect = new Rectangle(0, 0, 1, 1);
     private final EventList<BibEntry> entries = new BasicEventList<>();
-
     private final Map<BibEntry, BasePanel> entryHome = new HashMap<>();
+    private JDialog diag;
     private DefaultEventTableModel<BibEntry> model;
 
     private SortedList<BibEntry> sortedEntries;
@@ -206,6 +170,7 @@ public class SearchResultsDialog {
 
     /**
      * Control the visibility of the dialog.
+     *
      * @param visible true to show dialog, false to hide.
      */
     public void setVisible(boolean visible) {
@@ -223,6 +188,7 @@ public class SearchResultsDialog {
     /**
      * Set up the comparators for each column, so the user can modify sort order
      * by clicking the column labels.
+     *
      * @param comparatorChooser The comparator chooser controlling the sort order.
      */
     private void setupComparatorChooser(TableComparatorChooser<BibEntry> comparatorChooser) {
@@ -277,8 +243,9 @@ public class SearchResultsDialog {
 
     /**
      * Add a list of entries to the table.
+     *
      * @param newEntries The list of entries.
-     * @param panel A reference to the BasePanel where the entries belong.
+     * @param panel      A reference to the BasePanel where the entries belong.
      */
     public void addEntries(List<BibEntry> newEntries, BasePanel panel) {
         for (BibEntry entry : newEntries) {
@@ -288,6 +255,7 @@ public class SearchResultsDialog {
 
     /**
      * Add a single entry to the table.
+     *
      * @param entry The entry to add.
      * @param panel A reference to the BasePanel where the entry belongs.
      */
@@ -345,28 +313,29 @@ public class SearchResultsDialog {
                 BibEntry entry = sortedEntries.get(row);
                 BasePanel p = entryHome.get(entry);
                 switch (col) {
-                case FILE_COL:
-                    if (entry.hasField(Globals.FILE_FIELD)) {
-                        FileListTableModel tableModel = new FileListTableModel();
-                        tableModel.setContent(entry.getField(Globals.FILE_FIELD));
-                        if (tableModel.getRowCount() == 0) {
-                            return;
+                    case FILE_COL:
+                        if (entry.hasField(Globals.FILE_FIELD)) {
+                            FileListTableModel tableModel = new FileListTableModel();
+                            tableModel.setContent(entry.getField(Globals.FILE_FIELD));
+                            if (tableModel.getRowCount() == 0) {
+                                return;
+                            }
+                            FileListEntry fl = tableModel.getEntry(0);
+                            (new ExternalFileMenuItem(frame, entry, "", fl.link, null,
+                                    p.getBibDatabaseContext(), fl.type)).actionPerformed(null);
                         }
-                        FileListEntry fl = tableModel.getEntry(0);
-                        (new ExternalFileMenuItem(frame, entry, "", fl.link, null,
-                                p.getBibDatabaseContext(), fl.type)).actionPerformed(null);
-                    }
-                    break;
-                case URL_COL:
-                    entry.getFieldOptional("url").ifPresent(link -> { try {
-                        JabRefDesktop.openExternalViewer(p.getBibDatabaseContext(), link, "url");
-                    } catch (IOException ex) {
-                            LOGGER.warn("Could not open viewer", ex);
-                        }
-                    });
-                    break;
-                default:
-                    break;
+                        break;
+                    case URL_COL:
+                        entry.getFieldOptional("url").ifPresent(link -> {
+                            try {
+                                JabRefDesktop.openExternalViewer(p.getBibDatabaseContext(), link, "url");
+                            } catch (IOException ex) {
+                                LOGGER.warn("Could not open viewer", ex);
+                            }
+                        });
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -376,6 +345,7 @@ public class SearchResultsDialog {
          * gets redirected to this method. Here we open a file link menu if the
          * user is pointing at a file link icon. Otherwise a general context
          * menu should be shown.
+         *
          * @param e The triggering mouse event.
          */
         public void processPopupTrigger(MouseEvent e) {
@@ -455,34 +425,33 @@ public class SearchResultsDialog {
         public Object getColumnValue(BibEntry entry, int column) {
             if (column < PAD) {
                 switch (column) {
-                case FILE_COL:
-                    if (entry.hasField(Globals.FILE_FIELD)) {
-                        FileListTableModel tmpModel = new FileListTableModel();
-                        tmpModel.setContent(entry.getField(Globals.FILE_FIELD));
-                        fileLabel.setToolTipText(tmpModel.getToolTipHTMLRepresentation());
-                        if (tmpModel.getRowCount() > 0) {
-                            if (tmpModel.getEntry(0).type.isPresent()) {
-                                fileLabel.setIcon(tmpModel.getEntry(0).type.get().getIcon());
-                            } else {
-                                fileLabel.setIcon(IconTheme.JabRefIcon.FILE.getSmallIcon());
+                    case FILE_COL:
+                        if (entry.hasField(Globals.FILE_FIELD)) {
+                            FileListTableModel tmpModel = new FileListTableModel();
+                            tmpModel.setContent(entry.getField(Globals.FILE_FIELD));
+                            fileLabel.setToolTipText(tmpModel.getToolTipHTMLRepresentation());
+                            if (tmpModel.getRowCount() > 0) {
+                                if (tmpModel.getEntry(0).type.isPresent()) {
+                                    fileLabel.setIcon(tmpModel.getEntry(0).type.get().getIcon());
+                                } else {
+                                    fileLabel.setIcon(IconTheme.JabRefIcon.FILE.getSmallIcon());
+                                }
                             }
+                            return fileLabel;
+                        } else {
+                            return null;
                         }
-                        return fileLabel;
-                    } else {
+                    case URL_COL:
+                        if (entry.hasField("url")) {
+                            urlLabel.setToolTipText(entry.getField("url"));
+                            return urlLabel;
+                        } else {
+                            return null;
+                        }
+                    default:
                         return null;
-                    }
-                case URL_COL:
-                    if (entry.hasField("url")) {
-                        urlLabel.setToolTipText(entry.getField("url"));
-                        return urlLabel;
-                    } else {
-                        return null;
-                    }
-                default:
-                    return null;
                 }
-            }
-            else {
+            } else {
                 String field = FIELDS[column - PAD];
                 if (InternalBibtexFields.getFieldExtras(field).contains(FieldProperties.PERSON_NAMES)) {
                     // For name fields, tap into a MainTableFormat instance and use

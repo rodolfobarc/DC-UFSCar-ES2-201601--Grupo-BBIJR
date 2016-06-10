@@ -15,11 +15,10 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-
 import net.sf.jabref.gui.JabRefFrame;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class SpecialFieldMenuAction extends AbstractAction {
 

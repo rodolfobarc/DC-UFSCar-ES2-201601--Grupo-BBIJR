@@ -1,12 +1,5 @@
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.external.ExternalFileType;
 import net.sf.jabref.external.ExternalFileTypes;
@@ -15,17 +8,23 @@ import net.sf.jabref.logic.xmp.XMPUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.pdfimport.PdfImporter;
 import net.sf.jabref.pdfimport.PdfImporter.ImportPdfFilesResult;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Uses XMPUtils to get one BibEntry for a PDF-File.
  * Also imports the non-XMP Data (PDDocument-Information) using XMPUtil.getBibtexEntryFromDocumentInformation.
  * If data from more than one entry is read by XMPUtil then this entys are merged into one.
+ *
  * @author Dan
  * @version 12.11.2008 | 22:12:48
- *
  */
 public class EntryFromPDFCreator extends EntryFromFileCreator {
 
@@ -75,7 +74,9 @@ public class EntryFromPDFCreator extends EntryFromFileCreator {
         return entry;*/
     }
 
-    /** Adds entry data read from the PDDocument information of the file.
+    /**
+     * Adds entry data read from the PDDocument information of the file.
+     *
      * @param pdfFile
      * @param entry
      */
@@ -87,7 +88,7 @@ public class EntryFromPDFCreator extends EntryFromFileCreator {
             if (pdfDocInfo != null) {
                 Optional<BibEntry> entryDI = XMPUtil
                         .getBibtexEntryFromDocumentInformation(document
-                        .getDocumentInformation());
+                                .getDocumentInformation());
                 if (entryDI.isPresent()) {
                     addEntryDataToEntry(entry, entryDI.get());
                     Calendar creationDate = pdfDocInfo.getCreationDate();

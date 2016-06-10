@@ -1,13 +1,12 @@
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.model.entry.BibEntry;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 

@@ -76,7 +76,7 @@ public class LocalizationParser {
     public static Properties getProperties(String path) {
         Properties properties = new Properties();
         try (InputStream is = LocalizationConsistencyTest.class.getResourceAsStream(path);
-                InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             properties.load(reader);
         } catch (IOException e) {
             throw new RuntimeException(e);

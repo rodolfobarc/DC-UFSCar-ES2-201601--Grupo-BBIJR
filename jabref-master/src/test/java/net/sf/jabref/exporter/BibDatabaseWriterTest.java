@@ -1,21 +1,7 @@
 package net.sf.jabref.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Defaults;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.MetaData;
+import com.google.common.base.Charsets;
+import net.sf.jabref.*;
 import net.sf.jabref.importer.ImportFormatReader;
 import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.importer.fileformat.BibtexParser;
@@ -31,16 +17,21 @@ import net.sf.jabref.logic.labelpattern.DatabaseLabelPattern;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.BibDatabaseMode;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.BibtexEntryTypes;
-import net.sf.jabref.model.entry.BibtexString;
-import net.sf.jabref.model.entry.CustomEntryType;
-import net.sf.jabref.model.entry.IdGenerator;
-
-import com.google.common.base.Charsets;
+import net.sf.jabref.model.entry.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -225,13 +216,13 @@ public class BibDatabaseWriterTest {
         // @formatter:off
         assertEquals(
                 "% Encoding: US-ASCII" + Globals.NEWLINE +
-                Globals.NEWLINE
-                + "@Comment{jabref-meta: groupstree:" + Globals.NEWLINE
-                + "0 AllEntriesGroup:;" + Globals.NEWLINE
-                + "1 ExplicitGroup:test\\;2\\;;" + Globals.NEWLINE
-                + "}" + Globals.NEWLINE
-                + Globals.NEWLINE
-                + "@Comment{jabref-meta: groupsversion:3;}" + Globals.NEWLINE, stringWriter.toString());
+                        Globals.NEWLINE
+                        + "@Comment{jabref-meta: groupstree:" + Globals.NEWLINE
+                        + "0 AllEntriesGroup:;" + Globals.NEWLINE
+                        + "1 ExplicitGroup:test\\;2\\;;" + Globals.NEWLINE
+                        + "}" + Globals.NEWLINE
+                        + Globals.NEWLINE
+                        + "@Comment{jabref-meta: groupsversion:3;}" + Globals.NEWLINE, stringWriter.toString());
         // @formatter:on
     }
 
@@ -285,7 +276,7 @@ public class BibDatabaseWriterTest {
                 new Defaults(BibDatabaseMode.BIBTEX));
 
         databaseWriter.writePartOfDatabase(stringWriter, context, result.getDatabase().getEntries(), preferences);
-        try (Scanner scanner = new Scanner(testBibtexFile,encoding.name())) {
+        try (Scanner scanner = new Scanner(testBibtexFile, encoding.name())) {
             assertEquals(scanner.useDelimiter("\\A").next(), stringWriter.toString());
         }
     }
@@ -480,22 +471,22 @@ public class BibDatabaseWriterTest {
 
         assertEquals(
                 Globals.NEWLINE +
-                "@Article{," + Globals.NEWLINE +
-                "  author = {A}," + Globals.NEWLINE +
-                "  year   = {2000}," + Globals.NEWLINE +
-                "}"  + Globals.NEWLINE + Globals.NEWLINE +
-                "@Article{," + Globals.NEWLINE +
-                "  author = {A}," + Globals.NEWLINE +
-                "  year   = {2010}," + Globals.NEWLINE +
-                "}" + Globals.NEWLINE + Globals.NEWLINE +
-                "@Article{," + Globals.NEWLINE +
-                "  author = {B}," + Globals.NEWLINE +
-                "  year   = {2000}," + Globals.NEWLINE +
-                "}" + Globals.NEWLINE + Globals.NEWLINE +
-                "@Comment{jabref-meta: databaseType:bibtex;}"
-                 + Globals.NEWLINE + Globals.NEWLINE +
-                "@Comment{jabref-meta: saveOrderConfig:specified;author;false;year;true;abstract;false;}" +
-                Globals.NEWLINE
+                        "@Article{," + Globals.NEWLINE +
+                        "  author = {A}," + Globals.NEWLINE +
+                        "  year   = {2000}," + Globals.NEWLINE +
+                        "}" + Globals.NEWLINE + Globals.NEWLINE +
+                        "@Article{," + Globals.NEWLINE +
+                        "  author = {A}," + Globals.NEWLINE +
+                        "  year   = {2010}," + Globals.NEWLINE +
+                        "}" + Globals.NEWLINE + Globals.NEWLINE +
+                        "@Article{," + Globals.NEWLINE +
+                        "  author = {B}," + Globals.NEWLINE +
+                        "  year   = {2000}," + Globals.NEWLINE +
+                        "}" + Globals.NEWLINE + Globals.NEWLINE +
+                        "@Comment{jabref-meta: databaseType:bibtex;}"
+                        + Globals.NEWLINE + Globals.NEWLINE +
+                        "@Comment{jabref-meta: saveOrderConfig:specified;author;false;year;true;abstract;false;}" +
+                        Globals.NEWLINE
                 , stringWriter.toString());
     }
 

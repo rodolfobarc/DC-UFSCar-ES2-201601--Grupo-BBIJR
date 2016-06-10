@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.gui;
 
+import net.sf.jabref.external.ExternalFileType;
+
 import java.util.Objects;
 import java.util.Optional;
-
-import net.sf.jabref.external.ExternalFileType;
 
 /**
  * This class represents a file link for a Bibtex entry.
@@ -46,7 +46,7 @@ public class FileListEntry {
     }
 
     public String[] getStringArrayRepresentation() {
-        return new String[] {description, link, getTypeName()};
+        return new String[]{description, link, getTypeName()};
     }
 
     private String getTypeName() {

@@ -17,11 +17,7 @@
 */
 package net.sf.jabref.logic.labelpattern;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A small table, where an entry type is associated with a label pattern (an
@@ -119,6 +115,7 @@ public abstract class AbstractLabelPattern {
 
     /**
      * Sets the DEFAULT PATTERN for this label pattern
+     *
      * @param labelPattern the pattern to store
      */
     public void setDefaultValue(String labelPattern) {

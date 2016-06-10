@@ -15,23 +15,6 @@
  */
 package net.sf.jabref.exporter;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.MetaData;
@@ -50,9 +33,16 @@ import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.CustomEntryType;
 import net.sf.jabref.model.entry.EntryType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class BibDatabaseWriter {
 
@@ -69,7 +59,7 @@ public class BibDatabaseWriter {
         List<Comparator<BibEntry>> comparators = new ArrayList<>();
         Optional<SaveOrderConfig> saveOrder = getSaveOrder(preferences, metaData);
 
-        if (! saveOrder.isPresent()) {
+        if (!saveOrder.isPresent()) {
             // Take care, using CrossRefEntry-Comparator, that referred entries occur after referring
             // ones. Apart from crossref requirements, entries will be sorted based on their creation order,
             // utilizing the fact that IDs used for entries are increasing, sortable numbers.
@@ -95,7 +85,7 @@ public class BibDatabaseWriter {
      * global preference of saving in standard order.
      */
     public static List<BibEntry> getSortedEntries(BibDatabaseContext bibDatabaseContext, List<BibEntry> entriesToSort,
-            SavePreferences preferences) {
+                                                  SavePreferences preferences) {
         Objects.requireNonNull(bibDatabaseContext);
         Objects.requireNonNull(entriesToSort);
 
@@ -125,15 +115,29 @@ public class BibDatabaseWriter {
          * 3. order specified in preferences
          */
 
-        if(preferences.isSaveInOriginalOrder()) {
+        if (preferences.isSaveInOriginalOrder()) {
             return Optional.empty();
         }
 
-        if(preferences.getTakeMetadataSaveOrderInAccount()) {
+        if (preferences.getTakeMetadataSaveOrderInAccount()) {
             return metaData.getSaveOrderConfig();
         }
 
         return Optional.ofNullable(preferences.getSaveOrder());
+    }
+
+    private static List<FieldChange> applySaveActions(List<BibEntry> toChange, MetaData metaData) {
+        List<FieldChange> changes = new ArrayList<>();
+
+        Optional<FieldFormatterCleanups> saveActions = metaData.getSaveActions();
+        if (saveActions.isPresent()) {
+            // save actions defined -> apply for every entry
+            for (BibEntry entry : toChange) {
+                changes.addAll(saveActions.get().applySaveActions(entry));
+            }
+        }
+
+        return changes;
     }
 
     /**
@@ -148,7 +152,7 @@ public class BibDatabaseWriter {
     }
 
     public SaveSession savePartOfDatabase(BibDatabaseContext bibDatabaseContext, List<BibEntry> entries,
-            SavePreferences preferences) throws SaveException {
+                                          SavePreferences preferences) throws SaveException {
 
         SaveSession session;
         try {
@@ -173,7 +177,7 @@ public class BibDatabaseWriter {
     }
 
     public List<FieldChange> writePartOfDatabase(Writer writer, BibDatabaseContext bibDatabaseContext,
-            List<BibEntry> entries, SavePreferences preferences) throws IOException {
+                                                 List<BibEntry> entries, SavePreferences preferences) throws IOException {
         Objects.requireNonNull(writer);
 
         // Map to collect entry type definitions that we must save along with entries using them.
@@ -230,23 +234,9 @@ public class BibDatabaseWriter {
      * supplied input array bes.
      */
     public SaveSession savePartOfDatabase(BibDatabaseContext bibDatabaseContext, SavePreferences preferences,
-            List<BibEntry> entries) throws SaveException {
+                                          List<BibEntry> entries) throws SaveException {
 
         return savePartOfDatabase(bibDatabaseContext, entries, preferences);
-    }
-
-    private static List<FieldChange> applySaveActions(List<BibEntry> toChange, MetaData metaData) {
-        List<FieldChange> changes = new ArrayList<>();
-
-        Optional<FieldFormatterCleanups> saveActions = metaData.getSaveActions();
-        if (saveActions.isPresent()) {
-            // save actions defined -> apply for every entry
-            for (BibEntry entry : toChange) {
-                changes.addAll(saveActions.get().applySaveActions(entry));
-            }
-        }
-
-        return changes;
     }
 
     /**
@@ -255,7 +245,7 @@ public class BibDatabaseWriter {
      * @param encoding String the name of the encoding, which is part of the file header.
      */
     private void writeBibFileHeader(Writer out, Charset encoding) throws IOException {
-        if(encoding == null) {
+        if (encoding == null) {
             return;
         }
 
@@ -282,7 +272,7 @@ public class BibDatabaseWriter {
 
         Map<String, String> serializedMetaData = metaData.serialize();
 
-        for(Map.Entry<String, String> metaItem : serializedMetaData.entrySet()) {
+        for (Map.Entry<String, String> metaItem : serializedMetaData.entrySet()) {
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(Globals.NEWLINE);
@@ -305,7 +295,7 @@ public class BibDatabaseWriter {
     }
 
     private void writeString(Writer fw, BibtexString bs, Map<String, BibtexString> remaining, int maxKeyLength,
-            Boolean reformatFile)
+                             Boolean reformatFile)
             throws IOException {
         // First remove this from the "remaining" list so it can't cause problem with circular refs:
         remaining.remove(bs.getName());
@@ -316,7 +306,7 @@ public class BibDatabaseWriter {
             return;
         }
 
-        if(isFirstStringInType) {
+        if (isFirstStringInType) {
             fw.write(Globals.NEWLINE);
         }
 
@@ -357,8 +347,8 @@ public class BibDatabaseWriter {
      * Write all strings in alphabetical order, modified to produce a safe (for
      * BibTeX) order of the strings if they reference each other.
      *
-     * @param fw       The Writer to send the output to.
-     * @param database The database whose strings we should write.
+     * @param fw           The Writer to send the output to.
+     * @param database     The database whose strings we should write.
      * @param reformatFile
      * @throws IOException If anything goes wrong in writing.
      */

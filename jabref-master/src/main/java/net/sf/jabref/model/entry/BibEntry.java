@@ -15,47 +15,28 @@
 */
 package net.sf.jabref.model.entry;
 
+import com.google.common.base.Strings;
+import net.sf.jabref.model.database.BibDatabase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-
-import net.sf.jabref.model.database.BibDatabase;
-
-import com.google.common.base.Strings;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.text.*;
+import java.util.*;
 
 public class BibEntry {
-    private static final Log LOGGER = LogFactory.getLog(BibEntry.class);
-
     public static final String TYPE_HEADER = "entrytype";
     public static final String KEY_FIELD = "bibtexkey";
-    protected static final String ID_FIELD = "id";
     public static final String DEFAULT_TYPE = "misc";
-
+    protected static final String ID_FIELD = "id";
+    private static final Log LOGGER = LogFactory.getLog(BibEntry.class);
+    private final VetoableChangeSupport changeSupport = new VetoableChangeSupport(this);
     private String id;
     private String type;
     private Map<String, String> fields = new HashMap<>();
-
-    private final VetoableChangeSupport changeSupport = new VetoableChangeSupport(this);
-
     // Search and grouping status is stored in boolean fields for quick reference:
     private boolean searchHit;
     private boolean groupHit;
@@ -104,6 +85,13 @@ public class BibEntry {
     /**
      * Sets this entry's type.
      */
+    public void setType(EntryType type) {
+        this.setType(type.getName());
+    }
+
+    /**
+     * Sets this entry's type.
+     */
     public void setType(String type) {
         String newType;
         if ((type == null) || type.isEmpty()) {
@@ -127,10 +115,10 @@ public class BibEntry {
     }
 
     /**
-     * Sets this entry's type.
+     * Returns this entry's ID.
      */
-    public void setType(EntryType type) {
-        this.setType(type.getName());
+    public String getId() {
+        return id;
     }
 
     /**
@@ -148,13 +136,6 @@ public class BibEntry {
 
         this.id = id;
         changed = true;
-    }
-
-    /**
-     * Returns this entry's ID.
-     */
-    public String getId() {
-        return id;
     }
 
     /**
@@ -223,6 +204,17 @@ public class BibEntry {
         // Finally, handle dates
         if ("date".equals(name)) {
             String year = getField("year");
+
+            /**
+             * Trata as datas
+             * Aceita somente anos entre 1900 e 2016
+             * Se o ano for invalido, retorna 2016
+             */
+            int ano = Integer.parseInt(year);
+            if(ano < 1900 || ano > 2016) {
+                return "2016";
+            }
+
             MonthUtil.Month month = MonthUtil.getMonth(getField("month"));
             if (year != null) {
                 if (month.isValid()) {
@@ -335,6 +327,30 @@ public class BibEntry {
 
         if (BibEntry.ID_FIELD.equals(fieldName)) {
             throw new IllegalArgumentException("The field name '" + name + "' is reserved");
+        }
+
+        /**
+         * Trata as datas
+         * Aceita somente anos entre 1900 e 2016
+         * Se o ano for invalido, retorna 2016
+         */
+        if (fieldName.equals("year") && (Integer.parseInt(value) < 1900 || Integer.parseInt(value) > 2016)) {
+            value = "2016";
+        }
+
+        /**
+         * Trata o bibtexkey
+         * Aceita somente bibtex com no minimo dois caracteres
+         * sendo o primeiro uma letra maiuscula ou minuscula
+         * Se o bibtex for invalido, retorna
+         */
+        if (fieldName.equals("bibtexkey")) {
+            char c = value.charAt(0);
+            int ascii = (int) c;
+            if  (value.length() < 2 || ascii < 65 || ascii > 122 || (ascii < 97 && ascii > 90)) {
+                    clearField(name);
+                    return;
+            }
         }
 
         changed = true;
@@ -486,7 +502,7 @@ public class BibEntry {
      * Author1, Author2: Title (Year)
      */
     public String getAuthorTitleYear(int maxCharacters) {
-        String[] s = new String[] {getFieldOptional("author").orElse("N/A"), getFieldOptional("title").orElse("N/A"),
+        String[] s = new String[]{getFieldOptional("author").orElse("N/A"), getFieldOptional("title").orElse("N/A"),
                 getFieldOptional("year").orElse("N/A")};
 
         String text = s[0] + ": \"" + s[1] + "\" (" + s[2] + ')';
@@ -517,14 +533,13 @@ public class BibEntry {
         return year;
     }
 
+    public String getParsedSerialization() {
+        return parsedSerialization;
+    }
 
     public void setParsedSerialization(String parsedSerialization) {
         changed = false;
         this.parsedSerialization = parsedSerialization;
-    }
-
-    public String getParsedSerialization() {
-        return parsedSerialization;
     }
 
     public boolean hasChanged() {

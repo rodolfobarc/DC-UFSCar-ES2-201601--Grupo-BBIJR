@@ -15,23 +15,9 @@
  */
 package net.sf.jabref.gui.labelpattern;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.PreviewPanel;
@@ -39,18 +25,16 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dialog box for resolving duplicate bibte keys
  */
 class ResolveDuplicateLabelDialog {
-
-    private final JDialog diag;
-    private final List<JCheckBox> cbs = new ArrayList<>();
-    private boolean okPressed;
 
     private static final String LAYOUT = "<font face=\"arial\"><b><i>\\bibtextype</i><a name=\"\\bibtexkey\">\\begin{bibtexkey} (\\bibtexkey)</a>\\end{bibtexkey}</b><br>\n" +
             "\\begin{author} \\format[HTMLChars,AuthorAbbreviator,AuthorAndsReplacer]{\\author}<BR>\\end{author}\n" +
@@ -64,6 +48,9 @@ class ResolveDuplicateLabelDialog {
             "\\begin{publisher} <em>\\format[HTMLChars]{\\publisher}, </em>\\end{publisher}\n" +
             "\\begin{year}<b>\\year</b>\\end{year}\\begin{volume}<i>, \\volume</i>\\end{volume}\\begin{pages}, \\format[FormatPagesForHTML]{\\pages} \\end{pages}\n" +
             "<p></p></font>";
+    private final JDialog diag;
+    private final List<JCheckBox> cbs = new ArrayList<>();
+    private boolean okPressed;
 
 
     public ResolveDuplicateLabelDialog(BasePanel panel, String key, List<BibEntry> entries) {
@@ -108,8 +95,8 @@ class ResolveDuplicateLabelDialog {
         diag.pack();
 
         ok.addActionListener(e -> {
-                okPressed = true;
-                diag.dispose();
+            okPressed = true;
+            diag.dispose();
         });
 
 
@@ -132,6 +119,7 @@ class ResolveDuplicateLabelDialog {
     /**
      * After the dialog has been closed, this query answers whether the dialog was okPressed
      * (by cancel button or by closing the dialog directly).
+     *
      * @return true if it was okPressed, false if Ok was pressed.
      */
     public boolean isOkPressed() {
@@ -141,6 +129,7 @@ class ResolveDuplicateLabelDialog {
     /**
      * Get the list of checkboxes where the user has selected which entries to generate
      * new keys for.
+     *
      * @return the list of checkboxes
      */
     public List<JCheckBox> getCheckBoxes() {

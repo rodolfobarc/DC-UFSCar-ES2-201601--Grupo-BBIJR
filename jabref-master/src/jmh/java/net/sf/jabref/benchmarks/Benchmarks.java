@@ -1,18 +1,6 @@
 package net.sf.jabref.benchmarks;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Defaults;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.MetaData;
+import net.sf.jabref.*;
 import net.sf.jabref.exporter.BibDatabaseWriter;
 import net.sf.jabref.exporter.SaveException;
 import net.sf.jabref.exporter.SavePreferences;
@@ -23,7 +11,6 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.database.BibDatabaseModeDetection;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
@@ -31,11 +18,23 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.RunnerException;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 @State(Scope.Thread)
 public class Benchmarks {
 
     String bibtexString;
     BibDatabase database = new BibDatabase();
+
+    public static void main(String[] args) throws IOException, RunnerException {
+        Main.main(args);
+    }
 
     @Setup
     public void init() throws IOException, SaveException {
@@ -92,9 +91,5 @@ public class Benchmarks {
     @Benchmark
     public BibDatabaseMode inferBibDatabaseMode() {
         return BibDatabaseModeDetection.inferMode(database);
-    }
-
-    public static void main(String[] args) throws IOException, RunnerException {
-        Main.main(args);
     }
 }

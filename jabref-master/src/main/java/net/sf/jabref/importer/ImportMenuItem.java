@@ -15,27 +15,10 @@
 */
 package net.sf.jabref.importer;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.MetaData;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.EntryMarker;
-import net.sf.jabref.gui.FileDialogs;
-import net.sf.jabref.gui.ImportInspectionDialog;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.ParserResultWarningDialog;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.importer.fileformat.ImportFormat;
@@ -45,6 +28,16 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexString;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /*
  * TODO: could separate the "menu item" functionality from the importing functionality
@@ -80,6 +73,7 @@ public class ImportMenuItem extends JMenuItem implements ActionListener {
 
     /**
      * Automatically imports the files given as arguments
+     *
      * @param filenames List of files to import
      */
     public void automatedImport(List<String> filenames) {
@@ -92,6 +86,74 @@ public class ImportMenuItem extends JMenuItem implements ActionListener {
         worker.getCallBack().update();
     }
 
+    private ParserResult mergeImportResults(List<ImportFormatReader.UnknownFormatImport> imports) {
+        BibDatabase database = new BibDatabase();
+        ParserResult directParserResult = null;
+        boolean anythingUseful = false;
+
+        for (ImportFormatReader.UnknownFormatImport importResult : imports) {
+            if (importResult == null) {
+                continue;
+            }
+            if (ImportFormatReader.BIBTEX_FORMAT.equals(importResult.format)) {
+                // Bibtex result. We must merge it into our main base.
+                ParserResult pr = importResult.parserResult;
+
+                anythingUseful = anythingUseful
+                        || pr.getDatabase().hasEntries() || (!pr.getDatabase().hasNoStrings());
+
+                // Record the parserResult, as long as this is the first bibtex result:
+                if (directParserResult == null) {
+                    directParserResult = pr;
+                }
+
+                // Merge entries:
+                for (BibEntry entry : pr.getDatabase().getEntries()) {
+                    database.insertEntry(entry);
+                }
+
+                // Merge strings:
+                for (BibtexString bs : pr.getDatabase().getStringValues()) {
+                    try {
+                        database.addString((BibtexString) bs.clone());
+                    } catch (KeyCollisionException e) {
+                        // TODO: This means a duplicate string name exists, so it's not
+                        // a very exceptional situation. We should maybe give a warning...?
+                    }
+                }
+            } else {
+
+                ParserResult pr = importResult.parserResult;
+                Collection<BibEntry> entries = pr.getDatabase().getEntries();
+
+                anythingUseful = anythingUseful | !entries.isEmpty();
+
+                // set timestamp and owner
+                UpdateField.setAutomaticFields(entries, Globals.prefs.getBoolean(JabRefPreferences.OVERWRITE_OWNER),
+                        Globals.prefs.getBoolean(JabRefPreferences.OVERWRITE_TIME_STAMP)); // set timestamp and owner
+
+                boolean markEntries = !openInNew && EntryMarker.shouldMarkEntries();
+                for (BibEntry entry : entries) {
+                    if (markEntries) {
+                        EntryMarker.markEntry(entry, EntryMarker.IMPORT_MARK_LEVEL, false, new NamedCompound(""));
+                    }
+                    database.insertEntry(entry);
+                }
+            }
+        }
+
+        if (!anythingUseful) {
+            return null;
+        }
+
+        if ((imports.size() == 1) && (directParserResult != null)) {
+            return directParserResult;
+        } else {
+
+            return new ParserResult(database, new MetaData(), new HashMap<>());
+
+        }
+    }
 
     class MyWorker extends AbstractWorker {
 
@@ -205,76 +267,6 @@ public class ImportMenuItem extends JMenuItem implements ActionListener {
                 }
             }
             frame.unblock();
-        }
-    }
-
-
-    private ParserResult mergeImportResults(List<ImportFormatReader.UnknownFormatImport> imports) {
-        BibDatabase database = new BibDatabase();
-        ParserResult directParserResult = null;
-        boolean anythingUseful = false;
-
-        for (ImportFormatReader.UnknownFormatImport importResult : imports) {
-            if (importResult == null) {
-                continue;
-            }
-            if (ImportFormatReader.BIBTEX_FORMAT.equals(importResult.format)) {
-                // Bibtex result. We must merge it into our main base.
-                ParserResult pr = importResult.parserResult;
-
-                anythingUseful = anythingUseful
-                        || pr.getDatabase().hasEntries() || (!pr.getDatabase().hasNoStrings());
-
-                // Record the parserResult, as long as this is the first bibtex result:
-                if (directParserResult == null) {
-                    directParserResult = pr;
-                }
-
-                // Merge entries:
-                for (BibEntry entry : pr.getDatabase().getEntries()) {
-                    database.insertEntry(entry);
-                }
-
-                // Merge strings:
-                for (BibtexString bs : pr.getDatabase().getStringValues()) {
-                    try {
-                        database.addString((BibtexString) bs.clone());
-                    } catch (KeyCollisionException e) {
-                        // TODO: This means a duplicate string name exists, so it's not
-                        // a very exceptional situation. We should maybe give a warning...?
-                    }
-                }
-            } else {
-
-                ParserResult pr = importResult.parserResult;
-                Collection<BibEntry> entries = pr.getDatabase().getEntries();
-
-                anythingUseful = anythingUseful | !entries.isEmpty();
-
-                // set timestamp and owner
-                UpdateField.setAutomaticFields(entries, Globals.prefs.getBoolean(JabRefPreferences.OVERWRITE_OWNER),
-                        Globals.prefs.getBoolean(JabRefPreferences.OVERWRITE_TIME_STAMP)); // set timestamp and owner
-
-                boolean markEntries = !openInNew && EntryMarker.shouldMarkEntries();
-                for (BibEntry entry : entries) {
-                    if (markEntries) {
-                        EntryMarker.markEntry(entry, EntryMarker.IMPORT_MARK_LEVEL, false, new NamedCompound(""));
-                    }
-                    database.insertEntry(entry);
-                }
-            }
-        }
-
-        if (!anythingUseful) {
-            return null;
-        }
-
-        if ((imports.size() == 1) && (directParserResult != null)) {
-            return directParserResult;
-        } else {
-
-            return new ParserResult(database, new MetaData(), new HashMap<>());
-
         }
     }
 

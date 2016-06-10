@@ -1,16 +1,15 @@
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.model.entry.BibEntry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.model.entry.BibEntry;
+import static org.junit.Assert.assertEquals;
 
 public class CasodeTesteBook {
 

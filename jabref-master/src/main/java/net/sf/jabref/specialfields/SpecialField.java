@@ -15,11 +15,10 @@
  */
 package net.sf.jabref.specialfields;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.Icon;
 
 public abstract class SpecialField {
 
@@ -33,6 +32,9 @@ public abstract class SpecialField {
     private List<String> keywords;
     private HashMap<String, SpecialFieldValue> map;
 
+    public List<SpecialFieldValue> getValues() {
+        return this.values;
+    }
 
     protected void setValues(List<SpecialFieldValue> values) {
         this.values = values;
@@ -42,10 +44,6 @@ public abstract class SpecialField {
             v.getKeyword().ifPresent(keywords::add);
             v.getFieldValue().ifPresent(fieldValue -> map.put(fieldValue, v));
         }
-    }
-
-    public List<SpecialFieldValue> getValues() {
-        return this.values;
     }
 
     public List<String> getKeyWords() {

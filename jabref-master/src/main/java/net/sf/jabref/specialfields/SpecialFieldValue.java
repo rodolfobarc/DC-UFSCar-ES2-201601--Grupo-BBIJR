@@ -15,12 +15,10 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.util.Optional;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-
 import net.sf.jabref.gui.JabRefFrame;
+
+import javax.swing.*;
+import java.util.Optional;
 
 public class SpecialFieldValue {
 
@@ -34,26 +32,21 @@ public class SpecialFieldValue {
 
     // localized menu string used at menu / button
     private final String menuString;
-
-    private SpecialFieldAction action;
-
-    private SpecialFieldMenuAction menuAction;
-
     private final Icon icon;
-
     private final String toolTipText;
+    private SpecialFieldAction action;
+    private SpecialFieldMenuAction menuAction;
 
 
     // value when used in a separate vield
     //private String fieldValue;
 
     /**
-     *
-     * @param field The special field this value is a value of
-     * @param keyword - The keyword to be used at BibTex's keyword field. May be "null" if no keyword is to be set
-     * @param actionName - the action to call
-     * @param menuString - the string to display at a menu
-     * @param icon - the icon of this value
+     * @param field       The special field this value is a value of
+     * @param keyword     - The keyword to be used at BibTex's keyword field. May be "null" if no keyword is to be set
+     * @param actionName  - the action to call
+     * @param menuString  - the string to display at a menu
+     * @param icon        - the icon of this value
      * @param toolTipText - the tool tip text
      */
     public SpecialFieldValue(

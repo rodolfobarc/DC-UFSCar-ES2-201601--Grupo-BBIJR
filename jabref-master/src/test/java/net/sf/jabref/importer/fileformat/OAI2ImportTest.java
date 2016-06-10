@@ -1,21 +1,19 @@
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import net.sf.jabref.importer.OAI2Handler;
 import net.sf.jabref.importer.fetcher.OAI2Fetcher;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
 
 /**
  * Test for OAI2-Handler and Fetcher.

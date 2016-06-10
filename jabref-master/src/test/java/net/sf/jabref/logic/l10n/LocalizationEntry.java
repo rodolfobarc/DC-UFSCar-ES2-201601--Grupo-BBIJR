@@ -3,7 +3,7 @@ package net.sf.jabref.logic.l10n;
 import java.nio.file.Path;
 import java.util.Objects;
 
-class LocalizationEntry implements Comparable<LocalizationEntry>{
+class LocalizationEntry implements Comparable<LocalizationEntry> {
 
     private final Path path;
     private final String key;

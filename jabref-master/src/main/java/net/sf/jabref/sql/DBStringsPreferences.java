@@ -16,6 +16,14 @@ public final class DBStringsPreferences {
         this.database = database;
     }
 
+    public static DBStringsPreferences loadFromPreferences(JabRefPreferences preferences) {
+        return new DBStringsPreferences(
+                preferences.get(JabRefPreferences.DB_CONNECT_SERVER_TYPE),
+                preferences.get(JabRefPreferences.DB_CONNECT_HOSTNAME),
+                preferences.get(JabRefPreferences.DB_CONNECT_USERNAME),
+                preferences.get(JabRefPreferences.DB_CONNECT_DATABASE));
+    }
+
     public DatabaseType getServerType() {
         return serverType;
     }
@@ -30,14 +38,6 @@ public final class DBStringsPreferences {
 
     public String getDatabase() {
         return database;
-    }
-
-    public static DBStringsPreferences loadFromPreferences(JabRefPreferences preferences) {
-        return new DBStringsPreferences(
-                preferences.get(JabRefPreferences.DB_CONNECT_SERVER_TYPE),
-                preferences.get(JabRefPreferences.DB_CONNECT_HOSTNAME),
-                preferences.get(JabRefPreferences.DB_CONNECT_USERNAME),
-                preferences.get(JabRefPreferences.DB_CONNECT_DATABASE));
     }
 
     /**

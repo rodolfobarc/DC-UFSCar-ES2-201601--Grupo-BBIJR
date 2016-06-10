@@ -1,12 +1,12 @@
 package net.sf.jabref.gui.desktop.os;
 
+import net.sf.jabref.external.ExternalFileType;
+import net.sf.jabref.external.ExternalFileTypes;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypes;
 
 public class Windows implements NativeDesktop {
 
@@ -20,7 +20,7 @@ public class Windows implements NativeDesktop {
             openFileWithApplication(filePath, type.get().getOpenWithApplication());
         } else {
             //filePath as string, because it could be an URL
-            Runtime.getRuntime().exec(new String[] {"explorer.exe", filePath});
+            Runtime.getRuntime().exec(new String[]{"explorer.exe", filePath});
         }
 
     }

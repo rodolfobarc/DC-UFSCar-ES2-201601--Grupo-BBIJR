@@ -15,21 +15,21 @@
 */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.BibEntry;
-
 /**
  * Role of an importer for JabRef.
- *
+ * <p>
  * <p>Importers are sorted according to following criteria
  * <ol><li>
- *   custom importers come first, then importers shipped with JabRef
+ * custom importers come first, then importers shipped with JabRef
  * </li><li>
- *   then importers are sorted by name.
+ * then importers are sorted by name.
  * </li></ol>
  * </p>
  */
@@ -59,25 +59,25 @@ public abstract class ImportFormat implements Comparable<ImportFormat> {
     /**
      * Parse the entries in the source, and return a List of BibEntry
      * objects.
-     *
+     * <p>
      * This method can be called in two different contexts - either when importing in
      * a specified format, or when importing in unknown format. In the latter case,
      * JabRef cycles through all available import formats. No error messages or feedback
      * is displayed from individual import formats in this case.
-     *
+     * <p>
      * If importing in a specified format, and an empty list is returned, JabRef reports
      * that no entries were found. If an IOException is thrown, JabRef displays the exception's
      * message in unmodified form.
-     *
+     * <p>
      * This method should never return null. Return an empty list instead.
-     *
+     * <p>
      * TODO the return type should be changed to "ParseResult" as the parser could use a different encoding than the default encoding
      */
     public abstract List<BibEntry> importEntries(InputStream in, OutputPrinter status) throws IOException;
 
     /**
      * Name of this import format.
-     *
+     * <p>
      * <p>The name must be unique.</p>
      *
      * @return format name, must be unique and not <code>null</code>
@@ -112,12 +112,12 @@ public abstract class ImportFormat implements Comparable<ImportFormat> {
 
     /**
      * Description  of the ImportFormat.
-     *
+     * <p>
      * <p>Implementors of ImportFormats should override this. Ideally, it should specify
      * <ul><li>
-     *   what kind of entries from what sources and based on what specification it is able to import
+     * what kind of entries from what sources and based on what specification it is able to import
      * </li><li>
-     *   by what criteria it {@link #isRecognizedFormat(InputStream) recognizes} an import format
+     * by what criteria it {@link #isRecognizedFormat(InputStream) recognizes} an import format
      * </li></ul>
      *
      * @return description of the import format
@@ -128,7 +128,7 @@ public abstract class ImportFormat implements Comparable<ImportFormat> {
 
     /**
      * Sets if this is a custom importer.
-     *
+     * <p>
      * <p>For custom importers added dynamically to JabRef, this will be
      * set automatically by JabRef.</p>
      *
@@ -140,10 +140,10 @@ public abstract class ImportFormat implements Comparable<ImportFormat> {
 
     /**
      * Wether this importer is a custom importer.
-     *
+     * <p>
      * <p>Custom importers will have precedence over built-in importers.</p>
      *
-     * @return  wether this is a custom importer
+     * @return wether this is a custom importer
      */
     public final boolean isCustomImporter() {
         return this.isCustomImporter;

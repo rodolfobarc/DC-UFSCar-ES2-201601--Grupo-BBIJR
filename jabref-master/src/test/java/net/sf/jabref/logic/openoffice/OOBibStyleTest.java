@@ -1,17 +1,5 @@
 package net.sf.jabref.logic.openoffice;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefMain;
 import net.sf.jabref.JabRefPreferences;
@@ -22,15 +10,18 @@ import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
 import net.sf.jabref.logic.layout.Layout;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class OOBibStyleTest {
@@ -123,7 +114,7 @@ public class OOBibStyleTest {
                 style.getNumCitationMarker(Arrays.asList(1, 2, 3, 0), 1, true));
 
         assertEquals("[" + OOBibStyle.UNDEFINED_CITATION_MARKER + "; " + OOBibStyle.UNDEFINED_CITATION_MARKER + "; "
-                + OOBibStyle.UNDEFINED_CITATION_MARKER + "] ",
+                        + OOBibStyle.UNDEFINED_CITATION_MARKER + "] ",
                 style.getNumCitationMarker(Arrays.asList(0, 0, 0), 1, true));
     }
 
@@ -156,9 +147,9 @@ public class OOBibStyleTest {
         assertEquals("[Boström et al., 2006]",
                 style.getCitationMarker(Arrays.asList(entry), entryDBMap, true, null, null));
         assertEquals("Boström et al. [2006]",
-                style.getCitationMarker(Arrays.asList(entry), entryDBMap, false, null, new int[] {3}));
+                style.getCitationMarker(Arrays.asList(entry), entryDBMap, false, null, new int[]{3}));
         assertEquals("[Boström, Wäyrynen, Bodén, Beznosov & Kruchten, 2006]",
-                style.getCitationMarker(Arrays.asList(entry), entryDBMap, true, null, new int[] {5}));
+                style.getCitationMarker(Arrays.asList(entry), entryDBMap, true, null, new int[]{5}));
     }
 
     @Test
@@ -347,7 +338,7 @@ public class OOBibStyleTest {
         assertEquals("[Beta, 2000; Beta, 2000; Epsilon, 2001]",
                 style.getCitationMarker(entries, entryDBMap, true, null, null));
         assertEquals("[Beta, 2000a,b; Epsilon, 2001]",
-                style.getCitationMarker(entries, entryDBMap, true, new String[] {"a", "b", ""}, new int[] {1, 1, 1}));
+                style.getCitationMarker(entries, entryDBMap, true, new String[]{"a", "b", ""}, new int[]{1, 1, 1}));
     }
 
     @Test
@@ -383,7 +374,7 @@ public class OOBibStyleTest {
         assertEquals("Beta [2000]; Beta [2000]; Epsilon [2001]",
                 style.getCitationMarker(entries, entryDBMap, false, null, null));
         assertEquals("Beta [2000a,b]; Epsilon [2001]",
-                style.getCitationMarker(entries, entryDBMap, false, new String[] {"a", "b", ""}, new int[] {1, 1, 1}));
+                style.getCitationMarker(entries, entryDBMap, false, new String[]{"a", "b", ""}, new int[]{1, 1, 1}));
     }
 
     @Test
@@ -418,7 +409,7 @@ public class OOBibStyleTest {
         }
 
         assertEquals("[Beta, 2000a,b,c]",
-                style.getCitationMarker(entries, entryDBMap, true, new String[] {"a", "b", "c"}, new int[] {1, 1, 1}));
+                style.getCitationMarker(entries, entryDBMap, true, new String[]{"a", "b", "c"}, new int[]{1, 1, 1}));
     }
 
     @Test
@@ -453,7 +444,7 @@ public class OOBibStyleTest {
         }
 
         assertEquals("Beta [2000a,b,c]",
-                style.getCitationMarker(entries, entryDBMap, false, new String[] {"a", "b", "c"}, new int[] {1, 1, 1}));
+                style.getCitationMarker(entries, entryDBMap, false, new String[]{"a", "b", "c"}, new int[]{1, 1, 1}));
     }
 
     @Test

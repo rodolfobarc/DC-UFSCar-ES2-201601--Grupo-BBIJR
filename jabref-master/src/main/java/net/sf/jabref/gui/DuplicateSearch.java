@@ -21,11 +21,6 @@
 
 package net.sf.jabref.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.gui.DuplicateResolverDialog.DuplicateResolverResult;
@@ -37,14 +32,17 @@ import net.sf.jabref.gui.worker.CallBack;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.DuplicateCheck;
 import net.sf.jabref.model.entry.BibEntry;
-
 import spin.Spin;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DuplicateSearch implements Runnable {
 
     private final BasePanel panel;
-    private List<BibEntry> bes;
     private final List<BibEntry[]> duplicates = new ArrayList<>();
+    private List<BibEntry> bes;
 
 
     public DuplicateSearch(BasePanel bp) {
@@ -164,6 +162,41 @@ public class DuplicateSearch implements Runnable {
 
     }
 
+    static class DuplicateCallBack implements CallBack {
+
+        private final JabRefFrame frame;
+        private final BibEntry one;
+        private final BibEntry two;
+        private final DuplicateResolverType dialogType;
+        private DuplicateResolverResult reply = DuplicateResolverResult.NOT_CHOSEN;
+        private BibEntry merged;
+
+
+        public DuplicateCallBack(JabRefFrame frame, BibEntry one, BibEntry two, DuplicateResolverType dialogType) {
+
+            this.frame = frame;
+            this.one = one;
+            this.two = two;
+            this.dialogType = dialogType;
+        }
+
+        public DuplicateResolverResult getSelected() {
+            return reply;
+        }
+
+        public BibEntry getMergedEntry() {
+            return merged;
+        }
+
+        @Override
+        public void update() {
+            DuplicateResolverDialog diag = new DuplicateResolverDialog(frame, one, two, dialogType);
+            diag.setVisible(true);
+            diag.dispose();
+            reply = diag.getSelected();
+            merged = diag.getMergedEntry();
+        }
+    }
 
     class SearcherRunnable implements Runnable {
 
@@ -201,42 +234,6 @@ public class DuplicateSearch implements Runnable {
         // no synchronized used because no "really" critical situations expected
         public void setFinished() {
             finished = true;
-        }
-    }
-
-    static class DuplicateCallBack implements CallBack {
-
-        private DuplicateResolverResult reply = DuplicateResolverResult.NOT_CHOSEN;
-        private final JabRefFrame frame;
-        private final BibEntry one;
-        private final BibEntry two;
-        private final DuplicateResolverType dialogType;
-        private BibEntry merged;
-
-
-        public DuplicateCallBack(JabRefFrame frame, BibEntry one, BibEntry two, DuplicateResolverType dialogType) {
-
-            this.frame = frame;
-            this.one = one;
-            this.two = two;
-            this.dialogType = dialogType;
-        }
-
-        public DuplicateResolverResult getSelected() {
-            return reply;
-        }
-
-        public BibEntry getMergedEntry() {
-            return merged;
-        }
-
-        @Override
-        public void update() {
-            DuplicateResolverDialog diag = new DuplicateResolverDialog(frame, one, two, dialogType);
-            diag.setVisible(true);
-            diag.dispose();
-            reply = diag.getSelected();
-            merged = diag.getMergedEntry();
         }
     }
 

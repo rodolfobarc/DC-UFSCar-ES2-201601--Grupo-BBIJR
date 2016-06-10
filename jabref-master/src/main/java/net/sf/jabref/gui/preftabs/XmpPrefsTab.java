@@ -15,54 +15,38 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.gui.IconTheme;
+import net.sf.jabref.gui.OSXCompatibleToolbar;
+import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.OSXCompatibleToolbar;
-import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-
 /**
  * Preference Tab for XMP.
- *
+ * <p>
  * Allows the user to enable and configure the XMP privacy filter.
  */
 class XmpPrefsTab extends JPanel implements PrefsTab {
 
     private final JabRefPreferences prefs;
-    private boolean tableChanged;
-
-    private int rowCount;
-
     private final JTable table;
-
     private final JCheckBox privacyFilterCheckBox = new JCheckBox(
             Localization.lang("Do not write the following fields to XMP Metadata:"));
-
     private final List<Object> tableRows = new ArrayList<>(10);
+    private boolean tableChanged;
+    private int rowCount;
 
 
     /**
@@ -165,6 +149,62 @@ class XmpPrefsTab extends JPanel implements PrefsTab {
         add(pan, BorderLayout.CENTER);
     }
 
+    /**
+     * Load settings from the preferences and initialize the table.
+     */
+    @Override
+    public void setValues() {
+        tableRows.clear();
+        List<String> names = JabRefPreferences.getInstance().getStringList(JabRefPreferences.XMP_PRIVACY_FILTERS);
+        tableRows.addAll(names);
+        rowCount = tableRows.size() + 5;
+
+        privacyFilterCheckBox.setSelected(JabRefPreferences.getInstance().getBoolean(
+                JabRefPreferences.USE_XMP_PRIVACY_FILTER));
+    }
+
+    /**
+     * Store changes to table preferences. This method is called when the user
+     * clicks Ok.
+     */
+    @Override
+    public void storeSettings() {
+
+        if (table.isEditing()) {
+            int col = table.getEditingColumn();
+            int row = table.getEditingRow();
+            table.getCellEditor(row, col).stopCellEditing();
+        }
+
+        // Now we need to make sense of the contents the user has made to the
+        // table setup table. This needs to be done either if changes were made, or
+        // if the checkbox is checked and no field values have been stored previously:
+        if (tableChanged ||
+                (privacyFilterCheckBox.isSelected() && !prefs.hasKey(JabRefPreferences.XMP_PRIVACY_FILTERS))) {
+
+            // First we remove all rows with empty names.
+            for (int i = tableRows.size() - 1; i >= 0; i--) {
+                if ((tableRows.get(i) == null) || tableRows.get(i).toString().isEmpty()) {
+                    tableRows.remove(i);
+                }
+            }
+            // Finally, we store the new preferences.
+            JabRefPreferences.getInstance().putStringList(JabRefPreferences.XMP_PRIVACY_FILTERS,
+                    tableRows.stream().map(Object::toString).collect(Collectors.toList()));
+        }
+
+        JabRefPreferences.getInstance().putBoolean(JabRefPreferences.USE_XMP_PRIVACY_FILTER, privacyFilterCheckBox.isSelected());
+    }
+
+    @Override
+    public boolean validateSettings() {
+        return true;
+    }
+
+    @Override
+    public String getTabName() {
+        return Localization.lang("XMP-metadata");
+    }
 
     class DeleteRowAction extends AbstractAction {
 
@@ -225,64 +265,5 @@ class XmpPrefsTab extends JPanel implements PrefsTab {
             table.repaint();
             tableChanged = true;
         }
-    }
-
-
-    /**
-     * Load settings from the preferences and initialize the table.
-     */
-    @Override
-    public void setValues() {
-        tableRows.clear();
-        List<String> names = JabRefPreferences.getInstance().getStringList(JabRefPreferences.XMP_PRIVACY_FILTERS);
-        tableRows.addAll(names);
-        rowCount = tableRows.size() + 5;
-
-        privacyFilterCheckBox.setSelected(JabRefPreferences.getInstance().getBoolean(
-                JabRefPreferences.USE_XMP_PRIVACY_FILTER));
-    }
-
-    /**
-     * Store changes to table preferences. This method is called when the user
-     * clicks Ok.
-     *
-     */
-    @Override
-    public void storeSettings() {
-
-        if (table.isEditing()) {
-            int col = table.getEditingColumn();
-            int row = table.getEditingRow();
-            table.getCellEditor(row, col).stopCellEditing();
-        }
-
-        // Now we need to make sense of the contents the user has made to the
-        // table setup table. This needs to be done either if changes were made, or
-        // if the checkbox is checked and no field values have been stored previously:
-        if (tableChanged ||
-                (privacyFilterCheckBox.isSelected() && !prefs.hasKey(JabRefPreferences.XMP_PRIVACY_FILTERS))) {
-
-            // First we remove all rows with empty names.
-            for (int i = tableRows.size() - 1; i >= 0; i--) {
-                if ((tableRows.get(i) == null) || tableRows.get(i).toString().isEmpty()) {
-                    tableRows.remove(i);
-                }
-            }
-            // Finally, we store the new preferences.
-            JabRefPreferences.getInstance().putStringList(JabRefPreferences.XMP_PRIVACY_FILTERS,
-                    tableRows.stream().map(Object::toString).collect(Collectors.toList()));
-        }
-
-        JabRefPreferences.getInstance().putBoolean(JabRefPreferences.USE_XMP_PRIVACY_FILTER, privacyFilterCheckBox.isSelected());
-    }
-
-    @Override
-    public boolean validateSettings() {
-        return true;
-    }
-
-    @Override
-    public String getTabName() {
-        return Localization.lang("XMP-metadata");
     }
 }

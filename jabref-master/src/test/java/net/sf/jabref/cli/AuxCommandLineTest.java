@@ -1,21 +1,20 @@
 package net.sf.jabref.cli;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.importer.ParserResult;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import net.sf.jabref.model.database.BibDatabase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.importer.ParserResult;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.model.database.BibDatabase;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class AuxCommandLineTest {
 

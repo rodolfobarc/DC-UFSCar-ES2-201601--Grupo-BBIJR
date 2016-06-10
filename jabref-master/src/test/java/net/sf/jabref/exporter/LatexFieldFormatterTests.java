@@ -2,7 +2,6 @@ package net.sf.jabref.exporter;
 
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class LatexFieldFormatterTests {
     private LatexFieldFormatter formatter;
 
     @BeforeClass
-    public static void setUpBeforeClass(){
+    public static void setUpBeforeClass() {
         Globals.prefs = JabRefPreferences.getInstance();
     }
 
@@ -33,7 +32,7 @@ public class LatexFieldFormatterTests {
 
         // The newlines are normalized according to the globally configured newline setting in the formatter
         String expected = "{" + "lorem" + Globals.NEWLINE + " ipsum lorem ipsum" + Globals.NEWLINE
- + "lorem ipsum "
+                + "lorem ipsum "
                 + Globals.NEWLINE + "lorem ipsum"
                 + Globals.NEWLINE + "test" + "}";
 
@@ -74,7 +73,7 @@ public class LatexFieldFormatterTests {
         String text = "lorem ipsum lorem ipsum" + Globals.NEWLINE + "lorem ipsum lorem ipsum" + Globals.NEWLINE;
 
         String result = formatter.format(text, fieldName);
-        String expected = "{"+text+"}";
+        String expected = "{" + text + "}";
 
         assertEquals(expected, result);
     }

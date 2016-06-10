@@ -15,14 +15,10 @@
 */
 package net.sf.jabref.migrations;
 
-import java.util.List;
-
-import net.sf.jabref.logic.groups.AbstractGroup;
-import net.sf.jabref.logic.groups.AllEntriesGroup;
-import net.sf.jabref.logic.groups.GroupHierarchyType;
-import net.sf.jabref.logic.groups.GroupTreeNode;
-import net.sf.jabref.logic.groups.KeywordGroup;
+import net.sf.jabref.logic.groups.*;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.List;
 
 /**
  * Handles versioning of groups, e.g. automatic conversion from previous to
@@ -60,21 +56,23 @@ public class VersionHandling {
 
     public static GroupTreeNode importGroups(List<String> orderedData, int version) throws Exception {
         switch (version) {
-        case 0:
-        case 1:
-            return Version0_1.fromString(orderedData.get(0), version);
-        case 2:
-        case 3:
-            return Version2_3.fromString(orderedData, version);
-        default:
-            throw new IllegalArgumentException(
-                    "Failed to read groups data (unsupported version: " +
-                    Integer.toString(version) + ")");
+            case 0:
+            case 1:
+                return Version0_1.fromString(orderedData.get(0), version);
+            case 2:
+            case 3:
+                return Version2_3.fromString(orderedData, version);
+            default:
+                throw new IllegalArgumentException(
+                        "Failed to read groups data (unsupported version: " +
+                                Integer.toString(version) + ")");
         }
     }
 
 
-    /** Imports groups version 0 and 1. */
+    /**
+     * Imports groups version 0 and 1.
+     */
     private static class Version0_1 {
 
         /**
@@ -82,8 +80,7 @@ public class VersionHandling {
          * GroupTreeNode.toString() and recreates that node and all of its
          * children from it.
          *
-         * @throws Exception
-         *             When a group could not be recreated
+         * @throws Exception When a group could not be recreated
          */
         private static GroupTreeNode fromString(String str, int version) throws Exception {
             GroupTreeNode root = null;
@@ -131,20 +128,20 @@ public class VersionHandling {
             int level = 1;
             while (i < s.length()) {
                 switch (s.charAt(i)) {
-                case '\\':
-                    ++i;
-                    break;
-                case '(':
-                    ++level;
-                    break;
-                case ')':
-                    --level;
-                    if (level == 0) {
-                        return s.substring(1, i);
-                    }
-                    break;
-                default:
-                    break;
+                    case '\\':
+                        ++i;
+                        break;
+                    case '(':
+                        ++level;
+                        break;
+                    case ')':
+                        --level;
+                        if (level == 0) {
+                            return s.substring(1, i);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 ++i;
             }
@@ -155,12 +152,10 @@ public class VersionHandling {
          * Returns the index of the first occurrence of c, skipping quoted
          * special characters (escape character: '\\').
          *
-         * @param s
-         *            The String to search in.
-         * @param c
-         *            The character to search
+         * @param s The String to search in.
+         * @param c The character to search
          * @return The index of the first unescaped occurrence of c in s, or -1
-         *         if not found.
+         * if not found.
          */
         private static int indexOfUnquoted(String s, char c) {
             int i = 0;

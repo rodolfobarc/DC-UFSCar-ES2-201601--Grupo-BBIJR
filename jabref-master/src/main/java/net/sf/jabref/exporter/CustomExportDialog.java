@@ -15,26 +15,7 @@
 */
 package net.sf.jabref.exporter;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.FileDialogs;
@@ -42,7 +23,11 @@ import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Dialog for creating or modifying custom exports.
@@ -56,7 +41,7 @@ class CustomExportDialog extends JDialog {
 
 
     public CustomExportDialog(final JabRefFrame parent, final String exporterName, final String layoutFileName,
-            final String extensionName) {
+                              final String extensionName) {
         this(parent);
         name.setText(exporterName);
         layoutFile.setText(layoutFileName);
@@ -102,18 +87,18 @@ class CustomExportDialog extends JDialog {
 
         JButton browse = new JButton(Localization.lang("Browse"));
         browse.addActionListener(e -> {
-                File directory = new File(Globals.prefs.get(JabRefPreferences.EXPORT_WORKING_DIRECTORY));
-                String chosenStr = FileDialogs.getNewFile(parent, directory, ".layout",
-                        JFileChooser.OPEN_DIALOG, false);
-                if (chosenStr == null) {
-                    return;
-                }
-                File chosen = new File(chosenStr);
+            File directory = new File(Globals.prefs.get(JabRefPreferences.EXPORT_WORKING_DIRECTORY));
+            String chosenStr = FileDialogs.getNewFile(parent, directory, ".layout",
+                    JFileChooser.OPEN_DIALOG, false);
+            if (chosenStr == null) {
+                return;
+            }
+            File chosen = new File(chosenStr);
 
-                // Update working directory for layout files.
-                Globals.prefs.put(JabRefPreferences.EXPORT_WORKING_DIRECTORY, chosen.getParent());
+            // Update working directory for layout files.
+            Globals.prefs.put(JabRefPreferences.EXPORT_WORKING_DIRECTORY, chosen.getParent());
 
-                layoutFile.setText(chosen.getPath());
+            layoutFile.setText(chosen.getPath());
         });
 
         // Key bindings:

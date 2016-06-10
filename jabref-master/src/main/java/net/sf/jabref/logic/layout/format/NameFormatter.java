@@ -15,87 +15,83 @@
 */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.bst.BibtexNameFormatter;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.model.entry.AuthorList;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This layout formatter uses the Bibtex name.format$ method and provides ultimate flexibility:
- *
+ * <p>
  * The formatter needs a parameter to be passed in that follows the following format:
- *
+ * <p>
  * <case1>@<range11>@"<format>"@<range12>@"<format>"@<range13>...@@
- *
+ * <p>
  * <case2>@<range21>@... and so on.
- *
+ * <p>
  * Individual cases are separated by @@ and items in a case by @.
- *
+ * <p>
  * Cases are just integers or the character * and will tell the formatter to apply the following formats if there are
  * less or equal authors given to it. The cases must be in strict increasing order with the * in the last position.
- *
+ * <p>
  * For instance:
- *
+ * <p>
  * case1 = 2
  * case2 = 3
  * case3 = *
- *
+ * <p>
  * Ranges are either <integer>..<integer>, <integer> or the character * using a 1 based index for indexing
  * authors from the given authorlist. Integer indexes can be negative to denote them to start from
  * the end of the list where -1 is the last author.
- *
+ * <p>
  * For instance with an authorlist of "Joe Doe and Mary Jane and Bruce Bar and Arthur Kay":
- *
+ * <p>
  * 1..3 will affect Joe, Mary and Bruce
- *
+ * <p>
  * 4..4 will affect Arthur
- *
+ * <p>
  * * will affect all of them
- *
+ * <p>
  * 2..-1 will affect Mary, Bruce and Arthur
- *
+ * <p>
  * The <format> uses the Bibtex formatter format:
- *
+ * <p>
  * The four letter v, f, l, j indicate the name parts von, first, last, jr which
  * are used within curly braces. A single letter v, f, l, j indicates that the name should be abbreviated.
  * To put a quote in the format string quote it using \" (mh. this doesn't work yet)
- *
+ * <p>
  * I give some examples but would rather point you to the bibtex documentation.
- *
+ * <p>
  * "{ll}, {f}." Will turn "Joe Doe" into "Doe, J."
- *
+ * <p>
  * Complete example:
- *
+ * <p>
  * To turn:
- *
+ * <p>
  * "Joe Doe and Mary Jane and Bruce Bar and Arthur Kay"
- *
+ * <p>
  * into
- *
+ * <p>
  * "Doe, J., Jane, M., Bar, B. and Kay, A."
- *
+ * <p>
  * you would use
- *
+ * <p>
  * 1@*@{ll}, {f}.@@2@1@{ll}, {f}.@2@ and {ll}, {f}.@@*@1..-3@{ll}, {f}., @-2@{ll}, {f}.@-1@ and {ll}, {f}.
- *
+ * <p>
  * Yeah this is trouble-some to write, but should work.
- *
+ * <p>
  * For more examples see the test-cases.
- *
  */
 public class NameFormatter implements LayoutFormatter {
 
     public static final String DEFAULT_FORMAT = "1@*@{ff }{vv }{ll}{, jj}@@*@1@{ff }{vv }{ll}{, jj}@*@, {ff }{vv }{ll}{, jj}";
-
-    private String parameter = NameFormatter.DEFAULT_FORMAT;
-
     public static final String NAME_FORMATER_KEY = "nameFormatterNames";
-
     public static final String NAME_FORMATTER_VALUE = "nameFormatterFormats";
+    private String parameter = NameFormatter.DEFAULT_FORMAT;
 
     private static String format(String toFormat, AuthorList al, String[] formats) {
 
@@ -142,6 +138,24 @@ public class NameFormatter implements LayoutFormatter {
 
     }
 
+    public static Map<String, String> getNameFormatters() {
+
+        Map<String, String> result = new HashMap<>();
+
+        List<String> names = Globals.prefs.getStringList(NameFormatter.NAME_FORMATER_KEY);
+        List<String> formats = Globals.prefs.getStringList(NameFormatter.NAME_FORMATTER_VALUE);
+
+        for (int i = 0; i < names.size(); i++) {
+            if (i < formats.size()) {
+                result.put(names.get(i), formats.get(i));
+            } else {
+                result.put(names.get(i), DEFAULT_FORMAT);
+            }
+        }
+
+        return result;
+    }
+
     public String format(String toFormat, String inParameters) {
 
         AuthorList al = AuthorList.parse(toFormat);
@@ -178,27 +192,7 @@ public class NameFormatter implements LayoutFormatter {
         return format(fieldText, parameter);
     }
 
-
-
     public void setParameter(String parameter) {
         this.parameter = parameter;
-    }
-
-    public static Map<String, String> getNameFormatters() {
-
-        Map<String, String> result = new HashMap<>();
-
-        List<String> names = Globals.prefs.getStringList(NameFormatter.NAME_FORMATER_KEY);
-        List<String> formats = Globals.prefs.getStringList(NameFormatter.NAME_FORMATTER_VALUE);
-
-        for (int i = 0; i < names.size(); i++) {
-            if (i < formats.size()) {
-                result.put(names.get(i), formats.get(i));
-            } else {
-                result.put(names.get(i), DEFAULT_FORMAT);
-            }
-        }
-
-        return result;
     }
 }

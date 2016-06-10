@@ -15,11 +15,10 @@
 */
 package net.sf.jabref.importer;
 
-import java.io.File;
+import net.sf.jabref.importer.fileformat.ImportFormat;
 
 import javax.swing.filechooser.FileFilter;
-
-import net.sf.jabref.importer.fileformat.ImportFormat;
+import java.io.File;
 
 /**
  * File filter that lets the user choose export format while choosing file to

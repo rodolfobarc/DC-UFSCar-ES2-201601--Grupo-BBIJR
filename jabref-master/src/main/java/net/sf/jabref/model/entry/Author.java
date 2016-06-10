@@ -66,32 +66,32 @@ public class Author {
         StringBuilder sb = new StringBuilder();
         char lastChar = name.charAt(0);
         for (int i = 0; i < name.length(); i++) {
-            if(i > 0) {
+            if (i > 0) {
                 lastChar = name.charAt(i - 1);
             }
             char currentChar = name.charAt(i);
             sb.append(currentChar);
 
-            if(currentChar == '.') {
+            if (currentChar == '.') {
                 // A.A. -> A. A.
-                if(((i + 1) < name.length()) && Character.isUpperCase(name.charAt(i + 1))) {
+                if (((i + 1) < name.length()) && Character.isUpperCase(name.charAt(i + 1))) {
                     sb.append(' ');
                 }
             }
 
             boolean currentIsUppercaseLetter = Character.isLetter(currentChar) && Character.isUpperCase(currentChar);
-            if(!currentIsUppercaseLetter) {
+            if (!currentIsUppercaseLetter) {
                 // No uppercase letter, hence nothing to do
                 continue;
             }
 
             boolean lastIsLowercaseLetter = Character.isLetter(lastChar) && Character.isLowerCase(lastChar);
-            if(lastIsLowercaseLetter) {
+            if (lastIsLowercaseLetter) {
                 // previous character was lowercase (probably an acronym like JabRef) -> don't change anything
                 continue;
             }
 
-            if((i + 1) >= name.length()) {
+            if ((i + 1) >= name.length()) {
                 // Current character is last character in input, so append dot
                 sb.append('.');
                 continue;
@@ -103,7 +103,7 @@ public class Author {
                 sb.append(".");
                 continue;
             }
-            if('.' == nextChar) {
+            if ('.' == nextChar) {
                 // Dot already there, so nothing to do
                 continue;
             }
@@ -113,18 +113,18 @@ public class Author {
             boolean nextWordIsUppercase = true;
             for (int j = i + 1; j < name.length(); j++) {
                 char furtherChar = name.charAt(j);
-                if(Character.isWhitespace(furtherChar) || (furtherChar == '-') || (furtherChar == '~') || (furtherChar == '.')) {
+                if (Character.isWhitespace(furtherChar) || (furtherChar == '-') || (furtherChar == '~') || (furtherChar == '.')) {
                     // end of word
                     break;
                 }
 
                 boolean furtherIsUppercaseLetter = Character.isLetter(furtherChar) && Character.isUpperCase(furtherChar);
-                if(!furtherIsUppercaseLetter) {
+                if (!furtherIsUppercaseLetter) {
                     nextWordIsUppercase = false;
                     break;
                 }
             }
-            if(nextWordIsUppercase) {
+            if (nextWordIsUppercase) {
                 sb.append(". ");
             }
         }
@@ -166,17 +166,17 @@ public class Author {
         while (i < s.length()) {
             char c = s.charAt(i);
             switch (c) {
-            case '{':
-                level++;
-                break;
-            case '}':
-                level--;
-                if (level == -1) { // improper nesting
-                    return false;
-                }
-                break;
-            default:
-                break;
+                case '{':
+                    level++;
+                    break;
+                case '}':
+                    level--;
+                    if (level == -1) { // improper nesting
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
             }
             i++;
         }

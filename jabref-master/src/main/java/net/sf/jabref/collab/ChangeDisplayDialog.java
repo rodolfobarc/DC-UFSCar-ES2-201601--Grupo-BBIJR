@@ -15,30 +15,18 @@
 */
 package net.sf.jabref.collab;
 
-import java.awt.BorderLayout;
-import java.awt.Insets;
-import java.util.Collections;
-import java.util.Enumeration;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
+import java.util.Collections;
+import java.util.Enumeration;
 
 class ChangeDisplayDialog extends JDialog implements TreeSelectionListener {
 
@@ -52,7 +40,7 @@ class ChangeDisplayDialog extends JDialog implements TreeSelectionListener {
 
 
     public ChangeDisplayDialog(JFrame owner, final BasePanel panel,
-            BibDatabase secondary, final DefaultMutableTreeNode root) {
+                               BibDatabase secondary, final DefaultMutableTreeNode root) {
         super(owner, Localization.lang("External changes"), true);
         BibDatabase localSecondary;
 

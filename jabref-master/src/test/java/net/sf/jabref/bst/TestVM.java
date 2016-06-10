@@ -1,12 +1,5 @@
 package net.sf.jabref.bst;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bst.VM.BstEntry;
@@ -14,19 +7,31 @@ import net.sf.jabref.bst.VM.StackFunction;
 import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.antlr.runtime.RecognitionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class TestVM {
+
+    private static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
+        ParserResult result = BibtexParser.parse(new StringReader(s));
+        Collection<BibEntry> c = result.getDatabase().getEntries();
+        Assert.assertEquals(1, c.size());
+        return c.iterator().next();
+    }
 
     @Before
     public void setPreferences() {
         Globals.prefs = JabRefPreferences.getInstance();
     }
-
 
     @Test
     public void testAbbrv() throws RecognitionException, IOException {
@@ -216,7 +221,7 @@ public class TestVM {
                         + "\"Johnny!\" add.period$ \"Johnny?\" add.period$ \"Johnny} }}}\" add.period$"
                         + "\"Johnny!}\" add.period$ \"Johnny?}\" add.period$ \"Johnny.}\" add.period$ }"
                         + "EXECUTE {test}"
-                );
+        );
 
         List<BibEntry> v = new ArrayList<>();
         vm.run(v);
@@ -235,17 +240,17 @@ public class TestVM {
     @Test
     public void testSubstring() throws RecognitionException {
         VM vm = new VM("FUNCTION {test} " + "{ \"123456789\" #2  #1  substring$ " + // 2
-        "  \"123456789\" #4 global.max$ substring$ " + // 456789
-        "  \"123456789\" #1  #9  substring$ " + // 123456789
-        "  \"123456789\" #1  #10 substring$ " + // 123456789
-        "  \"123456789\" #1  #99 substring$ " + // 123456789
+                "  \"123456789\" #4 global.max$ substring$ " + // 456789
+                "  \"123456789\" #1  #9  substring$ " + // 123456789
+                "  \"123456789\" #1  #10 substring$ " + // 123456789
+                "  \"123456789\" #1  #99 substring$ " + // 123456789
 
-        "  \"123456789\" #-7 #3  substring$ " + // 123
-        "  \"123456789\" #-1 #1  substring$ " + // 9
-        "  \"123456789\" #-1 #3  substring$ " + // 789
-        "  \"123456789\" #-2 #2  substring$ " + // 78
+                "  \"123456789\" #-7 #3  substring$ " + // 123
+                "  \"123456789\" #-1 #1  substring$ " + // 9
+                "  \"123456789\" #-1 #3  substring$ " + // 789
+                "  \"123456789\" #-2 #2  substring$ " + // 78
 
-        "} EXECUTE {test} ");
+                "} EXECUTE {test} ");
 
         List<BibEntry> v = new ArrayList<>();
         vm.run(v);
@@ -265,10 +270,10 @@ public class TestVM {
     @Test
     public void testEmpty() throws RecognitionException, IOException {
         VM vm = new VM("ENTRY {title}{}{} READ STRINGS { s } FUNCTION {test} " + "{ s empty$ " + // FALSE
-        "\"\" empty$ " + // FALSE
-        "\"   \" empty$ " + // FALSE
-        " title empty$ " + // FALSE
-        " \" HALLO \" empty$ } ITERATE {test} ");
+                "\"\" empty$ " + // FALSE
+                "\"   \" empty$ " + // FALSE
+                " title empty$ " + // FALSE
+                " \" HALLO \" empty$ } ITERATE {test} ");
 
         List<BibEntry> v = new ArrayList<>();
         v.add(TestVM.bibtexString2BibtexEntry("@article{a, author=\"AAA\"}"));
@@ -311,7 +316,7 @@ public class TestVM {
                         + "  \"\" format.title "
                         + "  \"{A}{D}/{C}ycle: {I}{B}{M}'s {F}ramework for {A}pplication {D}evelopment and {C}ase\" \"u\" change.case$ format.title "
                         + "}" + "EXECUTE {test} "
-                );
+        );
 
         List<BibEntry> v = new ArrayList<>();
         vm.run(v);
@@ -455,7 +460,7 @@ public class TestVM {
                         + "	  while$                                                                  "
                         + "	}                                                                  "
                         + " EXECUTE {n.dashify} "
-                );
+        );
 
         List<BibEntry> v = new ArrayList<>();
         vm.run(v);
@@ -468,8 +473,8 @@ public class TestVM {
     public void testType() throws RecognitionException, IOException {
 
         VM vm = new VM("ENTRY  { title }  { }  { label }"
-                        + "FUNCTION {presort} { cite$ 'sort.key$ := } ITERATE { presort } SORT FUNCTION {test} { type$ } ITERATE { test }"
-                );
+                + "FUNCTION {presort} { cite$ 'sort.key$ := } ITERATE { presort } SORT FUNCTION {test} { type$ } ITERATE { test }"
+        );
 
         List<BibEntry> v = new ArrayList<>();
         v.add(TestVM.bibtexString2BibtexEntry("@article{a, author=\"AAA\"}"));
@@ -490,12 +495,12 @@ public class TestVM {
 
         VM vm = new VM( //
                 "ENTRY    { title }  { }  { label } " + //
-                "FUNCTION {presort} { cite$ 'sort.key$ := } " + //
-                "ITERATE  {presort} " + //
-                "READ SORT " + //
-                "FUNCTION {test}{ title missing$ cite$ } " + //
-                "ITERATE  { test }"
-                );
+                        "FUNCTION {presort} { cite$ 'sort.key$ := } " + //
+                        "ITERATE  {presort} " + //
+                        "READ SORT " + //
+                        "FUNCTION {test}{ title missing$ cite$ } " + //
+                        "ITERATE  { test }"
+        );
 
         List<BibEntry> v = new ArrayList<>();
         v.add(t1BibtexEntry());
@@ -545,7 +550,7 @@ public class TestVM {
                 "ENTRY  { title }  { }  { label } FUNCTION {presort} { cite$ 'sort.key$ := } ITERATE { presort } READ SORT "
                         + "FUNCTION {inproceedings}{ \"InProceedings called on \" title * } "
                         + "FUNCTION {book}{ \"Book called on \" title * } " + " ITERATE { call.type$ }"
-                );
+        );
 
         List<BibEntry> v = new ArrayList<>();
         v.add(t1BibtexEntry());
@@ -643,13 +648,6 @@ public class TestVM {
         Assert.assertEquals(2, vm.getStack().size());
         Assert.assertEquals(3, vm.getStack().pop());
         Assert.assertEquals("Hallo", vm.getStack().pop());
-    }
-
-    private static BibEntry bibtexString2BibtexEntry(String s) throws IOException {
-        ParserResult result = BibtexParser.parse(new StringReader(s));
-        Collection<BibEntry> c = result.getDatabase().getEntries();
-        Assert.assertEquals(1, c.size());
-        return c.iterator().next();
     }
 
     /* TEST DATA */

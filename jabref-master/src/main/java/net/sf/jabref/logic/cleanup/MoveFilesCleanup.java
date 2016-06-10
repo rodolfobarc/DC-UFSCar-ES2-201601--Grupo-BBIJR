@@ -13,19 +13,15 @@
 */
 package net.sf.jabref.logic.cleanup;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.TypedBibEntry;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.ParsedFileField;
+
+import java.io.File;
+import java.util.*;
 
 public class MoveFilesCleanup implements CleanupJob {
 
@@ -37,14 +33,14 @@ public class MoveFilesCleanup implements CleanupJob {
 
     @Override
     public List<FieldChange> cleanup(BibEntry entry) {
-        if(!databaseContext.getMetaData().getDefaultFileDirectory().isPresent()) {
+        if (!databaseContext.getMetaData().getDefaultFileDirectory().isPresent()) {
             return new ArrayList<>();
         }
 
         List<String> paths = databaseContext.getFileDirectory();
         String defaultFileDirectory = databaseContext.getMetaData().getDefaultFileDirectory().get();
         Optional<File> targetDirectory = FileUtil.expandFilename(defaultFileDirectory, paths);
-        if(!targetDirectory.isPresent()) {
+        if (!targetDirectory.isPresent()) {
             return new ArrayList<>();
         }
 
@@ -56,12 +52,12 @@ public class MoveFilesCleanup implements CleanupJob {
             String oldFileName = fileEntry.getLink();
 
             Optional<File> oldFile = FileUtil.expandFilename(oldFileName, paths);
-            if(!oldFile.isPresent() || !oldFile.get().exists()) {
+            if (!oldFile.isPresent() || !oldFile.get().exists()) {
                 continue;
             }
 
             File targetFile = new File(targetDirectory.get(), oldFile.get().getName());
-            if(targetFile.exists()) {
+            if (targetFile.exists()) {
                 // We do not overwrite already existing files
                 continue;
             }
@@ -78,7 +74,7 @@ public class MoveFilesCleanup implements CleanupJob {
         }
         if (changed) {
             Optional<FieldChange> change = typedEntry.setFiles(newFileList);
-            if(change.isPresent()) {
+            if (change.isPresent()) {
                 return Collections.singletonList(change.get());
             } else {
                 return Collections.emptyList();

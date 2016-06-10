@@ -1,15 +1,15 @@
 package net.sf.jabref.logic.formatter.bibtexfields;
 
+import net.sf.jabref.logic.formatter.Formatter;
+import net.sf.jabref.logic.l10n.Localization;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.logic.formatter.Formatter;
-import net.sf.jabref.logic.l10n.Localization;
-
 /**
  * This class includes sensible defaults for consistent formatting of BibTex page numbers.
- *
+ * <p>
  * From BibTex manual:
  * One or more page numbers or range of numbers, such as 42--111 or 7,41,73--97 or 43+
  * (the '+' in this last example indicates pages following that don't form a simple range).
@@ -39,13 +39,13 @@ public class NormalizePagesFormatter implements Formatter {
      * Converts the range number format of the <code>pages</code> field to page_number--page_number.
      * Removes all literals except [0-9,-+].
      * Keeps the existing String if the resulting field does not match the expected Regex.
-     *
+     * <p>
      * <example>
-     *     1-2 -> 1--2
-     *     1,2,3 -> 1,2,3
-     *     {1}-{2} -> 1--2
-     *     43+ -> 43+
-     *     Invalid -> Invalid
+     * 1-2 -> 1--2
+     * 1,2,3 -> 1,2,3
+     * {1}-{2} -> 1--2
+     * 43+ -> 43+
+     * Invalid -> Invalid
      * </example>
      */
     @Override
@@ -64,7 +64,7 @@ public class NormalizePagesFormatter implements Formatter {
         // replace
         String newValue = matcher.replaceFirst(PAGES_REPLACE_PATTERN);
         // replacement?
-        if(!newValue.equals(cleanValue)) {
+        if (!newValue.equals(cleanValue)) {
             // write field
             return newValue;
         }

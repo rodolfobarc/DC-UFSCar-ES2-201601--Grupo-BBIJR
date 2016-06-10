@@ -15,16 +15,14 @@
  */
 package net.sf.jabref.sql;
 
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.actions.BaseAction;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.sql.exporter.DatabaseExporter;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.sql.Connection;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Mar 27, 2008 Time: 6:05:13 PM To
@@ -42,15 +40,6 @@ public class DbConnectAction implements BaseAction {
 
     public AbstractAction getAction() {
         return new DbImpAction();
-    }
-
-    private class DbImpAction extends AbstractAction {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            action();
-
-        }
     }
 
     @Override
@@ -99,6 +88,15 @@ public class DbConnectAction implements BaseAction {
         } finally {
             panel.getBibDatabaseContext().getMetaData().setDBStrings(dbs);
             dbd.dispose();
+        }
+    }
+
+    private class DbImpAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            action();
+
         }
     }
 }

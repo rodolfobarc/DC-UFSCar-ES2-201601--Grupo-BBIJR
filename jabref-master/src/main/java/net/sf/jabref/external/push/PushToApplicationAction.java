@@ -15,19 +15,15 @@
  */
 package net.sf.jabref.external.push;
 
-import java.awt.event.ActionEvent;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * An Action class representing the process of invoking a PushToApplication operation.
@@ -45,6 +41,26 @@ class PushToApplicationAction extends AbstractAction implements Runnable {
         putValue(Action.NAME, operation.getName());
         putValue(Action.SHORT_DESCRIPTION, operation.getTooltip());
         this.operation = operation;
+    }
+
+    private static String getKeyString(List<BibEntry> bibentries) {
+        StringBuilder result = new StringBuilder();
+        String citeKey;
+        boolean first = true;
+        for (BibEntry bes : bibentries) {
+            citeKey = bes.getCiteKey();
+            // if the key is empty we give a warning and ignore this entry
+            if ((citeKey == null) || citeKey.isEmpty()) {
+                continue;
+            }
+            if (first) {
+                result.append(citeKey);
+                first = false;
+            } else {
+                result.append(',').append(citeKey);
+            }
+        }
+        return result.toString();
     }
 
     @Override
@@ -87,25 +103,5 @@ class PushToApplicationAction extends AbstractAction implements Runnable {
 
         // Call the operationCompleted() method on the event dispatch thread:
         SwingUtilities.invokeLater(() -> operation.operationCompleted(panel));
-    }
-
-    private static String getKeyString(List<BibEntry> bibentries) {
-        StringBuilder result = new StringBuilder();
-        String citeKey;
-        boolean first = true;
-        for (BibEntry bes : bibentries) {
-            citeKey = bes.getCiteKey();
-            // if the key is empty we give a warning and ignore this entry
-            if ((citeKey == null) || citeKey.isEmpty()) {
-                continue;
-            }
-            if (first) {
-                result.append(citeKey);
-                first = false;
-            } else {
-                result.append(',').append(citeKey);
-            }
-        }
-        return result.toString();
     }
 }

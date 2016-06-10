@@ -15,27 +15,6 @@
  */
 package net.sf.jabref.importer.fetcher;
 
-import java.awt.BorderLayout;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.help.HelpFiles;
@@ -49,12 +28,21 @@ import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.net.URLDownload;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IEEEXploreFetcher implements EntryFetcher {
 
@@ -84,9 +72,8 @@ public class IEEEXploreFetcher implements EntryFetcher {
     private final UnitsToLatexFormatter unitsToLatexFormatter = new UnitsToLatexFormatter();
     private final HtmlToLatexFormatter htmlToLatexFormatter = new HtmlToLatexFormatter();
     private final JCheckBox absCheckBox = new JCheckBox(Localization.lang("Include abstracts"), false);
-
-    private boolean shouldContinue;
     private final JournalAbbreviationLoader abbreviationLoader;
+    private boolean shouldContinue;
 
 
     public IEEEXploreFetcher(JournalAbbreviationLoader abbreviationLoader) {

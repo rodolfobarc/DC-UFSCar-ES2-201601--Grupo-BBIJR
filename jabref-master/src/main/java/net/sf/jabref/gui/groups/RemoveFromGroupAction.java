@@ -15,15 +15,14 @@
 */
 package net.sf.jabref.gui.groups;
 
-import java.awt.event.ActionEvent;
-import java.util.Optional;
-
-import javax.swing.AbstractAction;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.logic.groups.EntriesGroupChange;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.util.Util;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.Optional;
 
 public class RemoveFromGroupAction extends AbstractAction {
 
@@ -57,7 +56,7 @@ public class RemoveFromGroupAction extends AbstractAction {
         }
 
         Optional<EntriesGroupChange> undo = mNode.removeEntriesFromGroup(mPanel.getSelectedEntries());
-        if (! undo.isPresent()) {
+        if (!undo.isPresent()) {
             return; // no changed made
         }
 

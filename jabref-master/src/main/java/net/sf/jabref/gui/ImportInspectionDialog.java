@@ -15,61 +15,20 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Defaults;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefExecutorService;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.MetaData;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
+import ca.odell.glazedlists.swing.DefaultEventTableModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
+import ca.odell.glazedlists.swing.TableComparatorChooser;
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.ButtonStackBuilder;
+import net.sf.jabref.*;
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.bibtex.comparator.FieldComparator;
@@ -103,22 +62,18 @@ import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryUtil;
 import net.sf.jabref.model.entry.IdGenerator;
-
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.DefaultEventSelectionModel;
-import ca.odell.glazedlists.swing.DefaultEventTableModel;
-import ca.odell.glazedlists.swing.GlazedListsSwing;
-import ca.odell.glazedlists.swing.TableComparatorChooser;
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.ButtonStackBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 /**
  * Dialog to allow the selection of entries as part of an Import.
@@ -143,72 +98,44 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ImportInspectionDialog extends JDialog implements ImportInspector, OutputPrinter {
     private static final Log LOGGER = LogFactory.getLog(ImportInspectionDialog.class);
-
-    private BasePanel panel;
-
-    public final JabRefFrame frame;
-
-    private final BibDatabaseContext bibDatabaseContext;
-
-    private final JSplitPane contentPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
-    private final JTable glTable;
-
-    private final TableComparatorChooser<BibEntry> comparatorChooser;
-
-    private final DefaultEventSelectionModel<BibEntry> selectionModel;
-
-    private final JProgressBar progressBar = new JProgressBar(SwingConstants.HORIZONTAL);
-
-    private final JButton ok = new JButton(Localization.lang("OK"));
-    private final JButton generate = new JButton(Localization.lang("Generate now"));
-
-    private final EventList<BibEntry> entries = new BasicEventList<>();
-
-    private final SortedList<BibEntry> sortedList;
-
-    /**
-     * Duplicate resolving may require deletion of old entries.
-     */
-    private final List<BibEntry> entriesToDelete = new ArrayList<>();
-
-    private final String undoName;
-
-    private final List<CallBack> callBacks = new ArrayList<>();
-
-    private final boolean newDatabase;
-
-    private final JPopupMenu popup = new JPopupMenu();
-
-    private final JButton deselectAllDuplicates = new JButton(Localization.lang("Deselect all duplicates"));
-
-    private final JButton stop = new JButton(Localization.lang("Stop"));
-
-    private final PreviewPanel preview;
-
-    private boolean generatedKeys; // Set to true after keys have been generated.
-
-    private boolean defaultSelected = true;
-
-    private final Rectangle toRect = new Rectangle(0, 0, 1, 1);
-
-    private final Map<BibEntry, Set<GroupTreeNode>> groupAdditions = new HashMap<>();
-
-    private final JCheckBox autoGenerate = new JCheckBox(Localization.lang("Generate keys"),
-            Globals.prefs.getBoolean(JabRefPreferences.GENERATE_KEYS_AFTER_INSPECTION));
-
-    private final JLabel duplLabel = new JLabel(IconTheme.JabRefIcon.DUPLICATE.getSmallIcon());
-    private final JLabel fileLabel = new JLabel(IconTheme.JabRefIcon.FILE.getSmallIcon());
-    private final JLabel urlLabel = new JLabel(IconTheme.JabRefIcon.WWW.getSmallIcon());
-
     private static final List<String> INSPECTION_FIELDS = Arrays.asList("author", "title", "year", BibEntry.KEY_FIELD);
-
     private static final int DUPL_COL = 1;
     private static final int FILE_COL = 2;
     private static final int URL_COL = 3;
     private static final int PAD = 4;
-
     private static final String URL_FIELD = "url";
+    public final JabRefFrame frame;
+    private final BibDatabaseContext bibDatabaseContext;
+    private final JSplitPane contentPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    private final JTable glTable;
+    private final TableComparatorChooser<BibEntry> comparatorChooser;
+    private final DefaultEventSelectionModel<BibEntry> selectionModel;
+    private final JProgressBar progressBar = new JProgressBar(SwingConstants.HORIZONTAL);
+    private final JButton ok = new JButton(Localization.lang("OK"));
+    private final JButton generate = new JButton(Localization.lang("Generate now"));
+    private final EventList<BibEntry> entries = new BasicEventList<>();
+    private final SortedList<BibEntry> sortedList;
+    /**
+     * Duplicate resolving may require deletion of old entries.
+     */
+    private final List<BibEntry> entriesToDelete = new ArrayList<>();
+    private final String undoName;
+    private final List<CallBack> callBacks = new ArrayList<>();
+    private final boolean newDatabase;
+    private final JPopupMenu popup = new JPopupMenu();
+    private final JButton deselectAllDuplicates = new JButton(Localization.lang("Deselect all duplicates"));
+    private final JButton stop = new JButton(Localization.lang("Stop"));
+    private final PreviewPanel preview;
+    private final Rectangle toRect = new Rectangle(0, 0, 1, 1);
+    private final Map<BibEntry, Set<GroupTreeNode>> groupAdditions = new HashMap<>();
+    private final JCheckBox autoGenerate = new JCheckBox(Localization.lang("Generate keys"),
+            Globals.prefs.getBoolean(JabRefPreferences.GENERATE_KEYS_AFTER_INSPECTION));
+    private final JLabel duplLabel = new JLabel(IconTheme.JabRefIcon.DUPLICATE.getSmallIcon());
+    private final JLabel fileLabel = new JLabel(IconTheme.JabRefIcon.FILE.getSmallIcon());
+    private final JLabel urlLabel = new JLabel(IconTheme.JabRefIcon.WWW.getSmallIcon());
+    private BasePanel panel;
+    private boolean generatedKeys; // Set to true after keys have been generated.
+    private boolean defaultSelected = true;
 
 
     /**
@@ -580,6 +507,111 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
         return action;
     }
 
+    public void addCallBack(CallBack cb) {
+        callBacks.add(cb);
+    }
+
+    private void signalStopFetching() {
+        callBacks.forEach(c -> c.stopFetching());
+    }
+
+    private void setWidths() {
+        TableColumnModel cm = glTable.getColumnModel();
+        cm.getColumn(0).setPreferredWidth(55);
+        cm.getColumn(0).setMinWidth(55);
+        cm.getColumn(0).setMaxWidth(55);
+        for (int i = 1; i < PAD; i++) {
+            // Lock the width of icon columns.
+            cm.getColumn(i).setPreferredWidth(GUIGlobals.WIDTH_ICON_COL);
+            cm.getColumn(i).setMinWidth(GUIGlobals.WIDTH_ICON_COL);
+            cm.getColumn(i).setMaxWidth(GUIGlobals.WIDTH_ICON_COL);
+        }
+
+        for (int i = 0; i < INSPECTION_FIELDS.size(); i++) {
+            int width = InternalBibtexFields.getFieldLength(INSPECTION_FIELDS.get(i));
+            glTable.getColumnModel().getColumn(i + PAD).setPreferredWidth(width);
+        }
+    }
+
+    private void setupComparatorChooser() {
+        // First column:
+
+        List<Comparator> comparators = comparatorChooser.getComparatorsForColumn(0);
+        comparators.clear();
+
+        comparators = comparatorChooser.getComparatorsForColumn(1);
+        comparators.clear();
+
+        // Icon columns:
+        for (int i = 2; i < PAD; i++) {
+            comparators = comparatorChooser.getComparatorsForColumn(i);
+            comparators.clear();
+            if (i == FILE_COL) {
+                comparators.add(new IconComparator(Collections.singletonList(Globals.FILE_FIELD)));
+            } else if (i == URL_COL) {
+                comparators.add(new IconComparator(Collections.singletonList(URL_FIELD)));
+            }
+
+        }
+        // Remaining columns:
+        for (int i = PAD; i < (PAD + INSPECTION_FIELDS.size()); i++) {
+            comparators = comparatorChooser.getComparatorsForColumn(i);
+            comparators.clear();
+            comparators.add(new FieldComparator(INSPECTION_FIELDS.get(i - PAD)));
+        }
+
+        // Set initial sort columns:
+
+        /*
+         * // Default sort order: String[] sortFields = new String[]
+         * {Globals.prefs.get(JabRefPreferences.PRIMARY_SORT_FIELD), Globals.prefs.get(JabRefPreferences.SECONDARY_SORT_FIELD),
+         * Globals.prefs.get(JabRefPreferences.TERTIARY_SORT_FIELD)}; boolean[] sortDirections = new
+         * boolean[] {Globals.prefs.getBoolean(JabRefPreferences.PRIMARY_SORT_DESCENDING),
+         * Globals.prefs.getBoolean(JabRefPreferences.SECONDARY_SORT_DESCENDING),
+         * Globals.prefs.getBoolean(JabRefPreferences.TERTIARY_SORT_DESCENDING)}; // descending
+         */
+        sortedList.getReadWriteLock().writeLock().lock();
+        comparatorChooser.appendComparator(PAD, 0, false);
+        sortedList.getReadWriteLock().writeLock().unlock();
+
+    }
+
+    /**
+     * The "defaultSelected" boolean value determines if new entries added are
+     * selected for import or not. This value is true by default.
+     *
+     * @param defaultSelected The desired value.
+     */
+    public void setDefaultSelected(boolean defaultSelected) {
+        this.defaultSelected = defaultSelected;
+    }
+
+    @Override
+    public void setStatus(String s) {
+        frame.setStatus(s);
+    }
+
+    @Override
+    public void showMessage(Object message, String title, int msgType) {
+        JOptionPane.showMessageDialog(this, message, title, msgType);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    @FunctionalInterface
+    public interface CallBack {
+
+        /**
+         * This method is called by the dialog when the user has canceled or
+         * signaled a stop. It is expected that any long-running fetch
+         * operations will stop after this method is called.
+         */
+        void stopFetching();
+    }
+
     /**
      * Stores the information about the selected entries being scheduled for
      * addition to this group. The entries are *not* added to the group at this
@@ -613,10 +645,6 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
             }
             selectionModel.getSelected().getReadWriteLock().writeLock().unlock();
         }
-    }
-
-    public void addCallBack(CallBack cb) {
-        callBacks.add(cb);
     }
 
     private class OkListener implements ActionListener {
@@ -806,28 +834,6 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
             return selected;
         }
 
-    }
-
-    private void signalStopFetching() {
-        callBacks.forEach(c -> c.stopFetching());
-    }
-
-    private void setWidths() {
-        TableColumnModel cm = glTable.getColumnModel();
-        cm.getColumn(0).setPreferredWidth(55);
-        cm.getColumn(0).setMinWidth(55);
-        cm.getColumn(0).setMaxWidth(55);
-        for (int i = 1; i < PAD; i++) {
-            // Lock the width of icon columns.
-            cm.getColumn(i).setPreferredWidth(GUIGlobals.WIDTH_ICON_COL);
-            cm.getColumn(i).setMinWidth(GUIGlobals.WIDTH_ICON_COL);
-            cm.getColumn(i).setMaxWidth(GUIGlobals.WIDTH_ICON_COL);
-        }
-
-        for (int i = 0; i < INSPECTION_FIELDS.size(); i++) {
-            int width = InternalBibtexFields.getFieldLength(INSPECTION_FIELDS.get(i));
-            glTable.getColumnModel().getColumn(i + PAD).setPreferredWidth(width);
-        }
     }
 
     private class DeleteListener extends AbstractAction {
@@ -1219,7 +1225,7 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
                             entries.getReadWriteLock().writeLock().unlock();
                             glTable.repaint();
                         }
-                    } , diag));
+                    }, diag));
 
         }
     }
@@ -1266,73 +1272,6 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
             glTable.repaint();
         }
     }
-
-    private void setupComparatorChooser() {
-        // First column:
-
-        List<Comparator> comparators = comparatorChooser.getComparatorsForColumn(0);
-        comparators.clear();
-
-        comparators = comparatorChooser.getComparatorsForColumn(1);
-        comparators.clear();
-
-        // Icon columns:
-        for (int i = 2; i < PAD; i++) {
-            comparators = comparatorChooser.getComparatorsForColumn(i);
-            comparators.clear();
-            if (i == FILE_COL) {
-                comparators.add(new IconComparator(Collections.singletonList(Globals.FILE_FIELD)));
-            } else if (i == URL_COL) {
-                comparators.add(new IconComparator(Collections.singletonList(URL_FIELD)));
-            }
-
-        }
-        // Remaining columns:
-        for (int i = PAD; i < (PAD + INSPECTION_FIELDS.size()); i++) {
-            comparators = comparatorChooser.getComparatorsForColumn(i);
-            comparators.clear();
-            comparators.add(new FieldComparator(INSPECTION_FIELDS.get(i - PAD)));
-        }
-
-        // Set initial sort columns:
-
-        /*
-         * // Default sort order: String[] sortFields = new String[]
-         * {Globals.prefs.get(JabRefPreferences.PRIMARY_SORT_FIELD), Globals.prefs.get(JabRefPreferences.SECONDARY_SORT_FIELD),
-         * Globals.prefs.get(JabRefPreferences.TERTIARY_SORT_FIELD)}; boolean[] sortDirections = new
-         * boolean[] {Globals.prefs.getBoolean(JabRefPreferences.PRIMARY_SORT_DESCENDING),
-         * Globals.prefs.getBoolean(JabRefPreferences.SECONDARY_SORT_DESCENDING),
-         * Globals.prefs.getBoolean(JabRefPreferences.TERTIARY_SORT_DESCENDING)}; // descending
-         */
-        sortedList.getReadWriteLock().writeLock().lock();
-        comparatorChooser.appendComparator(PAD, 0, false);
-        sortedList.getReadWriteLock().writeLock().unlock();
-
-    }
-
-
-    @FunctionalInterface
-    public interface CallBack {
-
-        /**
-         * This method is called by the dialog when the user has canceled or
-         * signaled a stop. It is expected that any long-running fetch
-         * operations will stop after this method is called.
-         */
-        void stopFetching();
-    }
-
-
-    /**
-     * The "defaultSelected" boolean value determines if new entries added are
-     * selected for import or not. This value is true by default.
-     *
-     * @param defaultSelected The desired value.
-     */
-    public void setDefaultSelected(boolean defaultSelected) {
-        this.defaultSelected = defaultSelected;
-    }
-
 
     class EntryTable extends JTable {
 
@@ -1399,29 +1338,29 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
                 return entry.isSearchHit() ? Boolean.TRUE : Boolean.FALSE;
             } else if (i < PAD) {
                 switch (i) {
-                case DUPL_COL:
-                    return entry.isGroupHit() ? duplLabel : null;
-                case FILE_COL:
-                    if (entry.hasField(Globals.FILE_FIELD)) {
-                        FileListTableModel model = new FileListTableModel();
-                        model.setContent(entry.getField(Globals.FILE_FIELD));
-                        fileLabel.setToolTipText(model.getToolTipHTMLRepresentation());
-                        if (model.getRowCount() > 0) {
-                            fileLabel.setIcon(model.getEntry(0).type.get().getIcon());
+                    case DUPL_COL:
+                        return entry.isGroupHit() ? duplLabel : null;
+                    case FILE_COL:
+                        if (entry.hasField(Globals.FILE_FIELD)) {
+                            FileListTableModel model = new FileListTableModel();
+                            model.setContent(entry.getField(Globals.FILE_FIELD));
+                            fileLabel.setToolTipText(model.getToolTipHTMLRepresentation());
+                            if (model.getRowCount() > 0) {
+                                fileLabel.setIcon(model.getEntry(0).type.get().getIcon());
+                            }
+                            return fileLabel;
+                        } else {
+                            return null;
                         }
-                        return fileLabel;
-                    } else {
+                    case URL_COL:
+                        if (entry.hasField(URL_FIELD)) {
+                            urlLabel.setToolTipText(entry.getField(URL_FIELD));
+                            return urlLabel;
+                        } else {
+                            return null;
+                        }
+                    default:
                         return null;
-                    }
-                case URL_COL:
-                    if (entry.hasField(URL_FIELD)) {
-                        urlLabel.setToolTipText(entry.getField(URL_FIELD));
-                        return urlLabel;
-                    } else {
-                        return null;
-                    }
-                default:
-                    return null;
                 }
             } else {
                 String field = INSPECTION_FIELDS.get(i - PAD);
@@ -1434,20 +1373,5 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
             }
         }
 
-    }
-
-    @Override
-    public void setStatus(String s) {
-        frame.setStatus(s);
-    }
-
-    @Override
-    public void showMessage(Object message, String title, int msgType) {
-        JOptionPane.showMessageDialog(this, message, title, msgType);
-    }
-
-    @Override
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
     }
 }

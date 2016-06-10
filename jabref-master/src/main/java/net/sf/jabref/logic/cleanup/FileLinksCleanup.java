@@ -13,16 +13,16 @@
 */
 package net.sf.jabref.logic.cleanup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Fixes the format of the file field. For example, if the file link is empty but the description wrongly contains the path.

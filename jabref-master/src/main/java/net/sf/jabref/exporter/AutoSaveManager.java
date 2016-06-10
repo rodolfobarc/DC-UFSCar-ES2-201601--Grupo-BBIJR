@@ -15,17 +15,16 @@
  */
 package net.sf.jabref.exporter;
 
-import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Background task and utilities for autosave feature.
@@ -41,41 +40,9 @@ public class AutoSaveManager {
         this.frame = frame;
     }
 
-    public void startAutoSaveTimer() {
-        if(t != null) {
-            // shut down any previously set timer to not leak any timers
-            t.cancel();
-        }
-
-        TimerTask task = new AutoSaveTask();
-        t = new Timer();
-        long interval = (long) 60000 * Globals.prefs.getInt(JabRefPreferences.AUTO_SAVE_INTERVAL);
-        t.scheduleAtFixedRate(task, interval, interval);
-    }
-
-    public void stopAutoSaveTimer() {
-        t.cancel();
-    }
-
-
-    private class AutoSaveTask extends TimerTask {
-
-        @Override
-        public void run() {
-            // Since this method is running in the background, we must be prepared that
-            // there could be changes done by the user while this method is running.
-
-            for (BasePanel panel : frame.getBasePanelList()) {
-                if (panel.isModified() && (panel.getBibDatabaseContext().getDatabaseFile() != null)) {
-                        AutoSaveManager.autoSave(panel);
-                }
-            }
-        }
-    }
-
-
     /**
      * Get a File object pointing to the autosave file corresponding to the given file.
+     *
      * @param f The database file.
      * @return its corresponding autosave file.
      */
@@ -85,6 +52,7 @@ public class AutoSaveManager {
 
     /**
      * Perform an autosave.
+     *
      * @param panel The BasePanel to autosave for.
      * @return true if successful, false otherwise.
      */
@@ -108,6 +76,7 @@ public class AutoSaveManager {
 
     /**
      * Delete this BasePanel's autosave if it exists.
+     *
      * @param panel The BasePanel in question.
      * @return true if there was no autosave or if the autosave was successfully deleted, false otherwise.
      */
@@ -124,6 +93,34 @@ public class AutoSaveManager {
     }
 
     /**
+     * Check if a newer autosave exists for the given file.
+     *
+     * @param f The file to check.
+     * @return true if an autosave is found, and if the autosave is newer
+     * than the given file.
+     */
+    public static boolean newerAutoSaveExists(File f) {
+        File asFile = AutoSaveManager.getAutoSaveFile(f);
+        return asFile.exists() && (asFile.lastModified() > f.lastModified());
+    }
+
+    public void startAutoSaveTimer() {
+        if (t != null) {
+            // shut down any previously set timer to not leak any timers
+            t.cancel();
+        }
+
+        TimerTask task = new AutoSaveTask();
+        t = new Timer();
+        long interval = (long) 60000 * Globals.prefs.getInt(JabRefPreferences.AUTO_SAVE_INTERVAL);
+        t.scheduleAtFixedRate(task, interval, interval);
+    }
+
+    public void stopAutoSaveTimer() {
+        t.cancel();
+    }
+
+    /**
      * Clean up by deleting the autosave files corresponding to all open files,
      * if they exist.
      */
@@ -133,14 +130,18 @@ public class AutoSaveManager {
         }
     }
 
-    /**
-     * Check if a newer autosave exists for the given file.
-     * @param f The file to check.
-     * @return true if an autosave is found, and if the autosave is newer
-     *   than the given file.
-     */
-    public static boolean newerAutoSaveExists(File f) {
-        File asFile = AutoSaveManager.getAutoSaveFile(f);
-        return asFile.exists() && (asFile.lastModified() > f.lastModified());
+    private class AutoSaveTask extends TimerTask {
+
+        @Override
+        public void run() {
+            // Since this method is running in the background, we must be prepared that
+            // there could be changes done by the user while this method is running.
+
+            for (BasePanel panel : frame.getBasePanelList()) {
+                if (panel.isModified() && (panel.getBibDatabaseContext().getDatabaseFile() != null)) {
+                    AutoSaveManager.autoSave(panel);
+                }
+            }
+        }
     }
 }

@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.external.push;
 
-import javax.swing.Icon;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
+
+import javax.swing.*;
 
 public class PushToWinEdt extends AbstractPushToApplication implements PushToApplication {
 
@@ -34,7 +34,7 @@ public class PushToWinEdt extends AbstractPushToApplication implements PushToApp
 
     @Override
     protected String[] getCommandLine(String keyString) {
-        return new String[] {commandPath,
+        return new String[]{commandPath,
                 "\"[InsText('" + getCiteCommand() + "{" + keyString.replace("'", "''") + "}');]\""};
     }
 

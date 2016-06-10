@@ -5,6 +5,16 @@ import org.junit.Test;
 
 public class TextPrefixFunctionTest {
 
+    private static void assertPrefix(final String string, final String string2) {
+        Assert.assertEquals(string, BibtexTextPrefix.textPrefix(5, string2, new Warn() {
+
+            @Override
+            public void warn(String s) {
+                Assert.fail("Should not Warn! text.prefix$ should be " + string + " for (5) " + string2);
+            }
+        }));
+    }
+
     @Test
     public void testPrefix() {
         assertPrefix("i", "i");
@@ -16,16 +26,6 @@ public class TextPrefixFunctionTest {
         assertPrefix("{\\'e}", "{\\'e}");
         assertPrefix("{\\'{E}}doua", "{\\'{E}}douard Masterly");
         assertPrefix("Ulric", "Ulrich {\\\"{U}}nderwood and Ned {\\~N}et and Paul {\\={P}}ot");
-    }
-
-    private static void assertPrefix(final String string, final String string2) {
-        Assert.assertEquals(string, BibtexTextPrefix.textPrefix(5, string2, new Warn() {
-
-            @Override
-            public void warn(String s) {
-                Assert.fail("Should not Warn! text.prefix$ should be " + string + " for (5) " + string2);
-            }
-        }));
     }
 
 }

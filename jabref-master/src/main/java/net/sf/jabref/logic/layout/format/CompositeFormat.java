@@ -15,15 +15,14 @@
 */
 package net.sf.jabref.logic.layout.format;
 
+import net.sf.jabref.logic.layout.LayoutFormatter;
+
 import java.util.Arrays;
 import java.util.List;
-
-import net.sf.jabref.logic.layout.LayoutFormatter;
 
 /**
  * A layout formatter that is the composite of the given Formatters executed in
  * order.
- *
  */
 public class CompositeFormat implements LayoutFormatter {
 

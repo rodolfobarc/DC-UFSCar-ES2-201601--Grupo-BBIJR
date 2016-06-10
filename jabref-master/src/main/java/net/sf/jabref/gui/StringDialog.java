@@ -15,36 +15,6 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.undo.CompoundEdit;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.comparator.BibtexStringComparator;
@@ -63,13 +33,24 @@ import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.IdGenerator;
 
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.undo.CompoundEdit;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 class StringDialog extends JDialog {
 
+    public static final String STRINGS_TITLE = Localization.lang("Strings for database");
     // A reference to the entry this object works on.
     private final BibDatabase base;
     private final BasePanel panel;
-    private List<BibtexString> strings;
-
     private final StringTable table;
     private final HelpAction helpAction;
 
@@ -77,8 +58,7 @@ class StringDialog extends JDialog {
 
     // The action concerned with closing the window.
     private final CloseAction closeAction = new CloseAction();
-
-    public static final String STRINGS_TITLE = Localization.lang("Strings for database");
+    private List<BibtexString> strings;
 
 
     public StringDialog(JabRefFrame frame, BasePanel panel, BibDatabase base) {
@@ -165,6 +145,62 @@ class StringDialog extends JDialog {
         pw.setWindowPosition();
     }
 
+    private static boolean isNumber(String name) {
+        // A pure integer number cannot be used as a string label,
+        // since Bibtex will read it as a number.
+        try {
+            Integer.parseInt(name);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+
+    }
+
+    private void sortStrings() {
+        // Rebuild our sorted set of strings:
+        strings = new ArrayList<>();
+        for (String s : base.getStringKeySet()) {
+            strings.add(base.getString(s));
+        }
+        Collections.sort(strings, new BibtexStringComparator(false));
+    }
+
+    public void refreshTable() {
+        sortStrings();
+        table.revalidate();
+        table.clearSelection();
+        table.repaint();
+    }
+
+    public void saveDatabase() {
+        panel.runCommand(Actions.SAVE);
+    }
+
+    public void assureNotEditing() {
+        if (table.isEditing()) {
+            int col = table.getEditingColumn();
+            int row = table.getEditingRow();
+            table.getCellEditor(row, col).stopCellEditing();
+        }
+    }
+
+    static class SaveDatabaseAction extends AbstractAction {
+
+        private final StringDialog parent;
+
+
+        public SaveDatabaseAction(StringDialog parent) {
+            super("Save database", IconTheme.JabRefIcon.SAVE.getIcon());
+            putValue(Action.SHORT_DESCRIPTION, Localization.lang("Save database"));
+            this.parent = parent;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            parent.saveDatabase();
+        }
+    }
 
     class StringTable extends JTable {
 
@@ -194,28 +230,6 @@ class StringDialog extends JDialog {
         }
 
     }
-
-
-    private void sortStrings() {
-        // Rebuild our sorted set of strings:
-        strings = new ArrayList<>();
-        for (String s : base.getStringKeySet()) {
-            strings.add(base.getString(s));
-        }
-        Collections.sort(strings, new BibtexStringComparator(false));
-    }
-
-    public void refreshTable() {
-        sortStrings();
-        table.revalidate();
-        table.clearSelection();
-        table.repaint();
-    }
-
-    public void saveDatabase() {
-        panel.runCommand(Actions.SAVE);
-    }
-
 
     class StringTableModel extends AbstractTableModel {
 
@@ -293,7 +307,7 @@ class StringDialog extends JDialog {
         @Override
         public String getColumnName(int col) {
             return col == 0 ? Localization.lang("Label") :
-                Localization.lang("Content");
+                    Localization.lang("Content");
         }
 
         @Override
@@ -301,30 +315,6 @@ class StringDialog extends JDialog {
             return true;
         }
     }
-
-
-    private static boolean isNumber(String name) {
-        // A pure integer number cannot be used as a string label,
-        // since Bibtex will read it as a number.
-        try {
-            Integer.parseInt(name);
-            return true;
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-
-    }
-
-    public void assureNotEditing() {
-        if (table.isEditing()) {
-            int col = table.getEditingColumn();
-            int row = table.getEditingRow();
-            table.getCellEditor(row, col).stopCellEditing();
-        }
-    }
-
-
-
 
     class CloseAction extends AbstractAction {
 
@@ -387,25 +377,6 @@ class StringDialog extends JDialog {
                         Localization.lang("A string with that label already exists"),
                         Localization.lang("Label"), JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-
-
-
-    static class SaveDatabaseAction extends AbstractAction {
-
-        private final StringDialog parent;
-
-
-        public SaveDatabaseAction(StringDialog parent) {
-            super("Save database", IconTheme.JabRefIcon.SAVE.getIcon());
-            putValue(Action.SHORT_DESCRIPTION, Localization.lang("Save database"));
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            parent.saveDatabase();
         }
     }
 

@@ -15,12 +15,12 @@
 */
 package net.sf.jabref.logic.search.rules.describer;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.search.rules.SentenceAnalyzer;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ContainsAndRegexBasedSearchRuleDescriber implements SearchDescriber {
 
@@ -43,12 +43,12 @@ public class ContainsAndRegexBasedSearchRuleDescriber implements SearchDescriber
                 "This search contains entries in which any field contains the regular expression <b>%0</b>",
                 StringUtil.quoteForHTML(firstWord))
                 : Localization.lang("This search contains entries in which any field contains the term <b>%0</b>",
-                        StringUtil.quoteForHTML(firstWord)));
+                StringUtil.quoteForHTML(firstWord)));
 
-        if(words.size() > 1) {
+        if (words.size() > 1) {
             List<String> unprocessedWords = words.subList(1, words.size());
             List<String> unprocessedWordsInHtmlFormat = new LinkedList<>();
-            for(String word : unprocessedWords) {
+            for (String word : unprocessedWords) {
                 unprocessedWordsInHtmlFormat.add(String.format("<b>%s</b>", StringUtil.quoteForHTML(word)));
             }
             String andSeparator = String.format(" %s ", Localization.lang("and"));
@@ -61,7 +61,7 @@ public class ContainsAndRegexBasedSearchRuleDescriber implements SearchDescriber
     }
 
     private String getCaseSensitiveDescription() {
-        if(caseSensitive) {
+        if (caseSensitive) {
             return Localization.lang("case sensitive");
         } else {
             return Localization.lang("case insensitive");

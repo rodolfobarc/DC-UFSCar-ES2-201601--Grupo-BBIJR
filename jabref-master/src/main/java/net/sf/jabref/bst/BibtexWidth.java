@@ -20,14 +20,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
  * The |built_in| function {\.{purify\$}} pops the top (string) literal, removes
  * nonalphanumeric characters except for |white_space| and |sep_char| characters
  * (these get converted to a |space|) and removes certain alphabetic characters
  * contained in the control sequences associated with a special character, and
  * pushes the resulting string. If the literal isn't a string, it complains and
  * pushes the null string.
- *
  */
 public class BibtexWidth {
 
@@ -183,10 +181,8 @@ public class BibtexWidth {
     }
 
     /**
-     *
      * @param toMeasure
-     * @param warn
-     *            may-be-null
+     * @param warn      may-be-null
      * @return
      */
     public static int width(String toMeasure) {

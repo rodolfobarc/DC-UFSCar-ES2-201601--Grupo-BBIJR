@@ -15,12 +15,6 @@
 */
 package net.sf.jabref.gui.worker;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
-import javax.swing.JMenuItem;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -29,21 +23,24 @@ import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  *
  */
 public class MarkEntriesAction extends AbstractWorker implements ActionListener {
 
+    private static final Log LOGGER = LogFactory.getLog(MarkEntriesAction.class);
     private final JabRefFrame frame;
     private final int level;
     private final JMenuItem menuItem;
     private int besLength;
-
-    private static final Log LOGGER = LogFactory.getLog(MarkEntriesAction.class);
 
     public MarkEntriesAction(JabRefFrame frame, int level) {
         this.frame = frame;
@@ -94,17 +91,17 @@ public class MarkEntriesAction extends AbstractWorker implements ActionListener 
     public void update() {
         String outputStr;
         switch (besLength) {
-        case 0:
-            outputStr = Localization.lang("This operation requires one or more entries to be selected.");
-            break;
-        case 1:
-            frame.getCurrentBasePanel().markBaseChanged();
-            outputStr = Localization.lang("Marked selected entry");
-            break;
-        default:
-            frame.getCurrentBasePanel().markBaseChanged();
-            outputStr = Localization.lang("Marked all %0 selected entries", Integer.toString(besLength));
-            break;
+            case 0:
+                outputStr = Localization.lang("This operation requires one or more entries to be selected.");
+                break;
+            case 1:
+                frame.getCurrentBasePanel().markBaseChanged();
+                outputStr = Localization.lang("Marked selected entry");
+                break;
+            default:
+                frame.getCurrentBasePanel().markBaseChanged();
+                outputStr = Localization.lang("Marked all %0 selected entries", Integer.toString(besLength));
+                break;
         }
         frame.output(outputStr);
     }

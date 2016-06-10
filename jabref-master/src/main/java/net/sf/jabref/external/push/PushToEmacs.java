@@ -15,16 +15,6 @@
  */
 package net.sf.jabref.external.push;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
@@ -35,9 +25,13 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.OS;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Jan 14, 2006 Time: 4:55:23 PM
@@ -117,16 +111,16 @@ public class PushToEmacs extends AbstractPushToApplication implements PushToAppl
             }
 
             com[com.length - 1] = OS.WINDOWS ?
-            // Windows gnuclient escaping:
-            // java string: "(insert \\\"\\\\cite{Blah2001}\\\")";
-            // so cmd receives: (insert \"\\cite{Blah2001}\")
-            // so emacs receives: (insert "\cite{Blah2001}")
-            prefix.concat("\\\"\\" + getCiteCommand().replaceAll("\\\\", "\\\\\\\\") + "{" + keys + "}\\\"").concat(suffix) :
-            // Linux gnuclient escaping:
-            // java string: "(insert \"\\\\cite{Blah2001}\")"
-            // so sh receives: (insert "\\cite{Blah2001}")
-            // so emacs receives: (insert "\cite{Blah2001}")
-            prefix.concat("\"" + getCiteCommand().replaceAll("\\\\", "\\\\\\\\") + "{" + keys + "}\"").concat(suffix);
+                    // Windows gnuclient escaping:
+                    // java string: "(insert \\\"\\\\cite{Blah2001}\\\")";
+                    // so cmd receives: (insert \"\\cite{Blah2001}\")
+                    // so emacs receives: (insert "\cite{Blah2001}")
+                    prefix.concat("\\\"\\" + getCiteCommand().replaceAll("\\\\", "\\\\\\\\") + "{" + keys + "}\\\"").concat(suffix) :
+                    // Linux gnuclient escaping:
+                    // java string: "(insert \"\\\\cite{Blah2001}\")"
+                    // so sh receives: (insert "\\cite{Blah2001}")
+                    // so emacs receives: (insert "\cite{Blah2001}")
+                    prefix.concat("\"" + getCiteCommand().replaceAll("\\\\", "\\\\\\\\") + "{" + keys + "}\"").concat(suffix);
 
             final Process p = Runtime.getRuntime().exec(com);
 
@@ -160,9 +154,9 @@ public class PushToEmacs extends AbstractPushToApplication implements PushToAppl
     public void operationCompleted(BasePanel panel) {
         if (couldNotConnect) {
             JOptionPane.showMessageDialog(panel.frame(), "<HTML>" +
-                    Localization.lang("Could not connect to a running gnuserv process. Make sure that "
-                            + "Emacs or XEmacs is running,<BR>and that the server has been started "
-                            + "(by running the command 'server-start'/'gnuserv-start').") + "</HTML>",
+                            Localization.lang("Could not connect to a running gnuserv process. Make sure that "
+                                    + "Emacs or XEmacs is running,<BR>and that the server has been started "
+                                    + "(by running the command 'server-start'/'gnuserv-start').") + "</HTML>",
                     Localization.lang("Error"), JOptionPane.ERROR_MESSAGE);
         } else if (couldNotCall) {
             JOptionPane.showMessageDialog(panel.frame(),

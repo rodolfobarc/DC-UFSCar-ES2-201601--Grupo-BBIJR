@@ -17,10 +17,6 @@ public enum DatabaseType {
         this.formattedName = formattedName;
     }
 
-    public String getFormattedName() {
-        return formattedName;
-    }
-
     public static Optional<DatabaseType> build(String serverType) {
         for (DatabaseType type : values()) {
             if (type.getFormattedName().equalsIgnoreCase(serverType)) {
@@ -28,6 +24,10 @@ public enum DatabaseType {
             }
         }
         return Optional.empty();
+    }
+
+    public String getFormattedName() {
+        return formattedName;
     }
 
     @Override

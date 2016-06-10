@@ -15,9 +15,9 @@
 */
 package net.sf.jabref.logic.labelpattern;
 
-import java.util.List;
-
 import net.sf.jabref.Globals;
+
+import java.util.List;
 
 public class DatabaseLabelPattern extends AbstractLabelPattern {
 

@@ -1,14 +1,14 @@
 package net.sf.jabref;
 
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.database.BibDatabaseMode;
+import net.sf.jabref.model.database.BibDatabaseModeDetection;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.database.BibDatabaseMode;
-import net.sf.jabref.model.database.BibDatabaseModeDetection;
 
 /**
  * Represents everything related to a .bib file.
@@ -20,7 +20,9 @@ public class BibDatabaseContext {
     private final BibDatabase database;
     private final MetaData metaData;
     private final Defaults defaults;
-    /** The file where this database was last saved to. */
+    /**
+     * The file where this database was last saved to.
+     */
     private File file;
 
     public BibDatabaseContext() {
@@ -66,7 +68,7 @@ public class BibDatabaseContext {
             BibDatabaseMode inferredMode = BibDatabaseModeDetection.inferMode(database);
             BibDatabaseMode newMode = BibDatabaseMode.BIBTEX;
             if ((defaults.mode == BibDatabaseMode.BIBLATEX) || (inferredMode == BibDatabaseMode.BIBLATEX)) {
-                newMode =  BibDatabaseMode.BIBLATEX;
+                newMode = BibDatabaseMode.BIBLATEX;
             }
             this.setMode(newMode);
             return newMode;
@@ -124,13 +126,13 @@ public class BibDatabaseContext {
 
         // 1. metadata user-specific directory
         Optional<String> userFileDirectory = metaData.getUserFileDirectory(Globals.prefs.getUser());
-        if(userFileDirectory.isPresent()) {
+        if (userFileDirectory.isPresent()) {
             fileDirs.add(getFileDirectoryPath(userFileDirectory.get()));
         }
 
         // 2. metadata general directory
         Optional<String> metaDataDirectory = metaData.getDefaultFileDirectory();
-        if(metaDataDirectory.isPresent()) {
+        if (metaDataDirectory.isPresent()) {
             fileDirs.add(getFileDirectoryPath(metaDataDirectory.get()));
         }
 

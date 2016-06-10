@@ -16,16 +16,8 @@
 */
 package net.sf.jabref.exporter;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefPreferences;
@@ -39,28 +31,30 @@ import net.sf.jabref.gui.worker.Worker;
 import net.sf.jabref.logic.l10n.Encodings;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileBasedLock;
-
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * Action for the "Save" and "Save as" operations called from BasePanel. This class is also used for
  * save operations when closing a database or quitting the applications.
- *
+ * <p>
  * The operations run synchronously, but offload the save operation from the event thread using Spin.
  * Callers can query whether the operation was canceled, or whether it was successful.
  */
 public class SaveDatabaseAction extends AbstractWorker {
 
+    private static final Log LOGGER = LogFactory.getLog(SaveDatabaseAction.class);
     private final BasePanel panel;
     private final JabRefFrame frame;
     private boolean success;
     private boolean canceled;
     private boolean fileLockedError;
-
-    private static final Log LOGGER = LogFactory.getLog(SaveDatabaseAction.class);
 
     public SaveDatabaseAction(BasePanel panel) {
         this.panel = panel;
@@ -200,7 +194,7 @@ public class SaveDatabaseAction extends AbstractWorker {
 
             JOptionPane.showMessageDialog
                     (frame, Localization.lang("Could not save file.")
-                            + ".\n" + ex.getMessage(),
+                                    + ".\n" + ex.getMessage(),
                             Localization.lang("Save database"),
                             JOptionPane.ERROR_MESSAGE);
             throw new SaveException("rt");
@@ -221,7 +215,7 @@ public class SaveDatabaseAction extends AbstractWorker {
             String tryDiff = Localization.lang("Try different encoding");
             int answer = JOptionPane.showOptionDialog(frame, builder.getPanel(), Localization.lang("Save database"),
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
-                    new String[] {Localization.lang("Save"), tryDiff,
+                    new String[]{Localization.lang("Save"), tryDiff,
                             Localization.lang("Cancel")}, tryDiff);
 
             if (answer == JOptionPane.NO_OPTION) {
@@ -250,7 +244,7 @@ public class SaveDatabaseAction extends AbstractWorker {
             }
         } catch (SaveException e) {
             int ans = JOptionPane.showConfirmDialog(null, Localization.lang("Save failed during backup creation") + ". "
-                    + Localization.lang("Save without backup?"),
+                            + Localization.lang("Save without backup?"),
                     Localization.lang("Unable to create backup"),
                     JOptionPane.YES_NO_OPTION);
             if (ans == JOptionPane.YES_OPTION) {
@@ -369,7 +363,7 @@ public class SaveDatabaseAction extends AbstractWorker {
     private boolean checkExternalModification() {
         // Check for external modifications:
         if (panel.isUpdatedExternally() || Globals.fileUpdateMonitor.hasBeenModified(panel.getFileMonitorHandle())) {
-            String[] opts = new String[] {Localization.lang("Review changes"), Localization.lang("Save"),
+            String[] opts = new String[]{Localization.lang("Review changes"), Localization.lang("Save"),
                     Localization.lang("Cancel")};
             int answer = JOptionPane.showOptionDialog(panel.frame(),
                     Localization.lang("File has been updated externally. " + "What do you want to do?"),

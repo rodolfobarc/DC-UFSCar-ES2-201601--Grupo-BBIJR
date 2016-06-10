@@ -15,7 +15,17 @@
 */
 package net.sf.jabref.exporter;
 
-import java.awt.Toolkit;
+import net.sf.jabref.Globals;
+import net.sf.jabref.gui.BasePanel;
+import net.sf.jabref.gui.JabRefFrame;
+import net.sf.jabref.gui.worker.AbstractWorker;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.ClipboardOwner;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,21 +35,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-
-import javax.swing.BorderFactory;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.worker.AbstractWorker;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Created by IntelliJ IDEA.
@@ -90,7 +85,7 @@ public class ExportToClipboardAction extends AbstractWorker {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         int answer = JOptionPane.showOptionDialog(frame, list, Localization.lang("Select export format"),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                new String[] {Localization.lang("Export with selected format"),
+                new String[]{Localization.lang("Export with selected format"),
                         Localization.lang("Return to JabRef")},
                 Localization.lang("Export with selected format"));
         if (answer == JOptionPane.NO_OPTION) {

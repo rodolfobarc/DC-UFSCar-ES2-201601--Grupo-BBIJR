@@ -37,11 +37,11 @@
 
 package net.sf.jabref.logic.layout.format;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.util.strings.XmlCharsMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Changes {\^o} or {\^{o}} to ?
@@ -52,13 +52,16 @@ public class XMLChars implements LayoutFormatter {
 
     private static final Map<String, String> ASCII_TO_XML_CHARS = new HashMap<>();
 
-    private boolean[] forceReplace;
-
-
     static {
         ASCII_TO_XML_CHARS.put("<", "&lt;");
         ASCII_TO_XML_CHARS.put("\"", "&quot;");
         ASCII_TO_XML_CHARS.put(">", "&gt;");
+    }
+
+    private boolean[] forceReplace;
+
+    private static String firstFormat(String s) {
+        return s.replaceAll("&|\\\\&", "&#x0026;").replace("--", "&#x2013;");
     }
 
     @Override
@@ -80,12 +83,6 @@ public class XMLChars implements LayoutFormatter {
         return restFormat(formattedFieldText);
     }
 
-    private static String firstFormat(String s) {
-        return s.replaceAll("&|\\\\&", "&#x0026;").replace("--", "&#x2013;");
-    }
-
-
-
     private String restFormat(String toFormat) {
 
         String fieldText = toFormat.replace("}", "").replace("{", "");
@@ -101,7 +98,7 @@ public class XMLChars implements LayoutFormatter {
                 forceReplace[i] = true;
             }
             forceReplace[32] = false;
-            for (int i : new int[] {44, 45, 63, 64, 94, 95, 96, 124}) {
+            for (int i : new int[]{44, 45, 63, 64, 94, 95, 96, 124}) {
                 forceReplace[i] = true;
             }
         }

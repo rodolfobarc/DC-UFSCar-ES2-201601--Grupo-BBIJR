@@ -15,14 +15,8 @@
 */
 package net.sf.jabref.gui.util.component;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import java.awt.*;
 
 public class CheckBoxMessage extends JPanel {
 

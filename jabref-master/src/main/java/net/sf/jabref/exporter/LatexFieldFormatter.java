@@ -15,15 +15,15 @@
 */
 package net.sf.jabref.exporter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.importer.fileformat.FieldContentParser;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Currently the only implementation of net.sf.jabref.exporter.FieldFormatter
@@ -37,18 +37,13 @@ public class LatexFieldFormatter {
 
     // "Fieldname" to indicate that a field should be treated as a bibtex string. Used when writing database to file.
     public static final String BIBTEX_STRING = "__string";
-
-
-    private StringBuilder stringBuilder;
-
     private final boolean neverFailOnHashes;
-
     private final boolean resolveStringsAllFields;
     private final char valueDelimiterStartOfValue;
     private final char valueDelimiterEndOfValue;
     private final List<String> doNotResolveStringsFors;
-
     private final FieldContentParser parser;
+    private StringBuilder stringBuilder;
 
 
     public LatexFieldFormatter() {
@@ -68,6 +63,33 @@ public class LatexFieldFormatter {
 
     public static LatexFieldFormatter buildIgnoreHashes() {
         return new LatexFieldFormatter(true);
+    }
+
+    private static void checkBraces(String text) throws IllegalArgumentException {
+
+        List<Integer> left = new ArrayList<>(5);
+        List<Integer> right = new ArrayList<>(5);
+        int current = -1;
+
+        // First we collect all occurrences:
+        while ((current = text.indexOf('{', current + 1)) != -1) {
+            left.add(current);
+        }
+        while ((current = text.indexOf('}', current + 1)) != -1) {
+            right.add(current);
+        }
+
+        // Then we throw an exception if the error criteria are met.
+        if (!right.isEmpty() && left.isEmpty()) {
+            throw new IllegalArgumentException("'}' character ends string prematurely.");
+        }
+        if (!right.isEmpty() && (right.get(0) < left.get(0))) {
+            throw new IllegalArgumentException("'}' character ends string prematurely.");
+        }
+        if (left.size() != right.size()) {
+            throw new IllegalArgumentException("Braces don't match.");
+        }
+
     }
 
     /**
@@ -278,33 +300,6 @@ public class LatexFieldFormatter {
 
     private void putIn(String s) {
         stringBuilder.append(StringUtil.wrap(s, GUIGlobals.LINE_LENGTH));
-    }
-
-    private static void checkBraces(String text) throws IllegalArgumentException {
-
-        List<Integer> left = new ArrayList<>(5);
-        List<Integer> right = new ArrayList<>(5);
-        int current = -1;
-
-        // First we collect all occurrences:
-        while ((current = text.indexOf('{', current + 1)) != -1) {
-            left.add(current);
-        }
-        while ((current = text.indexOf('}', current + 1)) != -1) {
-            right.add(current);
-        }
-
-        // Then we throw an exception if the error criteria are met.
-        if (!right.isEmpty() && left.isEmpty()) {
-            throw new IllegalArgumentException("'}' character ends string prematurely.");
-        }
-        if (!right.isEmpty() && (right.get(0) < left.get(0))) {
-            throw new IllegalArgumentException("'}' character ends string prematurely.");
-        }
-        if (left.size() != right.size()) {
-            throw new IllegalArgumentException("Braces don't match.");
-        }
-
     }
 
 }

@@ -32,16 +32,16 @@ public class StreamEavesdropper {
     private final PrintStream systemErr;
 
 
+    public StreamEavesdropper(PrintStream systemOut, PrintStream systemErr) {
+        this.systemOut = systemOut;
+        this.systemErr = systemErr;
+    }
+
     public static StreamEavesdropper eavesdropOnSystem() {
         StreamEavesdropper streamEavesdropper = new StreamEavesdropper(System.out, System.err);
         System.setOut(streamEavesdropper.getOutStream());
         System.setErr(streamEavesdropper.getErrStream());
         return streamEavesdropper;
-    }
-
-    public StreamEavesdropper(PrintStream systemOut, PrintStream systemErr) {
-        this.systemOut = systemOut;
-        this.systemErr = systemErr;
     }
 
     public PrintStream getOutStream() {

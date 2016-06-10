@@ -15,9 +15,6 @@
 */
 package net.sf.jabref.collab;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableInsertString;
@@ -27,23 +24,23 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.KeyCollisionException;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+
 class StringNameChange extends Change {
 
+    private static final Log LOGGER = LogFactory.getLog(StringNameChange.class);
     private final BibtexString string;
     private final String mem;
     private final String disk;
     private final String content;
     private final BibtexString tmpString;
 
-    private static final Log LOGGER = LogFactory.getLog(StringNameChange.class);
-
 
     public StringNameChange(BibtexString string, BibtexString tmpString,
-            String mem, String tmp, String disk, String content) {
+                            String mem, String tmp, String disk, String content) {
         super(Localization.lang("Renamed string") + ": '" + tmp + '\'');
         this.tmpString = tmpString;
         this.string = string;

@@ -15,6 +15,19 @@
  */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.gui.FetcherPreviewDialog;
+import net.sf.jabref.gui.help.HelpFiles;
+import net.sf.jabref.importer.ImportInspector;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.importer.ParserResult;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.logic.net.URLDownload;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -30,27 +43,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import net.sf.jabref.gui.FetcherPreviewDialog;
-import net.sf.jabref.gui.help.HelpFiles;
-import net.sf.jabref.importer.ImportInspector;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.importer.ParserResult;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.logic.net.URLDownload;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class GoogleScholarFetcher implements PreviewEntryFetcher {
 
     private static final Log LOGGER = LogFactory.getLog(GoogleScholarFetcher.class);
-
-    private boolean hasRunConfig;
     private static final int MAX_ENTRIES_TO_LOAD = 50;
     private static final String QUERY_MARKER = "___QUERY___";
     private static final String URL_START = "http://scholar.google.com";
@@ -58,20 +53,56 @@ public class GoogleScholarFetcher implements PreviewEntryFetcher {
     private static final String URL_SETPREFS = "http://scholar.google.com/scholar_setprefs";
     private static final String SEARCH_URL = GoogleScholarFetcher.URL_START + "/scholar?q=" + GoogleScholarFetcher.QUERY_MARKER
             + "&amp;hl=en&amp;btnG=Search";
-
     private static final Pattern BIBTEX_LINK_PATTERN = Pattern.compile("<a href=\"([^\"]*)\"[^>]*>[A-Za-z ]*BibTeX");
     private static final Pattern TITLE_START_PATTERN = Pattern.compile("<div class=\"gs_ri\">");
     private static final Pattern LINK_PATTERN = Pattern.compile("<h3 class=\"gs_rt\"><a href=\"([^\"]*)\">");
     private static final Pattern TITLE_END_PATTERN = Pattern.compile("<div class=\"gs_fl\">");
-
     private static final Pattern INPUT_PATTERN = Pattern.compile("<input type=([^ ]+) name=([^ ]+) value=([^> ]+)");
-
     private final Map<String, String> entryLinks = new HashMap<>();
+    private boolean hasRunConfig;
     //final static Pattern NEXT_PAGE_PATTERN = Pattern.compile(
     //        "<a href=\"([^\"]*)\"><span class=\"SPRITE_nav_next\"> </span><br><span style=\".*\">Next</span></a>");
-
     private boolean stopFetching;
 
+    private static void runConfig() throws IOException {
+        try {
+            new URLDownload(new URL("http://scholar.google.com")).downloadToString();
+            //save("setting.html", ud.getStringContent());
+            String settingsPage = new URLDownload(new URL(GoogleScholarFetcher.URL_SETTING)).downloadToString();
+            // Get the form items and their values from the page:
+            Map<String, String> formItems = GoogleScholarFetcher.getFormElements(settingsPage);
+            // Override the important ones:
+            formItems.put("scis", "yes");
+            formItems.put("scisf", "4");
+            formItems.put("num", String.valueOf(GoogleScholarFetcher.MAX_ENTRIES_TO_LOAD));
+            String request = formItems.entrySet().stream().map(Object::toString)
+                    .collect(Collectors.joining("&", GoogleScholarFetcher.URL_SETPREFS + "?", "&submit="));
+            // Download the URL to set preferences:
+            new URLDownload(new URL(request)).downloadToString();
+
+        } catch (UnsupportedEncodingException ex) {
+            LOGGER.error("Unsupported encoding.", ex);
+        }
+    }
+
+    private static Map<String, String> getFormElements(String page) {
+        Matcher m = GoogleScholarFetcher.INPUT_PATTERN.matcher(page);
+        Map<String, String> items = new HashMap<>();
+        while (m.find()) {
+            String name = m.group(2);
+            if ((name.length() > 2) && (name.charAt(0) == '"')
+                    && (name.charAt(name.length() - 1) == '"')) {
+                name = name.substring(1, name.length() - 1);
+            }
+            String value = m.group(3);
+            if ((value.length() > 2) && (value.charAt(0) == '"')
+                    && (value.charAt(value.length() - 1) == '"')) {
+                value = value.substring(1, value.length() - 1);
+            }
+            items.put(name, value);
+        }
+        return items;
+    }
 
     @Override
     public int getWarningLimit() {
@@ -154,16 +185,6 @@ public class GoogleScholarFetcher implements PreviewEntryFetcher {
         return HelpFiles.FETCHER_GOOGLE_SCHOLAR;
     }
 
-    @Override
-    public JPanel getOptionsPanel() {
-        return null;
-    }
-
-    @Override
-    public void stopFetching() {
-        stopFetching = true;
-    }
-
     /*  Used for debugging */
     /*    private static void save(String filename, String content) throws IOException {
         try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
@@ -172,25 +193,14 @@ public class GoogleScholarFetcher implements PreviewEntryFetcher {
     }
     */
 
-    private static void runConfig() throws IOException {
-        try {
-            new URLDownload(new URL("http://scholar.google.com")).downloadToString();
-            //save("setting.html", ud.getStringContent());
-            String settingsPage = new URLDownload(new URL(GoogleScholarFetcher.URL_SETTING)).downloadToString();
-            // Get the form items and their values from the page:
-            Map<String, String> formItems = GoogleScholarFetcher.getFormElements(settingsPage);
-            // Override the important ones:
-            formItems.put("scis", "yes");
-            formItems.put("scisf", "4");
-            formItems.put("num", String.valueOf(GoogleScholarFetcher.MAX_ENTRIES_TO_LOAD));
-            String request = formItems.entrySet().stream().map(Object::toString)
-                    .collect(Collectors.joining("&", GoogleScholarFetcher.URL_SETPREFS + "?", "&submit="));
-            // Download the URL to set preferences:
-            new URLDownload(new URL(request)).downloadToString();
+    @Override
+    public JPanel getOptionsPanel() {
+        return null;
+    }
 
-        } catch (UnsupportedEncodingException ex) {
-            LOGGER.error("Unsupported encoding.", ex);
-        }
+    @Override
+    public void stopFetching() {
+        stopFetching = true;
     }
 
     /**
@@ -309,26 +319,5 @@ public class GoogleScholarFetcher implements PreviewEntryFetcher {
             LOGGER.error("Malformed URL.", ex);
             return null;
         }
-    }
-
-
-
-    private static Map<String, String> getFormElements(String page) {
-        Matcher m = GoogleScholarFetcher.INPUT_PATTERN.matcher(page);
-        Map<String, String> items = new HashMap<>();
-        while (m.find()) {
-            String name = m.group(2);
-            if ((name.length() > 2) && (name.charAt(0) == '"')
-                    && (name.charAt(name.length() - 1) == '"')) {
-                name = name.substring(1, name.length() - 1);
-            }
-            String value = m.group(3);
-            if ((value.length() > 2) && (value.charAt(0) == '"')
-                    && (value.charAt(value.length() - 1) == '"')) {
-                value = value.substring(1, value.length() - 1);
-            }
-            items.put(name, value);
-        }
-        return items;
     }
 }

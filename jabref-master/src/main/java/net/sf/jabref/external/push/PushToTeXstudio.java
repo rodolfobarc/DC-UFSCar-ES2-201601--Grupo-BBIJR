@@ -15,10 +15,10 @@
 */
 package net.sf.jabref.external.push;
 
-import javax.swing.Icon;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
+
+import javax.swing.*;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Jan 14, 2006 Time: 4:55:23 PM To change this template use File | Settings
@@ -38,7 +38,7 @@ public class PushToTeXstudio extends AbstractPushToApplication implements PushTo
 
     @Override
     protected String[] getCommandLine(String keyString) {
-        return new String[] {commandPath, "--insert-cite", String.format("%s{%s}", getCiteCommand(), keyString)};
+        return new String[]{commandPath, "--insert-cite", String.format("%s{%s}", getCiteCommand(), keyString)};
     }
 
     @Override

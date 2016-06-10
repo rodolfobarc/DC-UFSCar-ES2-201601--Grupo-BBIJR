@@ -15,22 +15,8 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ItemListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.JabRefFrame;
@@ -39,8 +25,9 @@ import net.sf.jabref.gui.help.HelpAction;
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemListener;
 
 /**
  * Preferences tab for file options. These options were moved out from GeneralTab to
@@ -64,8 +51,6 @@ class FileTab extends JPanel implements PrefsTab {
     private final JTextField nonWrappableFields;
     private final JTextField doNotResolveStringsFor;
     private final JSpinner autoSaveInterval;
-    private boolean origAutoSaveSetting;
-
     private final JTextField fileDir;
     private final JCheckBox bibLocationAsFileDir;
     private final JCheckBox bibLocAsPrimaryDir;
@@ -75,6 +60,7 @@ class FileTab extends JPanel implements PrefsTab {
     private final JRadioButton matchExactKeyOnly = new JRadioButton(Localization.lang("Autolink only files that match the BibTeX key"));
     private final JRadioButton matchStartsWithKey = new JRadioButton(Localization.lang("Autolink files with names starting with the BibTeX key"));
     private final JTextField regExpTextField;
+    private boolean origAutoSaveSetting;
 
 
     public FileTab(JabRefFrame frame, JabRefPreferences prefs) {
@@ -103,7 +89,7 @@ class FileTab extends JPanel implements PrefsTab {
         autoSave = new JCheckBox(Localization.lang("Autosave"));
         promptBeforeUsingAutoSave = new JCheckBox(Localization.lang("Prompt before recovering a database from an autosave file"));
         autoSaveInterval = new JSpinner(new SpinnerNumberModel(1, 1, 60, 1));
-        valueDelimiter = new JComboBox<>(new String[] {
+        valueDelimiter = new JComboBox<>(new String[]{
                 Localization.lang("Quotes") + ": \", \"",
                 Localization.lang("Curly Brackets") + ": {, }"});
         resolveStringsAll = new JRadioButton(Localization.lang("Resolve strings for all fields except") + ":");
@@ -113,7 +99,7 @@ class FileTab extends JPanel implements PrefsTab {
         bg.add(resolveStringsStandard);
 
         // This is sort of a quick hack
-        newlineSeparator = new JComboBox<>(new String[] {"CR", "CR/LF", "LF"});
+        newlineSeparator = new JComboBox<>(new String[]{"CR", "CR/LF", "LF"});
 
         reformatFileOnSaveAndExport = new JCheckBox(Localization.lang("Always reformat .bib file on save and export"));
 
@@ -265,15 +251,15 @@ class FileTab extends JPanel implements PrefsTab {
 
         String newline;
         switch (newlineSeparator.getSelectedIndex()) {
-        case 0:
-            newline = "\r";
-            break;
-        case 2:
-            newline = "\n";
-            break;
-        default:
-            newline = "\r\n";
-            break;
+            case 0:
+                newline = "\r";
+                break;
+            case 2:
+                newline = "\n";
+                break;
+            default:
+                newline = "\r\n";
+                break;
         }
         prefs.put(JabRefPreferences.NEWLINE, newline);
         // we also have to change Globals variable as globals is not a getter, but a constant
@@ -307,8 +293,7 @@ class FileTab extends JPanel implements PrefsTab {
         // See if we should start or stop the auto save manager:
         if (!origAutoSaveSetting && autoSave.isSelected()) {
             Globals.startAutoSaveManager(frame);
-        }
-        else if (origAutoSaveSetting && !autoSave.isSelected()) {
+        } else if (origAutoSaveSetting && !autoSave.isSelected()) {
             Globals.stopAutoSaveManager();
         }
 

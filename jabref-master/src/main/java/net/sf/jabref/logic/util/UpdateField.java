@@ -1,14 +1,14 @@
 package net.sf.jabref.logic.util;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.util.date.EasyDateFormat;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Collection;
+import java.util.Optional;
 
 public class UpdateField {
 
@@ -18,9 +18,9 @@ public class UpdateField {
     /**
      * Updating a field will result in the entry being reformatted on save
      *
-     * @param be         BibEntry
-     * @param field      Field name
-     * @param newValue   New field value
+     * @param be       BibEntry
+     * @param field    Field name
+     * @param newValue New field value
      */
     public static Optional<FieldChange> updateField(BibEntry be, String field, String newValue) {
         return updateField(be, field, newValue, false);
@@ -29,9 +29,9 @@ public class UpdateField {
     /**
      * Updating a non-displayable field does not result in the entry being reformatted on save
      *
-     * @param be         BibEntry
-     * @param field      Field name
-     * @param newValue   New field value
+     * @param be       BibEntry
+     * @param field    Field name
+     * @param newValue New field value
      */
     public static Optional<FieldChange> updateNonDisplayableField(BibEntry be, String field, String newValue) {
         boolean changed = be.hasChanged();
@@ -43,13 +43,13 @@ public class UpdateField {
     /**
      * Undoable change of field value
      *
-     * @param be                          BibEntry
-     * @param field                       Field name
-     * @param newValue                    New field value
-     * @param nullFieldIfValueIsTheSame   If true the field value is removed when the current value is equals to newValue
+     * @param be                        BibEntry
+     * @param field                     Field name
+     * @param newValue                  New field value
+     * @param nullFieldIfValueIsTheSame If true the field value is removed when the current value is equals to newValue
      */
     public static Optional<FieldChange> updateField(BibEntry be, String field, String newValue,
-            Boolean nullFieldIfValueIsTheSame) {
+                                                    Boolean nullFieldIfValueIsTheSame) {
         String writtenValue = null;
         String oldValue = null;
         if (be.hasField(field)) {
@@ -101,7 +101,7 @@ public class UpdateField {
     }
 
     private static void setAutomaticFields(BibEntry entry, boolean setOwner, String owner, boolean setTimeStamp,
-            String timeStampField, String timeStamp) {
+                                           String timeStampField, String timeStamp) {
 
         // Set owner field if this option is enabled:
         if (setOwner) {
@@ -121,7 +121,7 @@ public class UpdateField {
      * @param bibs List of bibtex entries
      */
     public static void setAutomaticFields(Collection<BibEntry> bibs, boolean overwriteOwner,
-            boolean overwriteTimestamp) {
+                                          boolean overwriteTimestamp) {
 
         boolean globalSetOwner = Globals.prefs.getBoolean(JabRefPreferences.USE_OWNER);
         boolean globalSetTimeStamp = Globals.prefs.getBoolean(JabRefPreferences.USE_TIME_STAMP);

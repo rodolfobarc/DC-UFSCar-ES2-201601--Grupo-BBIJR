@@ -15,53 +15,44 @@
 */
 package net.sf.jabref.specialfields;
 
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableFieldChange;
 import net.sf.jabref.logic.util.UpdateField;
 import net.sf.jabref.model.entry.BibEntry;
 
+import java.util.List;
+
 public class SpecialFieldsUtils {
 
-    private static final String KEYWORDS_FIELD = "keywords";
     public static final String FIELDNAME_PRIORITY = "priority";
     public static final String FIELDNAME_RANKING = "ranking";
     public static final String FIELDNAME_RELEVANCE = "relevance";
     public static final String FIELDNAME_QUALITY = "qualityassured";
     public static final String FIELDNAME_READ = "readstatus";
     public static final String FIELDNAME_PRINTED = "printed";
-
     public static final String PREF_SPECIALFIELDSENABLED = "specialFieldsEnabled";
     public static final Boolean PREF_SPECIALFIELDSENABLED_DEFAULT = Boolean.TRUE;
-
     public static final String PREF_SHOWCOLUMN_RANKING = "showRankingColumn";
     public static final Boolean PREF_SHOWCOLUMN_RANKING_DEFAULT = Boolean.TRUE;
-
     public static final String PREF_SHOWCOLUMN_PRIORITY = "showPriorityColumn";
     public static final Boolean PREF_SHOWCOLUMN_PRIORITY_DEFAULT = Boolean.FALSE;
-
     public static final String PREF_SHOWCOLUMN_RELEVANCE = "showRelevanceColumn";
     public static final Boolean PREF_SHOWCOLUMN_RELEVANCE_DEFAULT = Boolean.FALSE;
-
     public static final String PREF_SHOWCOLUMN_QUALITY = "showQualityColumn";
     public static final Boolean PREF_SHOWCOLUMN_QUALITY_DEFAULT = Boolean.FALSE;
-
     public static final String PREF_SHOWCOLUMN_READ = "showReadColumn";
     public static final Boolean PREF_SHOWCOLUMN_READ_DEFAULT = Boolean.FALSE;
-
     public static final String PREF_SHOWCOLUMN_PRINTED = "showPrintedColumn";
     public static final Boolean PREF_SHOWCOLUMN_PRINTED_DEFAULT = Boolean.FALSE;
-
     // The choice between PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS and PREF_SERIALIZESPECIALFIELDS is mutually exclusive
     // At least in the settings, not in the implementation. But having both confused the users, therefore, having activated both options at the same time has been disabled
     public static final String PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS = "autoSyncSpecialFieldsToKeywords";
     public static final Boolean PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS_DEFAULT = Boolean.TRUE;
-
     // The choice between PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS and PREF_SERIALIZESPECIALFIELDS is mutually exclusive
     public static final String PREF_SERIALIZESPECIALFIELDS = "serializeSpecialFields";
     public static final Boolean PREF_SERIALIZESPECIALFIELDS_DEFAULT = Boolean.FALSE;
+    private static final String KEYWORDS_FIELD = "keywords";
 
 
     /****************************************************/
@@ -70,10 +61,10 @@ public class SpecialFieldsUtils {
     /****************************************************/
 
     /**
-     * @param e - Field to be handled
-     * @param value - may be null to state that field should be emptied
-     * @param be - BibTeXEntry to be handled
-     * @param ce - Filled with undo info (if necessary)
+     * @param e                         - Field to be handled
+     * @param value                     - may be null to state that field should be emptied
+     * @param be                        - BibTeXEntry to be handled
+     * @param ce                        - Filled with undo info (if necessary)
      * @param nullFieldIfValueIsTheSame - true: field is nulled if value is the same than the current value in be
      */
     public static void updateField(SpecialField e, String value, BibEntry be, NamedCompound ce, boolean nullFieldIfValueIsTheSame) {
@@ -136,7 +127,7 @@ public class SpecialFieldsUtils {
     }
 
     private static void importKeywordsForField(List<String> keywordList, SpecialField c, BibEntry be,
-            NamedCompound nc) {
+                                               NamedCompound nc) {
         List<String> values = c.getKeyWords();
         String newValue = null;
         for (String val : values) {

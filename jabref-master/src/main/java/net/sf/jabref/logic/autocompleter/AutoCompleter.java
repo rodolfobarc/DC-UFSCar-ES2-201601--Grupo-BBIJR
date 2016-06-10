@@ -1,8 +1,8 @@
 package net.sf.jabref.logic.autocompleter;
 
-import java.util.List;
-
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.List;
 
 /**
  * Delivers possible completions for a given string.
@@ -20,13 +20,14 @@ public interface AutoCompleter<E> {
 
     /**
      * Add a BibEntry to this AutoCompleter.
+     *
      * @note The AutoCompleter itself decides which information should be stored for later completion.
      */
     void addBibtexEntry(BibEntry entry);
 
     /**
      * States whether the field consists of multiple values (false) or of a single value (true)
-     *
+     * <p>
      * Symptom: if false, net.sf.jabref.gui.AutoCompleteListener#getCurrentWord(JTextComponent comp)
      * returns current word only, if true, it returns the text beginning from the buffer.
      */
@@ -51,6 +52,7 @@ public interface AutoCompleter<E> {
      * Directly adds an item to the AutoCompleter.
      * This method should be called only if the information does not comes directly from a BibEntry.
      * Otherwise the {@link #addBibtexEntry(BibEntry)} is preferred.
+     *
      * @param item item to add
      */
     void addItemToIndex(E item);

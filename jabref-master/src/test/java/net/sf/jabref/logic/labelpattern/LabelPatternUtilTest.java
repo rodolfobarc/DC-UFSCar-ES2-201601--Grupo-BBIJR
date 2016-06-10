@@ -5,7 +5,6 @@ import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -215,7 +214,7 @@ public class LabelPatternUtilTest {
 
     @Test(expected = NullPointerException.class)
     public void testFirstAuthorNull() {
-            LabelPatternUtil.firstAuthor(null);
+        LabelPatternUtil.firstAuthor(null);
     }
 
     @Test
@@ -273,7 +272,7 @@ public class LabelPatternUtilTest {
 
     @Test(expected = NullPointerException.class)
     public void testAuthIniNNull() {
-            LabelPatternUtil.authIniN(null, 3);
+        LabelPatternUtil.authIniN(null, 3);
     }
 
     /**

@@ -15,19 +15,6 @@
 */
 package net.sf.jabref.importer;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.JabRefFrame;
@@ -35,9 +22,17 @@ import net.sf.jabref.gui.actions.MnemonicAwareAction;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.importer.fileformat.ImportFormat;
 import net.sf.jabref.logic.l10n.Localization;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ImportFormats {
     private static final Log LOGGER = LogFactory.getLog(ImportFormats.class);
@@ -71,9 +66,10 @@ public class ImportFormats {
 
     /**
      * Create an AbstractAction for performing an Import operation.
-     * @param frame The JabRefFrame of this JabRef instance.
+     *
+     * @param frame     The JabRefFrame of this JabRef instance.
      * @param openInNew Indicate whether the action should open into a new database or
-     *  into the currently open one.
+     *                  into the currently open one.
      * @return The action.
      */
     public static AbstractAction getImportAction(JabRefFrame frame, boolean openInNew) {

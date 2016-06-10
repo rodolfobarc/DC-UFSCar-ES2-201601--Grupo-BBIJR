@@ -15,9 +15,9 @@
 */
 package net.sf.jabref.logic.autocompleter;
 
-import java.util.Objects;
-
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Objects;
 
 /**
  * Delivers possible completions for a given string.

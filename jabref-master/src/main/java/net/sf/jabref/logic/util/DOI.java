@@ -1,5 +1,8 @@
 package net.sf.jabref.logic.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -7,23 +10,15 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Class for working with Digital object identifiers (DOIs)
  *
  * @see https://en.wikipedia.org/wiki/Digital_object_identifier
  */
 public class DOI {
-    private static final Log LOGGER = LogFactory.getLog(DOI.class);
-
     // DOI resolver
     public static final URI RESOLVER = URI.create("http://doi.org");
-
-    // DOI
-    private final String doi;
-
+    private static final Log LOGGER = LogFactory.getLog(DOI.class);
     // Regex
     // (see http://www.doi.org/doi_handbook/2_Numbering.html)
     private static final String DOI_EXP = ""
@@ -35,7 +30,6 @@ public class DOI {
             + "[/:]"                            // divider
             + "(?:.+)"                          // suffix alphanumeric string
             + ")";                              // end group \1
-
     private static final String FIND_DOI_EXP = ""
             + "(?:urn:)?"                       // optional urn
             + "(?:doi:)?"                       // optional doi
@@ -45,19 +39,20 @@ public class DOI {
             + "[/:]"                            // divider
             + "(?:[^\\s]+)"                     // suffix alphanumeric without space
             + ")";                              // end group \1
-
     private static final String HTTP_EXP = "https?://[^\\s]+?" + DOI_EXP;
     // Pattern
     private static final Pattern EXACT_DOI_PATT = Pattern.compile("^(?:https?://[^\\s]+?)?" + DOI_EXP + "$", Pattern.CASE_INSENSITIVE);
     private static final Pattern DOI_PATT = Pattern.compile("(?:https?://[^\\s]+?)?" + FIND_DOI_EXP, Pattern.CASE_INSENSITIVE);
+    // DOI
+    private final String doi;
 
     /**
      * Creates a DOI from various schemes including URL, URN, and plain DOIs.
      *
      * @param doi the DOI string
-     * @throws NullPointerException if DOI is null
-     * @throws IllegalArgumentException if doi does not include a valid DOI
      * @return an instance of the DOI class
+     * @throws NullPointerException     if DOI is null
+     * @throws IllegalArgumentException if doi does not include a valid DOI
      */
     public DOI(String doi) {
         Objects.requireNonNull(doi);
@@ -66,12 +61,12 @@ public class DOI {
         String trimmedDoi = doi.trim();
 
         // HTTP URL decoding
-        if(doi.matches(HTTP_EXP)) {
+        if (doi.matches(HTTP_EXP)) {
             try {
                 // decodes path segment
                 URI url = new URI(trimmedDoi);
                 trimmedDoi = url.getScheme() + "://" + url.getHost() + url.getPath();
-            } catch(URISyntaxException e) {
+            } catch (URISyntaxException e) {
                 throw new IllegalArgumentException(doi + " is not a valid HTTP DOI.");
             }
         }
@@ -88,7 +83,7 @@ public class DOI {
 
     /**
      * Creates an Optional<DOI> from various schemes including URL, URN, and plain DOIs.
-     *
+     * <p>
      * Useful for suppressing the <c>IllegalArgumentException</c> of the Constructor
      * and checking for Optional.isPresent() instead.
      *
@@ -138,7 +133,7 @@ public class DOI {
         try {
             URI uri = new URI(RESOLVER.getScheme(), RESOLVER.getHost(), "/" + doi, null);
             return Optional.of(uri);
-        } catch(URISyntaxException e) {
+        } catch (URISyntaxException e) {
             // should never happen
             LOGGER.error(doi + " could not be encoded as URI.", e);
             return Optional.empty();

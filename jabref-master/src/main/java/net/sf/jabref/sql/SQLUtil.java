@@ -15,19 +15,14 @@
  */
 package net.sf.jabref.sql;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
+import net.sf.jabref.bibtex.InternalBibtexFields;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.jabref.bibtex.InternalBibtexFields;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author pattonlk
@@ -41,10 +36,8 @@ import org.apache.commons.logging.LogFactory;
 final public class SQLUtil {
 
     private static final List<String> RESERVED_DB_WORDS = Collections.singletonList("key");
-
-    private static List<String> allFields;
-
     private static final Log LOGGER = LogFactory.getLog(SQLUtil.class);
+    private static List<String> allFields;
 
     private SQLUtil() {
     }
@@ -137,7 +130,7 @@ final public class SQLUtil {
      * 'opt' and 'uti' respectively
      */
     public static List<String> setFieldRequirement(List<String> allFields, List<String> reqFields,
-            List<String> optFields, List<String> utiFields, List<String> origList) {
+                                                   List<String> optFields, List<String> utiFields, List<String> origList) {
 
         String currentField;
         for (int i = 0; i < allFields.size(); i++) {

@@ -15,59 +15,38 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.swing.Box;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JViewport;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionListener;
-
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+
 /**
- *
  * @author alver
  */
 class FieldSetComponent extends JPanel implements ActionListener {
 
-    private final Set<ActionListener> additionListeners = new HashSet<>();
     protected final JList<String> list;
-    private final JScrollPane sp;
-    protected DefaultListModel<String> listModel;
-    private JComboBox<String> sel;
-    private JTextField input;
-    private final JButton add;
     protected final JButton remove;
-    private JButton up;
-    private JButton down;
     protected final GridBagLayout gbl = new GridBagLayout();
     protected final GridBagConstraints con = new GridBagConstraints();
     protected final boolean forceLowerCase;
-    protected boolean changesMade;
+    private final Set<ActionListener> additionListeners = new HashSet<>();
+    private final JScrollPane sp;
+    private final JButton add;
     private final Set<ListDataListener> modelListeners = new HashSet<>();
+    protected DefaultListModel<String> listModel;
+    protected boolean changesMade;
+    private JComboBox<String> sel;
+    private JTextField input;
+    private JButton up;
+    private JButton down;
 
 
     /**
@@ -191,7 +170,7 @@ class FieldSetComponent extends JPanel implements ActionListener {
         // Make sure it is visible:
         JViewport viewport = sp.getViewport();
         Rectangle rectangle = list.getCellBounds(idx, idx);
-        if(rectangle != null) {
+        if (rectangle != null) {
             viewport.scrollRectToVisible(rectangle);
         }
 
@@ -219,18 +198,6 @@ class FieldSetComponent extends JPanel implements ActionListener {
         }
         add.setEnabled(en);
         remove.setEnabled(en);
-    }
-
-    public void setFields(List<String> fields) {
-        DefaultListModel<String> newListModel = new DefaultListModel<>();
-        for (String field : fields) {
-            newListModel.addElement(field);
-        }
-        this.listModel = newListModel;
-        for (ListDataListener modelListener : modelListeners) {
-            newListModel.addListDataListener(modelListener);
-        }
-        list.setModel(newListModel);
     }
 
     /**
@@ -292,6 +259,18 @@ class FieldSetComponent extends JPanel implements ActionListener {
             res.add(elements.nextElement());
         }
         return res;
+    }
+
+    public void setFields(List<String> fields) {
+        DefaultListModel<String> newListModel = new DefaultListModel<>();
+        for (String field : fields) {
+            newListModel.addElement(field);
+        }
+        this.listModel = newListModel;
+        for (ListDataListener modelListener : modelListeners) {
+            newListModel.addListDataListener(modelListener);
+        }
+        list.setModel(newListModel);
     }
 
     /**

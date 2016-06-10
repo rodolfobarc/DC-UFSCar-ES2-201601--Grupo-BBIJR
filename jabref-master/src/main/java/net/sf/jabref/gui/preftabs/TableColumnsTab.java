@@ -15,36 +15,9 @@
  */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibtexSingleField;
 import net.sf.jabref.bibtex.InternalBibtexFields;
@@ -58,36 +31,36 @@ import net.sf.jabref.gui.help.HelpAction;
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.specialfields.SpecialFieldsUtils;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.*;
+import java.util.List;
 
 class TableColumnsTab extends JPanel implements PrefsTab {
 
     private static final Log LOGGER = LogFactory.getLog(TableColumnsTab.class);
 
     private final JabRefPreferences prefs;
-    private boolean tableChanged;
     private final JTable colSetup;
-    private int rowCount = -1;
-    private int ncWidth = -1;
     private final List<TableRow> tableRows = new ArrayList<>(10);
     private final JabRefFrame frame;
-
     private final JCheckBox urlColumn;
     private final JCheckBox fileColumn;
     private final JCheckBox arxivColumn;
-
     private final JCheckBox extraFileColumns;
     private final JList<String> listOfFileColumns;
-
     private final JRadioButton preferUrl;
     private final JRadioButton preferDoi;
-
-    /*** begin: special fields ***/
+    /***
+     * begin: special fields
+     ***/
     private final JCheckBox specialFieldsEnabled;
     private final JCheckBox rankingColumn;
     private final JCheckBox qualityColumn;
@@ -97,6 +70,9 @@ class TableColumnsTab extends JPanel implements PrefsTab {
     private final JCheckBox readStatusColumn;
     private final JRadioButton syncKeywords;
     private final JRadioButton writeSpecialFields;
+    private boolean tableChanged;
+    private int rowCount = -1;
+    private int ncWidth = -1;
     private boolean oldSpecialFieldsEnabled;
     private boolean oldRankingColumn;
     private boolean oldQualityColumn;
@@ -106,47 +82,6 @@ class TableColumnsTab extends JPanel implements PrefsTab {
     private boolean oldReadStatusColumn;
     private boolean oldSyncKeyWords;
     private boolean oldWriteSpecialFields;
-
-
-    /*** end: special fields ***/
-
-    static class TableRow {
-
-        private String name;
-        private int length;
-
-
-        public TableRow() {
-            name = "";
-            length = BibtexSingleField.DEFAULT_FIELD_LENGTH;
-        }
-
-        public TableRow(String name) {
-            this.name = name;
-            length = BibtexSingleField.DEFAULT_FIELD_LENGTH;
-        }
-
-        public TableRow(String name, int length) {
-            this.name = name;
-            this.length = length;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getLength() {
-            return length;
-        }
-
-        public void setLength(int length) {
-            this.length = length;
-        }
-    }
 
 
     /**
@@ -197,7 +132,7 @@ class TableColumnsTab extends JPanel implements PrefsTab {
             @Override
             public String getColumnName(int col) {
                 return col == 0 ? Localization.lang("Field name") :
-                    Localization.lang("Column width");
+                        Localization.lang("Column width");
             }
 
             @Override
@@ -233,8 +168,7 @@ class TableColumnsTab extends JPanel implements PrefsTab {
                     if ("".equals(getValueAt(row, 1))) {
                         setValueAt(String.valueOf(BibtexSingleField.DEFAULT_FIELD_LENGTH), row, 1);
                     }
-                }
-                else {
+                } else {
                     if (value == null) {
                         rowContent.setLength(-1);
                     } else {
@@ -251,7 +185,7 @@ class TableColumnsTab extends JPanel implements PrefsTab {
         cm.getColumn(1).setPreferredWidth(80);
 
         FormLayout layout = new FormLayout
-                ("1dlu, 8dlu, left:pref, 4dlu, fill:pref","");
+                ("1dlu, 8dlu, left:pref, 4dlu, fill:pref", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         JPanel pan = new JPanel();
         JPanel tabPanel = new JPanel();
@@ -413,9 +347,8 @@ class TableColumnsTab extends JPanel implements PrefsTab {
                 }
             }
             listOfFileColumns.setSelectedIndices(indicesToSelect);
-        }
-        else {
-            listOfFileColumns.setSelectedIndices(new int[] {});
+        } else {
+            listOfFileColumns.setSelectedIndices(new int[]{});
         }
 
         /*** begin: special fields ***/
@@ -466,6 +399,164 @@ class TableColumnsTab extends JPanel implements PrefsTab {
 
     }
 
+    /**
+     * Store changes to table preferences. This method is called when
+     * the user clicks Ok.
+     */
+    @Override
+    public void storeSettings() {
+        prefs.putBoolean(JabRefPreferences.FILE_COLUMN, fileColumn.isSelected());
+        prefs.putBoolean(JabRefPreferences.URL_COLUMN, urlColumn.isSelected());
+        prefs.putBoolean(JabRefPreferences.PREFER_URL_DOI, preferDoi.isSelected());
+        prefs.putBoolean(JabRefPreferences.ARXIV_COLUMN, arxivColumn.isSelected());
+
+        prefs.putBoolean(JabRefPreferences.EXTRA_FILE_COLUMNS, extraFileColumns.isSelected());
+        if (extraFileColumns.isSelected() && !listOfFileColumns.isSelectionEmpty()) {
+            int numberSelected = listOfFileColumns.getSelectedIndices().length;
+            List<String> selections = new ArrayList<>(numberSelected);
+            for (int i = 0; i < numberSelected; i++) {
+                selections.add(listOfFileColumns.getModel().getElementAt(listOfFileColumns.getSelectedIndices()[i]));
+            }
+            prefs.putStringList(JabRefPreferences.LIST_OF_FILE_COLUMNS, selections);
+        } else {
+            prefs.putStringList(JabRefPreferences.LIST_OF_FILE_COLUMNS, new ArrayList<>());
+        }
+
+        /*** begin: special fields ***/
+
+        boolean newSpecialFieldsEnabled = specialFieldsEnabled.isSelected();
+        boolean newRankingColumn = rankingColumn.isSelected();
+        boolean newQualityColumn = qualityColumn.isSelected();
+        boolean newPriorityColumn = priorityColumn.isSelected();
+        boolean newRelevanceColumn = relevanceColumn.isSelected();
+        boolean newPrintedColumn = printedColumn.isSelected();
+        boolean newReadStatusColumn = readStatusColumn.isSelected();
+        boolean newSyncKeyWords = syncKeywords.isSelected();
+        boolean newWriteSpecialFields = writeSpecialFields.isSelected();
+
+        boolean restartRequired;
+        restartRequired = (oldSpecialFieldsEnabled != newSpecialFieldsEnabled) ||
+                (oldRankingColumn != newRankingColumn) ||
+                (oldQualityColumn != newQualityColumn) ||
+                (oldPriorityColumn != newPriorityColumn) ||
+                (oldRelevanceColumn != newRelevanceColumn) ||
+                (oldPrintedColumn != newPrintedColumn) ||
+                (oldReadStatusColumn != newReadStatusColumn) ||
+                (oldSyncKeyWords != newSyncKeyWords) ||
+                (oldWriteSpecialFields != newWriteSpecialFields);
+        if (restartRequired) {
+            JOptionPane.showMessageDialog(null,
+                    Localization.lang("You have changed settings for special fields.")
+                            .concat(" ")
+                            .concat(Localization.lang("You must restart JabRef for this to come into effect.")),
+                    Localization.lang("Changed special field settings"),
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+        // restart required implies that the settings have been changed
+        // the seetings need to be stored
+        if (restartRequired) {
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SPECIALFIELDSENABLED, newSpecialFieldsEnabled);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_RANKING, newRankingColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_PRIORITY, newPriorityColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_QUALITY, newQualityColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_RELEVANCE, newRelevanceColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_PRINTED, newPrintedColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_READ, newReadStatusColumn);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS, newSyncKeyWords);
+            prefs.putBoolean(SpecialFieldsUtils.PREF_SERIALIZESPECIALFIELDS, newWriteSpecialFields);
+        }
+
+        /*** end: special fields ***/
+
+        if (colSetup.isEditing()) {
+            int col = colSetup.getEditingColumn();
+            int row = colSetup.getEditingRow();
+            colSetup.getCellEditor(row, col).stopCellEditing();
+        }
+
+        // Now we need to make sense of the contents the user has made to the
+        // table setup table.
+        if (tableChanged) {
+            // First we remove all rows with empty names.
+            int i = 0;
+            while (i < tableRows.size()) {
+                if (tableRows.get(i).getName().isEmpty()) {
+                    tableRows.remove(i);
+                } else {
+                    i++;
+                }
+            }
+            // Then we make arrays
+            List<String> names = new ArrayList<>(tableRows.size());
+            List<String> widths = new ArrayList<>(tableRows.size());
+            List<Integer> nWidths = new ArrayList<>(tableRows.size());
+
+            prefs.putInt(JabRefPreferences.NUMBER_COL_WIDTH, ncWidth);
+            for (TableRow tr : tableRows) {
+                names.add(tr.getName().toLowerCase());
+                nWidths.add(tr.getLength());
+                widths.add(String.valueOf(tr.getLength()));
+            }
+
+            // Finally, we store the new preferences.
+            prefs.putStringList(JabRefPreferences.COLUMN_NAMES, names);
+            prefs.putStringList(JabRefPreferences.COLUMN_WIDTHS, widths);
+        }
+
+    }
+
+    @Override
+    public boolean validateSettings() {
+        return true;
+    }
+
+    @Override
+    public String getTabName() {
+        return Localization.lang("Entry table columns");
+    }
+
+    /***
+     * end: special fields
+     ***/
+
+    static class TableRow {
+
+        private String name;
+        private int length;
+
+
+        public TableRow() {
+            name = "";
+            length = BibtexSingleField.DEFAULT_FIELD_LENGTH;
+        }
+
+        public TableRow(String name) {
+            this.name = name;
+            length = BibtexSingleField.DEFAULT_FIELD_LENGTH;
+        }
+
+        public TableRow(String name, int length) {
+            this.name = name;
+            this.length = length;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public void setLength(int length) {
+            this.length = length;
+        }
+    }
 
     class DeleteRowAction extends AbstractAction {
 
@@ -688,124 +779,5 @@ class TableColumnsTab extends JPanel implements PrefsTab {
             }
 
         }
-    }
-
-
-    /**
-     * Store changes to table preferences. This method is called when
-     * the user clicks Ok.
-     *
-     */
-    @Override
-    public void storeSettings() {
-        prefs.putBoolean(JabRefPreferences.FILE_COLUMN, fileColumn.isSelected());
-        prefs.putBoolean(JabRefPreferences.URL_COLUMN, urlColumn.isSelected());
-        prefs.putBoolean(JabRefPreferences.PREFER_URL_DOI, preferDoi.isSelected());
-        prefs.putBoolean(JabRefPreferences.ARXIV_COLUMN, arxivColumn.isSelected());
-
-        prefs.putBoolean(JabRefPreferences.EXTRA_FILE_COLUMNS, extraFileColumns.isSelected());
-        if (extraFileColumns.isSelected() && !listOfFileColumns.isSelectionEmpty()) {
-            int numberSelected = listOfFileColumns.getSelectedIndices().length;
-            List<String> selections = new ArrayList<>(numberSelected);
-            for (int i = 0; i < numberSelected; i++) {
-                selections.add(listOfFileColumns.getModel().getElementAt(listOfFileColumns.getSelectedIndices()[i]));
-            }
-            prefs.putStringList(JabRefPreferences.LIST_OF_FILE_COLUMNS, selections);
-        } else {
-            prefs.putStringList(JabRefPreferences.LIST_OF_FILE_COLUMNS, new ArrayList<>());
-        }
-
-        /*** begin: special fields ***/
-
-        boolean newSpecialFieldsEnabled = specialFieldsEnabled.isSelected();
-        boolean newRankingColumn = rankingColumn.isSelected();
-        boolean newQualityColumn = qualityColumn.isSelected();
-        boolean newPriorityColumn = priorityColumn.isSelected();
-        boolean newRelevanceColumn = relevanceColumn.isSelected();
-        boolean newPrintedColumn = printedColumn.isSelected();
-        boolean newReadStatusColumn = readStatusColumn.isSelected();
-        boolean newSyncKeyWords = syncKeywords.isSelected();
-        boolean newWriteSpecialFields = writeSpecialFields.isSelected();
-
-        boolean restartRequired;
-        restartRequired = (oldSpecialFieldsEnabled != newSpecialFieldsEnabled) ||
-                (oldRankingColumn != newRankingColumn) ||
-                (oldQualityColumn != newQualityColumn) ||
-                (oldPriorityColumn != newPriorityColumn) ||
-                (oldRelevanceColumn != newRelevanceColumn) ||
-                (oldPrintedColumn != newPrintedColumn) ||
-                (oldReadStatusColumn != newReadStatusColumn) ||
-                (oldSyncKeyWords != newSyncKeyWords) ||
-                (oldWriteSpecialFields != newWriteSpecialFields);
-        if (restartRequired) {
-            JOptionPane.showMessageDialog(null,
-                    Localization.lang("You have changed settings for special fields.")
-                    .concat(" ")
-                    .concat(Localization.lang("You must restart JabRef for this to come into effect.")),
-                    Localization.lang("Changed special field settings"),
-                    JOptionPane.WARNING_MESSAGE);
-        }
-
-        // restart required implies that the settings have been changed
-        // the seetings need to be stored
-        if (restartRequired) {
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SPECIALFIELDSENABLED, newSpecialFieldsEnabled);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_RANKING, newRankingColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_PRIORITY, newPriorityColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_QUALITY, newQualityColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_RELEVANCE, newRelevanceColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_PRINTED, newPrintedColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SHOWCOLUMN_READ, newReadStatusColumn);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_AUTOSYNCSPECIALFIELDSTOKEYWORDS, newSyncKeyWords);
-            prefs.putBoolean(SpecialFieldsUtils.PREF_SERIALIZESPECIALFIELDS, newWriteSpecialFields);
-        }
-
-        /*** end: special fields ***/
-
-        if (colSetup.isEditing()) {
-            int col = colSetup.getEditingColumn();
-            int row = colSetup.getEditingRow();
-            colSetup.getCellEditor(row, col).stopCellEditing();
-        }
-
-        // Now we need to make sense of the contents the user has made to the
-        // table setup table.
-        if (tableChanged) {
-            // First we remove all rows with empty names.
-            int i = 0;
-            while (i < tableRows.size()) {
-                if (tableRows.get(i).getName().isEmpty()) {
-                    tableRows.remove(i);
-                } else {
-                    i++;
-                }
-            }
-            // Then we make arrays
-            List<String> names = new ArrayList<>(tableRows.size());
-            List<String> widths = new ArrayList<>(tableRows.size());
-            List<Integer> nWidths = new ArrayList<>(tableRows.size());
-
-            prefs.putInt(JabRefPreferences.NUMBER_COL_WIDTH, ncWidth);
-            for (TableRow tr : tableRows) {
-                names.add(tr.getName().toLowerCase());
-                nWidths.add(tr.getLength());
-                widths.add(String.valueOf(tr.getLength()));
-            }
-
-            // Finally, we store the new preferences.
-            prefs.putStringList(JabRefPreferences.COLUMN_NAMES, names);
-            prefs.putStringList(JabRefPreferences.COLUMN_WIDTHS, widths);
-        }
-
-    }
-
-    @Override
-    public boolean validateSettings() {
-        return true;
-    }
-
-    @Override
-    public String getTabName() {
-        return Localization.lang("Entry table columns");
     }
 }

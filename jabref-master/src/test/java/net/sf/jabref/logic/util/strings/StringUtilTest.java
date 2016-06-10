@@ -3,14 +3,10 @@ package net.sf.jabref.logic.util.strings;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.model.entry.FileField;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class StringUtilTest {
 
@@ -100,7 +96,7 @@ public class StringUtilTest {
 
         assertEquals("", StringUtil.join(s, "\\", 3, s.length));
 
-        assertEquals("", StringUtil.join(new String[] {}, "\\", 0, 0));
+        assertEquals("", StringUtil.join(new String[]{}, "\\", 0, 0));
     }
 
     @Test
@@ -148,7 +144,6 @@ public class StringUtilTest {
         assertEquals("a:;", StringUtil.unquote("a:::;", ':'));
         assertEquals("a:b%c;", StringUtil.unquote("a::b:%c:;", ':'));
     }
-
 
 
     @Test
@@ -229,17 +224,17 @@ public class StringUtilTest {
 
     @Test(expected = NumberFormatException.class)
     public void testIntValueOfExceptionIfStringContainsLetter() {
-            StringUtil.intValueOf("12A2");
+        StringUtil.intValueOf("12A2");
     }
 
     @Test(expected = NumberFormatException.class)
     public void testIntValueOfExceptionIfStringNull() {
-            StringUtil.intValueOf(null);
+        StringUtil.intValueOf(null);
     }
 
     @Test(expected = NumberFormatException.class)
     public void testIntValueOfExceptionfIfStringEmpty() {
-            StringUtil.intValueOf("");
+        StringUtil.intValueOf("");
     }
 
     @Test

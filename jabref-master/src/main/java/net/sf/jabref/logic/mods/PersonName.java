@@ -15,20 +15,19 @@
 */
 package net.sf.jabref.logic.mods;
 
-import java.util.List;
-
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.AuthorList;
 
+import java.util.List;
+
 /**
  * @author Michael Wrighton, S M Mahbub Murshed
- *
- * S M Mahbub Murshed : added few functions for convenience. May 15, 2007
- *
- * History
- * Dec 16, 2011 - Changed parseName(String) to export authorname with
- * 				  more than 3 names correctly
- *
+ *         <p>
+ *         S M Mahbub Murshed : added few functions for convenience. May 15, 2007
+ *         <p>
+ *         History
+ *         Dec 16, 2011 - Changed parseName(String) to export authorname with
+ *         more than 3 names correctly
  */
 public class PersonName {
 
@@ -74,8 +73,7 @@ public class PersonName {
         } else if (amountOfNames == 2) {
             givenName = names.get(0);
             surname = names.get(1);
-        }
-        else {
+        } else {
             givenName = names.get(0);
             middleName = "";
             for (int i = 1; i < (amountOfNames - 1); i++) {

@@ -1,20 +1,19 @@
 package net.sf.jabref.importer.fileformat;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibEntryAssert;
 import net.sf.jabref.importer.OutputPrinterToNull;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class OvidImporterTest {
 
@@ -140,7 +139,7 @@ public class OvidImporterTest {
 
         for (int n = 3; n <= 7; n++) {
             try (InputStream is = OvidImporter.class.getResourceAsStream("OvidImporterTest" + n + ".txt");
-                    InputStream nis = OvidImporter.class.getResourceAsStream("OvidImporterTestBib" + n + ".bib")) {
+                 InputStream nis = OvidImporter.class.getResourceAsStream("OvidImporterTestBib" + n + ".bib")) {
                 List<BibEntry> entries = importer.importEntries(is, new OutputPrinterToNull());
                 Assert.assertNotNull(entries);
                 Assert.assertEquals(1, entries.size());

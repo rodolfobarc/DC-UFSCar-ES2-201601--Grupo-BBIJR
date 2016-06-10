@@ -26,35 +26,22 @@
  */
 package net.sf.jabref.importer;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-
 import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.importer.fileformat.ImportFormat;
 import net.sf.jabref.logic.l10n.Localization;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Dialog to allow users to choose a file contained in a ZIP file.
@@ -69,8 +56,8 @@ class ZipFileChooser extends JDialog {
     /**
      * New Zip file chooser.
      *
-     * @param owner  Owner of the file chooser
-     * @param zipFile  Zip-Fle to choose from, must be readable
+     * @param owner   Owner of the file chooser
+     * @param zipFile Zip-Fle to choose from, must be readable
      */
     public ZipFileChooser(ImportCustomizationDialog importCustomizationDialog, ZipFile zipFile) {
         super(importCustomizationDialog, Localization.lang("Select file from ZIP-archive"), false);
@@ -147,8 +134,8 @@ class ZipFileChooser extends JDialog {
     /**
      * Entries that can be selected with this dialog.
      *
-     * @param zipFile  Zip-File
-     * @return  entries that can be selected
+     * @param zipFile Zip-File
+     * @return entries that can be selected
      */
     private static ZipEntry[] getSelectableZipEntries(ZipFile zipFile) {
         List<ZipEntry> entries = new ArrayList<>();
@@ -173,22 +160,22 @@ class ZipFileChooser extends JDialog {
 
     /**
      * Table model for the ZIP archive contents.
-     *
+     * <p>
      * <p>Contains one row for each entry.
      * Does not contain rows for directory entries.</p>
-     *
+     * <p>
      * <p>The columns contain information about ZIP file entries:
      * <ol><li>
-     *   name {@link String}
+     * name {@link String}
      * </li><li>
-     *   time of last modification {@link Date}
+     * time of last modification {@link Date}
      * </li><li>
-     *   size (uncompressed) {@link Long}
+     * size (uncompressed) {@link Long}
      * </li></ol></p>
      */
     private static class ZipFileChooserTableModel extends AbstractTableModel {
 
-        private final String[] columnNames = new String[] {Localization.lang("Name"),
+        private final String[] columnNames = new String[]{Localization.lang("Name"),
                 Localization.lang("Last modified"), Localization.lang("Size")};
         private final ZipEntry[] rows;
         private final ZipFile zipFile;
@@ -230,8 +217,8 @@ class ZipFileChooser extends JDialog {
         /**
          * Zip-File entry at the given row index.
          *
-         * @param rowIndex  row index
-         * @return  Zip file entry
+         * @param rowIndex row index
+         * @return Zip file entry
          */
         public ZipEntry getZipEntry(int rowIndex) {
             return this.rows[rowIndex];

@@ -15,19 +15,18 @@
 */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.importer.ParserResult;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import net.sf.jabref.logic.net.URLDownload;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
-import net.sf.jabref.importer.ParserResult;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.logic.net.URLDownload;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Convenience class for getting BibTeX entries from the BibSonomy scraper,
@@ -42,6 +41,7 @@ class BibsonomyScraper {
 
     /**
      * Return a BibEntry by looking up the given url from the BibSonomy scraper.
+     *
      * @param entryUrl
      * @return
      */

@@ -15,20 +15,13 @@
  */
 package net.sf.jabref.gui.actions;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-
 import net.sf.jabref.logic.error.StreamEavesdropper;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.logging.Cache;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * Such an error console can be
@@ -49,25 +42,6 @@ public class ErrorConsoleAction extends AbstractAction {
         this.cache = cache;
         putValue(Action.SHORT_DESCRIPTION, Localization.lang("Display all error messages"));
         this.frame = frame;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        displayErrorConsole(frame);
-    }
-
-    private void displayErrorConsole(JFrame parent) {
-        JTabbedPane tabbed = new JTabbedPane();
-
-        addTextArea(tabbed, Localization.lang("Log"), cache.get());
-        addTextArea(tabbed, Localization.lang("Exceptions"), streamEavesdropper.getErrorMessages(),
-                Localization.lang("No exceptions have occurred."));
-        addTextArea(tabbed, Localization.lang("Output"), streamEavesdropper.getOutput());
-
-        tabbed.setPreferredSize(new Dimension(500, 500));
-
-        JOptionPane.showMessageDialog(parent, tabbed,
-                Localization.lang("Program output"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -91,5 +65,24 @@ public class ErrorConsoleAction extends AbstractAction {
      */
     private static void addTextArea(JTabbedPane tabbed, String title, String output) {
         addTextArea(tabbed, title, output, null);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        displayErrorConsole(frame);
+    }
+
+    private void displayErrorConsole(JFrame parent) {
+        JTabbedPane tabbed = new JTabbedPane();
+
+        addTextArea(tabbed, Localization.lang("Log"), cache.get());
+        addTextArea(tabbed, Localization.lang("Exceptions"), streamEavesdropper.getErrorMessages(),
+                Localization.lang("No exceptions have occurred."));
+        addTextArea(tabbed, Localization.lang("Output"), streamEavesdropper.getOutput());
+
+        tabbed.setPreferredSize(new Dimension(500, 500));
+
+        JOptionPane.showMessageDialog(parent, tabbed,
+                Localization.lang("Program output"), JOptionPane.ERROR_MESSAGE);
     }
 }

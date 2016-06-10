@@ -15,18 +15,6 @@
 */
 package net.sf.jabref.gui.fieldeditors;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.text.Document;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.actions.Actions;
@@ -34,6 +22,14 @@ import net.sf.jabref.gui.actions.PasteAction;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
 import net.sf.jabref.gui.fieldeditors.contextmenu.FieldTextMenu;
 import net.sf.jabref.model.entry.EntryUtil;
+
+import javax.swing.*;
+import javax.swing.text.Document;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * An implementation of the FieldEditor backed by a JTextField. Used for single-line input, only BibTex key at the

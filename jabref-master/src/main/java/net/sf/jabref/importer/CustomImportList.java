@@ -27,26 +27,24 @@
 */
 package net.sf.jabref.importer;
 
-import java.util.List;
-import java.util.TreeSet;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.List;
+import java.util.TreeSet;
+
 /**
  * Collection of user defined custom import formats.
- *
+ * <p>
  * <p>The collection can be stored and retrieved from Preferences. It is sorted by the default
  * order of {@link ImportFormat}.</p>
  */
 public class CustomImportList extends TreeSet<CustomImporter> {
 
-    private final JabRefPreferences prefs;
-
     private static final Log LOGGER = LogFactory.getLog(CustomImportList.class);
+    private final JabRefPreferences prefs;
 
 
     public CustomImportList(JabRefPreferences prefs) {
@@ -74,12 +72,12 @@ public class CustomImportList extends TreeSet<CustomImporter> {
 
     /**
      * Adds an importer.
-     *
+     * <p>
      * <p>If an old one equal to the new one was contained, the old
      * one is replaced.</p>
      *
      * @param customImporter new (version of an) importer
-     * @return  if the importer was contained
+     * @return if the importer was contained
      */
     public boolean replaceImporter(CustomImporter customImporter) {
         boolean wasContained = this.remove(customImporter);

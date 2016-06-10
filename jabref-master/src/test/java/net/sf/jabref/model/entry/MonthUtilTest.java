@@ -66,7 +66,7 @@ public class MonthUtilTest {
         Assert.assertEquals(6, MonthUtil.getMonth("7").index);
         Assert.assertEquals(7, MonthUtil.getMonth("8").index);
         Assert.assertEquals(8, MonthUtil.getMonth("9").index);
-
+        Assert.assertEquals(9, MonthUtil.getMonth("10").index);
         Assert.assertEquals(10, MonthUtil.getMonth("11").index);
         Assert.assertEquals(11, MonthUtil.getMonth("12").index);
 

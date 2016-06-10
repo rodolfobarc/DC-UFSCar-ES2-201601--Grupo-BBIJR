@@ -15,13 +15,6 @@
 */
 package net.sf.jabref.external;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.FileListTableModel;
@@ -30,9 +23,14 @@ import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.logic.fulltext.FindFullText;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Try to download fulltext PDF for selected entry(ies) by following URL or DOI link.
@@ -93,8 +91,7 @@ public class FindFullTextAction extends AbstractWorker {
                 LOGGER.warn("Problem downloading file", e);
             }
             basePanel.output(Localization.lang("Finished downloading full text document"));
-        }
-        else {
+        } else {
             String message = Localization.lang("Full text document download failed");
             basePanel.output(message);
             JOptionPane.showMessageDialog(basePanel.frame(), message, message, JOptionPane.ERROR_MESSAGE);

@@ -15,11 +15,6 @@
  */
 package net.sf.jabref.gui;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.InternalBibtexFields;
@@ -27,6 +22,11 @@ import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableFieldChange;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EntryMarker {
 
@@ -198,6 +198,6 @@ public class EntryMarker {
     public static boolean shouldMarkEntries() {
         return (Globals.prefs.getBoolean(JabRefPreferences.MARK_IMPORTED_ENTRIES)
                 && (Globals.prefs.getBoolean(JabRefPreferences.USE_OWNER)
-                        || Globals.prefs.getBoolean(JabRefPreferences.USE_TIME_STAMP)));
+                || Globals.prefs.getBoolean(JabRefPreferences.USE_TIME_STAMP)));
     }
 }

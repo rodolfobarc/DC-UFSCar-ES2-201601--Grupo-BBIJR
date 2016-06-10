@@ -13,13 +13,6 @@
 */
 package net.sf.jabref.logic.cleanup;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.TypedBibEntry;
@@ -28,16 +21,19 @@ import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.ParsedFileField;
 
+import java.io.File;
+import java.util.*;
+
 public class RenamePdfCleanup implements CleanupJob {
 
     private final BibDatabaseContext databaseContext;
     private final Boolean onlyRelativePaths;
-    private int unsuccessfulRenames;
     private final JournalAbbreviationRepository repository;
+    private int unsuccessfulRenames;
 
 
     public RenamePdfCleanup(Boolean onlyRelativePaths, BibDatabaseContext databaseContext,
-            JournalAbbreviationRepository repository) {
+                            JournalAbbreviationRepository repository) {
         this.databaseContext = Objects.requireNonNull(databaseContext);
         this.onlyRelativePaths = onlyRelativePaths;
         this.repository = repository;
@@ -77,7 +73,7 @@ public class RenamePdfCleanup implements CleanupJob {
             String expandedOldFilePath = expandedOldFile.get().toString();
             Boolean pathsDifferOnlyByCase = newPath.equalsIgnoreCase(expandedOldFilePath) && !newPath.equals(
                     expandedOldFilePath);
-            if (new File(newPath).exists() && ! pathsDifferOnlyByCase) {
+            if (new File(newPath).exists() && !pathsDifferOnlyByCase) {
                 // we do not overwrite files
                 // Since File.exists is sometimes not case-sensitive, the check pathsDifferOnlyByCase ensures that we
                 // nonetheless rename files to a new name which just differs by case.
@@ -115,7 +111,7 @@ public class RenamePdfCleanup implements CleanupJob {
             //we put an undo of the field content here
             //the file is not being renamed back, which leads to inconsistencies
             //if we put a null undo object here, the change by "doMakePathsRelative" would overwrite the field value nevertheless.
-            if(change.isPresent()) {
+            if (change.isPresent()) {
                 return Collections.singletonList(change.get());
             } else {
                 return Collections.emptyList();

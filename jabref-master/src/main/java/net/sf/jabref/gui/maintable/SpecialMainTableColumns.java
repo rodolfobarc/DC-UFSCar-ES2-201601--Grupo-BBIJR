@@ -1,11 +1,5 @@
 package net.sf.jabref.gui.maintable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.JLabel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.external.ExternalFileType;
@@ -13,14 +7,12 @@ import net.sf.jabref.gui.FileListTableModel;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.specialfields.Printed;
-import net.sf.jabref.specialfields.Priority;
-import net.sf.jabref.specialfields.Quality;
-import net.sf.jabref.specialfields.Rank;
-import net.sf.jabref.specialfields.ReadStatus;
-import net.sf.jabref.specialfields.Relevance;
-import net.sf.jabref.specialfields.SpecialFieldValue;
-import net.sf.jabref.specialfields.SpecialFieldsUtils;
+import net.sf.jabref.specialfields.*;
+
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class SpecialMainTableColumns {
 
@@ -156,15 +148,13 @@ public class SpecialMainTableColumns {
 
     /**
      * create a MainTableColumn for specific file types.
-     *
+     * <p>
      * Shows the icon for the given type (or the FILE_MULTIPLE icon)
      *
      * @param externalFileTypeName the name of the externalFileType
-     *
      * @return the created MainTableColumn
      */
     public static MainTableColumn createFileIconColumn(String externalFileTypeName) {
-
 
 
         return new MainTableColumn(externalFileTypeName, Arrays.asList(Globals.FILE_FIELD), new JLabel()) {

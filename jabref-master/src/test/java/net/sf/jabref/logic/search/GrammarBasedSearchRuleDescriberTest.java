@@ -2,7 +2,6 @@ package net.sf.jabref.logic.search;
 
 import net.sf.jabref.logic.search.rules.GrammarBasedSearchRule;
 import net.sf.jabref.logic.search.rules.describer.GrammarBasedSearchRuleDescriber;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +44,6 @@ public class GrammarBasedSearchRuleDescriberTest {
                 + "the regular expression <b>&#101;</b>) or the field <b>&#101;</b> contains the regular "
                 + "expression <b>&#120;</b>). The search is case insensitive.");
     }
-
 
 
     private void evaluate(String query, boolean caseSensitive, boolean regex, String expected) {

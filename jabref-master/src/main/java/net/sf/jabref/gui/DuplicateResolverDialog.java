@@ -15,18 +15,14 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.mergeentries.MergeEntries;
 import net.sf.jabref.gui.util.PositionWindow;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
+import java.awt.*;
 
 // created by : ?
 //
@@ -35,38 +31,19 @@ import net.sf.jabref.model.entry.BibEntry;
 
 public class DuplicateResolverDialog extends JDialog {
 
-    enum DuplicateResolverType {
-        DUPLICATE_SEARCH,
-        IMPORT_CHECK,
-        INSPECTION,
-        DUPLICATE_SEARCH_WITH_EXACT
-    }
-
-    enum DuplicateResolverResult {
-        NOT_CHOSEN,
-        KEEP_BOTH,
-        KEEP_UPPER,
-        KEEP_LOWER,
-        AUTOREMOVE_EXACT,
-        KEEP_MERGE,
-        BREAK
-    }
-
     private final JButton cancel = new JButton(Localization.lang("Cancel"));
     private final JButton merge = new JButton(Localization.lang("Keep merged entry only"));
     private final JabRefFrame frame;
     private final JPanel options = new JPanel();
     private DuplicateResolverResult status = DuplicateResolverResult.NOT_CHOSEN;
     private MergeEntries me;
-
     public DuplicateResolverDialog(JabRefFrame frame, BibEntry one, BibEntry two, DuplicateResolverType type) {
         super(frame, Localization.lang("Possible duplicate entries"), true);
         this.frame = frame;
         init(one, two, type);
     }
-
     public DuplicateResolverDialog(ImportInspectionDialog dialog, BibEntry one, BibEntry two,
-            DuplicateResolverType type) {
+                                   DuplicateResolverType type) {
         super(dialog, Localization.lang("Possible duplicate entries"), true);
         this.frame = dialog.frame;
         init(one, two, type);
@@ -78,33 +55,33 @@ public class DuplicateResolverDialog extends JDialog {
         JButton first;
         JButton removeExact = null;
         switch (type) {
-        case DUPLICATE_SEARCH:
-            first = new JButton(Localization.lang("Keep left"));
-            second = new JButton(Localization.lang("Keep right"));
-            both = new JButton(Localization.lang("Keep both"));
-            me = new MergeEntries(one, two, frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
-            break;
-        case INSPECTION:
-            first = new JButton(Localization.lang("Remove old entry"));
-            second = new JButton(Localization.lang("Remove entry from import"));
-            both = new JButton(Localization.lang("Keep both"));
-            me = new MergeEntries(one, two, Localization.lang("Old entry"),
-                    Localization.lang("From import"), frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
-            break;
-        case DUPLICATE_SEARCH_WITH_EXACT:
-            first = new JButton(Localization.lang("Keep left"));
-            second = new JButton(Localization.lang("Keep right"));
-            both = new JButton(Localization.lang("Keep both"));
-            removeExact = new JButton(Localization.lang("Automatically remove exact duplicates"));
-            me = new MergeEntries(one, two, frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
-            break;
-        default:
-            first = new JButton(Localization.lang("Import and remove old entry"));
-            second = new JButton(Localization.lang("Do not import entry"));
-            both = new JButton(Localization.lang("Import and keep old entry"));
-            me = new MergeEntries(one, two, Localization.lang("Old entry"),
-                    Localization.lang("From import"), frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
-            break;
+            case DUPLICATE_SEARCH:
+                first = new JButton(Localization.lang("Keep left"));
+                second = new JButton(Localization.lang("Keep right"));
+                both = new JButton(Localization.lang("Keep both"));
+                me = new MergeEntries(one, two, frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
+                break;
+            case INSPECTION:
+                first = new JButton(Localization.lang("Remove old entry"));
+                second = new JButton(Localization.lang("Remove entry from import"));
+                both = new JButton(Localization.lang("Keep both"));
+                me = new MergeEntries(one, two, Localization.lang("Old entry"),
+                        Localization.lang("From import"), frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
+                break;
+            case DUPLICATE_SEARCH_WITH_EXACT:
+                first = new JButton(Localization.lang("Keep left"));
+                second = new JButton(Localization.lang("Keep right"));
+                both = new JButton(Localization.lang("Keep both"));
+                removeExact = new JButton(Localization.lang("Automatically remove exact duplicates"));
+                me = new MergeEntries(one, two, frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
+                break;
+            default:
+                first = new JButton(Localization.lang("Import and remove old entry"));
+                second = new JButton(Localization.lang("Do not import entry"));
+                both = new JButton(Localization.lang("Import and keep old entry"));
+                me = new MergeEntries(one, two, Localization.lang("Old entry"),
+                        Localization.lang("From import"), frame.getCurrentBasePanel().getBibDatabaseContext().getMode());
+                break;
         }
 
         if (removeExact != null) {
@@ -139,7 +116,6 @@ public class DuplicateResolverDialog extends JDialog {
 
     }
 
-
     private void buttonPressed(DuplicateResolverResult button) {
         status = button;
         dispose();
@@ -151,6 +127,23 @@ public class DuplicateResolverDialog extends JDialog {
 
     public BibEntry getMergedEntry() {
         return me.getMergeEntry();
+    }
+
+    enum DuplicateResolverType {
+        DUPLICATE_SEARCH,
+        IMPORT_CHECK,
+        INSPECTION,
+        DUPLICATE_SEARCH_WITH_EXACT
+    }
+
+    enum DuplicateResolverResult {
+        NOT_CHOSEN,
+        KEEP_BOTH,
+        KEEP_UPPER,
+        KEEP_LOWER,
+        AUTOREMOVE_EXACT,
+        KEEP_MERGE,
+        BREAK
     }
 
 }

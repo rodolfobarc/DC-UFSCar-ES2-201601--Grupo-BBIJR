@@ -15,29 +15,8 @@
 */
 package net.sf.jabref.gui.entryeditor;
 
-import java.awt.AWTKeyStroke;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusListener;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.text.JTextComponent;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
@@ -53,8 +32,12 @@ import net.sf.jabref.gui.util.FocusRequester;
 import net.sf.jabref.logic.autocompleter.AutoCompleter;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.FocusListener;
+import java.util.*;
+import java.util.List;
 
 /**
  * A single tab displayed in the EntryEditor holding several FieldEditors.
@@ -71,27 +54,19 @@ class EntryEditorTab {
     private final EntryEditor parent;
 
     private final Map<String, FieldEditor> editors = new HashMap<>();
-
-    private FieldEditor activeField;
-
+    private final FocusListener fieldListener = new EntryEditorTabFocusListener(this);
+    private final String tabTitle;
+    private final JabRefFrame frame;
+    private final BasePanel basePanel;
     // UGLY HACK to have a pointer to the fileListEditor to call autoSetLinks()
     public FileListEditor fileListEditor;
-
+    private FieldEditor activeField;
     private BibEntry entry;
-
-    private final FocusListener fieldListener = new EntryEditorTabFocusListener(this);
-
-    private final String tabTitle;
-
-    private final JabRefFrame frame;
-
-    private final BasePanel basePanel;
-
     private boolean updating;
 
 
     public EntryEditorTab(JabRefFrame frame, BasePanel panel, List<String> fields, EntryEditor parent,
-            boolean addKeyField, boolean compressed, String tabTitle) {
+                          boolean addKeyField, boolean compressed, String tabTitle) {
         if (fields == null) {
             this.fields = Collections.emptyList();
         } else {
@@ -218,6 +193,21 @@ class EntryEditorTab {
         return entry;
     }
 
+    public void setEntry(BibEntry entry) {
+        try {
+            updating = true;
+            for (FieldEditor editor : editors.values()) {
+                String toSet = entry.getFieldOptional(editor.getFieldName()).orElse("");
+                if (!toSet.equals(editor.getText())) {
+                    editor.setText(toSet);
+                }
+            }
+            this.entry = entry;
+        } finally {
+            updating = false;
+        }
+    }
+
     private boolean isFieldModified(FieldEditor fieldEditor) {
         String text = fieldEditor.getText().trim();
 
@@ -252,14 +242,14 @@ class EntryEditorTab {
         activeField = fieldEditor;
     }
 
+    public FieldEditor getActive() {
+        return activeField;
+    }
+
     public void setActive(String fieldName) {
         if (editors.containsKey(fieldName)) {
             activeField = editors.get(fieldName);
         }
-    }
-
-    public FieldEditor getActive() {
-        return activeField;
     }
 
     public List<String> getFields() {
@@ -282,34 +272,17 @@ class EntryEditorTab {
         setEntry(getEntry());
     }
 
-
-
-    public void setEntry(BibEntry entry) {
-        try {
-            updating = true;
-            for (FieldEditor editor : editors.values()) {
-                String toSet = entry.getFieldOptional(editor.getFieldName()).orElse("");
-                if (!toSet.equals(editor.getText())) {
-                    editor.setText(toSet);
-                }
-            }
-            this.entry = entry;
-        } finally {
-            updating = false;
-        }
-    }
-
     public boolean updateField(String field, String content) {
         if (!editors.containsKey(field)) {
             return false;
         }
         FieldEditor fieldEditor = editors.get(field);
         // trying to preserve current edit position (fixes SF bug #1285)
-        if(fieldEditor.getTextComponent() instanceof JTextComponent) {
+        if (fieldEditor.getTextComponent() instanceof JTextComponent) {
             int initialCaretPosition = ((JTextComponent) fieldEditor).getCaretPosition();
             fieldEditor.setText(content);
             int textLength = fieldEditor.getText().length();
-            if(initialCaretPosition<textLength) {
+            if (initialCaretPosition < textLength) {
                 ((JTextComponent) fieldEditor).setCaretPosition(initialCaretPosition);
             } else {
                 ((JTextComponent) fieldEditor).setCaretPosition(textLength);

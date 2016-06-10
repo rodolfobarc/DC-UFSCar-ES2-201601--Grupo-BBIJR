@@ -1,7 +1,5 @@
 package net.sf.jabref.importer;
 
-import java.util.Collections;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -10,10 +8,11 @@ import net.sf.jabref.logic.groups.ExplicitGroup;
 import net.sf.jabref.logic.groups.GroupHierarchyType;
 import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -21,7 +20,8 @@ import static org.junit.Assert.assertTrue;
 public class ConvertLegacyExplicitGroupsTest {
 
     private ConvertLegacyExplicitGroups action;
-    @Mock private BasePanel basePanel;
+    @Mock
+    private BasePanel basePanel;
     private BibEntry entry;
     private ExplicitGroup group;
 

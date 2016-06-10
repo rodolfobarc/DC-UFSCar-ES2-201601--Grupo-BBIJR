@@ -17,12 +17,12 @@ package net.sf.jabref.logic.layout;
 
 /**
  * The LayoutFormatter is used for a Filter design-pattern.
- *
+ * <p>
  * Implementing classes have to accept a String and returned a formatted version of it.
- *
+ * <p>
  * Example:
- *
- *   "John von Neumann" => "von Neumann, John"
+ * <p>
+ * "John von Neumann" => "von Neumann, John"
  *
  * @version 1.2 - Documentation CO
  */
@@ -38,8 +38,7 @@ public interface LayoutFormatter {
      * If the formatter can detect an invalid input it should return the
      * original string otherwise it may simply return a wrong output.
      *
-     * @param fieldText
-     *            The text to layout.
+     * @param fieldText The text to layout.
      * @return The layouted text.
      */
     String format(String fieldText);

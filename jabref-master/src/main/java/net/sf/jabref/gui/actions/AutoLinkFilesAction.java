@@ -1,12 +1,5 @@
 package net.sf.jabref.gui.actions;
 
-import java.awt.event.ActionEvent;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JDialog;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefGUI;
@@ -16,6 +9,10 @@ import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * This Action may only be used in a menu or button.
@@ -54,7 +51,7 @@ public class AutoLinkFilesAction extends AbstractAction {
                         JabRefGUI.getMainFrame().output(Localization.lang("Finished automatically setting external links.") + " "
                                 + Localization.lang("No files found."));
                     }
-                } , diag);
+                }, diag);
         JabRefExecutorService.INSTANCE.execute(runnable);
     }
 }

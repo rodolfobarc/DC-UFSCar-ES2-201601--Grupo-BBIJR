@@ -27,9 +27,10 @@ public class OpenOfficeFileSearch {
 
     /**
      * Search for Program files directory.
+     *
      * @return the File pointing to the Program files directory, or null if not found.
-     *   Since we are not including a library for Windows integration, this method can't
-     *   find the Program files dir in localized Windows installations.
+     * Since we are not including a library for Windows integration, this method can't
+     * find the Program files dir in localized Windows installations.
      */
     public List<File> findWindowsProgramFilesDir() {
         List<String> sourceList = new ArrayList<>();
@@ -63,9 +64,10 @@ public class OpenOfficeFileSearch {
 
     /**
      * Search for Program files directory.
+     *
      * @return the File pointing to the Program files directory, or null if not found.
-     *   Since we are not including a library for Windows integration, this method can't
-     *   find the Program files dir in localized Windows installations.
+     * Since we are not including a library for Windows integration, this method can't
+     * find the Program files dir in localized Windows installations.
      */
     public List<File> findOSXProgramFilesDir() {
         List<File> dirList = new ArrayList<>();
@@ -102,12 +104,14 @@ public class OpenOfficeFileSearch {
         }
         return sofficeFiles;
     }
+
     /**
-    * Search for a file, starting at the given directory.
-    * @param startDir The starting point.
-    * @param filename The name of the file to search for.
-    * @return The directory where the file was first found, or null if not found.
-    */
+     * Search for a file, starting at the given directory.
+     *
+     * @param startDir The starting point.
+     * @param filename The name of the file to search for.
+     * @return The directory where the file was first found, or null if not found.
+     */
     public Optional<File> findFileInDir(File startDir, String filename) {
         if (fileSearchCanceled) {
             return Optional.empty();

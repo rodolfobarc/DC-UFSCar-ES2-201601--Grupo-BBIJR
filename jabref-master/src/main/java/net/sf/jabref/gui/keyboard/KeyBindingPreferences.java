@@ -1,8 +1,12 @@
 package net.sf.jabref.gui.keyboard;
 
-import java.awt.AWTError;
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.logic.util.OS;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,22 +14,11 @@ import java.util.Objects;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 
-import javax.swing.KeyStroke;
-
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.logic.util.OS;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class KeyBindingPreferences {
 
     private static final Log LOGGER = LogFactory.getLog(KeyBindingPreferences.class);
-
-    private int shortcutMask = -1;
-
     private final JabRefPreferences prefs;
-
+    private int shortcutMask = -1;
     private KeyBindingRepository keyBindingRepository = new KeyBindingRepository();
 
 

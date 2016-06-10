@@ -15,13 +15,9 @@
 */
 package net.sf.jabref.gui.renderer;
 
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 
 /**
  * Renderer for table cells, which supports both Icons, JLabels and plain text.
@@ -40,7 +36,8 @@ public class GeneralRenderer extends DefaultTableCellRenderer {
     /**
      * Renderer with specified foreground and background colors, and default selected
      * background color.
-     * @param c Foreground color
+     *
+     * @param c  Foreground color
      * @param fg Background color
      */
     public GeneralRenderer(Color c, Color fg) {
@@ -50,8 +47,9 @@ public class GeneralRenderer extends DefaultTableCellRenderer {
 
     /**
      * Renderer with specified foreground, background and selected background colors
-     * @param c Foreground color
-     * @param fg Unselected background color
+     *
+     * @param c   Foreground color
+     * @param fg  Unselected background color
      * @param sel Selected background color
      */
     public GeneralRenderer(Color c, Color fg, Color sel) {
@@ -61,7 +59,7 @@ public class GeneralRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object o, boolean isSelected,
-            boolean hasFocus, int row, int column) {
+                                                   boolean hasFocus, int row, int column) {
         if (selBackground == null) {
             return super.getTableCellRendererComponent(table, o, isSelected, hasFocus, row, column);
         } else {

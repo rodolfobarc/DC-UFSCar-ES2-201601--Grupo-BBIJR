@@ -1,11 +1,11 @@
 package net.sf.jabref;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 

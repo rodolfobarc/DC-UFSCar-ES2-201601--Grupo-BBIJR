@@ -1,19 +1,16 @@
 package net.sf.jabref.logic.search;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MatchesHighlighterTest {
 

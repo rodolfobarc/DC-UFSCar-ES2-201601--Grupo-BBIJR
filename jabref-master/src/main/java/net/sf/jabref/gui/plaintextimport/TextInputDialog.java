@@ -51,76 +51,14 @@
 
 package net.sf.jabref.gui.plaintextimport;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.EditorKit;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.BibEntryWriter;
 import net.sf.jabref.bibtex.FieldProperties;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.exporter.LatexFieldFormatter;
-import net.sf.jabref.gui.ClipBoardManager;
-import net.sf.jabref.gui.EntryMarker;
-import net.sf.jabref.gui.FileDialogs;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.OSXCompatibleToolbar;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.util.component.OverlayPanel;
@@ -130,10 +68,24 @@ import net.sf.jabref.logic.util.UpdateField;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class TextInputDialog extends JDialog {
 
@@ -147,26 +99,20 @@ public class TextInputDialog extends JDialog {
     private final JPanel buttons = new JPanel();
     private final JPanel rawPanel = new JPanel();
     private final JPanel sourcePanel = new JPanel();
-    private JList<String> fieldList;
     private final JRadioButton override = new JRadioButton(Localization.lang("Override"));
     private final JRadioButton append = new JRadioButton(Localization.lang("Append"));
     private final JToolBar toolBar = new OSXCompatibleToolbar();
-
     private final List<String> allFields = new ArrayList<>();
     private final List<String> requiredFields = new ArrayList<>();
     private final List<String> optionalFields = new ArrayList<>();
-
     private final BibEntry entry;
-
     private final JPopupMenu inputMenu = new JPopupMenu();
-    private StyledDocument document; // content from inputPane
     private final JTextPane textPane = new JTextPane();
     private final JTextArea sourcePreview = new JTextArea();
-
     private final TagToMarkedTextStore markedTextStore;
-
     private final JabRefFrame frame;
-
+    private JList<String> fieldList;
+    private StyledDocument document; // content from inputPane
     private boolean okPressed;
 
 
@@ -382,7 +328,6 @@ public class TextInputDialog extends JDialog {
         inputMenu.add(overrideMenu);
 
 
-
         // Toolbar
 
         toolBar.add(clearAction);
@@ -478,7 +423,7 @@ public class TextInputDialog extends JDialog {
                             entry.setField(fieldName, old + " and " + txt);
                         } else if ("keywords".equals(fieldName)) {
                             // Add keyword
-                                entry.addKeyword(txt);
+                            entry.addKeyword(txt);
                         } else {
                             entry.setField(fieldName, old + txt);
                         }
@@ -496,6 +441,7 @@ public class TextInputDialog extends JDialog {
 
     /**
      * tries to parse the pasted reference with freecite
+     *
      * @return true if successful, false otherwise
      */
     private boolean parseWithFreeCiteAndAddEntries() {
@@ -716,6 +662,7 @@ public class TextInputDialog extends JDialog {
 
         private final String field;
         private final Boolean overrideField;
+
         public MenuTextForTagAction(String field, Boolean overrideField) {
             super(field);
             this.field = field;

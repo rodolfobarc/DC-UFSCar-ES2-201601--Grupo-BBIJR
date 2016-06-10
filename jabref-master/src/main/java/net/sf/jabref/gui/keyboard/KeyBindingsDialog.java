@@ -15,23 +15,15 @@
 */
 package net.sf.jabref.gui.keyboard;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.TableColumnModel;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Dialog to customize key bindings
@@ -127,11 +119,11 @@ public class KeyBindingsDialog extends JDialog {
             if (hasNothingSelected) {
                 int answer = JOptionPane.showOptionDialog(KeyBindingsDialog.this,
                         Localization.lang("All key bindings will be reset to their defaults.") + " " +
-                        Localization.lang("Continue?"),
+                                Localization.lang("Continue?"),
                         Localization.lang("Resetting all key bindings"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null,
-                        new String[] {Localization.lang("OK"),
+                        new String[]{Localization.lang("OK"),
                                 Localization.lang("Cancel")},
                         Localization.lang("OK"));
                 if (answer == JOptionPane.YES_OPTION) {

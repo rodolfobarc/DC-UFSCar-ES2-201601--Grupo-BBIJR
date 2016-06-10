@@ -15,13 +15,6 @@
 */
 package net.sf.jabref.exporter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.GUIGlobals;
@@ -29,9 +22,15 @@ import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileBasedLock;
 import net.sf.jabref.logic.util.io.FileUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class used to handle safe storage to disk.
@@ -48,23 +47,19 @@ import org.apache.commons.logging.LogFactory;
  * If committing fails, the temporary file will not be deleted.
  */
 public class SaveSession {
-    private static final Log LOGGER = LogFactory.getLog(SaveSession.class);
-
     public static final String LOCKFILE_SUFFIX = ".lock";
-
     // The age in ms of a lockfile before JabRef will offer to "steal" the locked file:
     public static final long LOCKFILE_CRITICAL_AGE = 60000;
+    private static final Log LOGGER = LogFactory.getLog(SaveSession.class);
     private static final String TEMP_PREFIX = "jabref";
 
     private static final String TEMP_SUFFIX = "save.bib";
     private final File tmp;
     private final Charset encoding;
-    private boolean backup;
     private final boolean useLockFile;
-
     private final VerifyingWriter writer;
-
     private final List<FieldChange> undoableFieldChanges = new ArrayList<>();
+    private boolean backup;
 
 
     public SaveSession(Charset encoding, boolean backup) throws IOException {
@@ -73,7 +68,7 @@ public class SaveSession {
         this.backup = backup;
         this.encoding = encoding;
     /* Using
-	   try (FileOutputStream fos = new FileOutputStream(tmp)) {
+       try (FileOutputStream fos = new FileOutputStream(tmp)) {
 	       writer = new VerifyingWriter(fos, encoding);
 	   }
 	   doesn't work since fos is closed after assigning write,

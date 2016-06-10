@@ -15,36 +15,7 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.bibtex.InternalBibtexFields;
@@ -57,13 +28,31 @@ import net.sf.jabref.model.entry.CustomEntryType;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.EntryUtil;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 public class EntryCustomizationDialog extends JDialog implements ListSelectionListener, ActionListener {
 
     private final JabRefFrame frame;
+    private final List<String> preset = InternalBibtexFields.getAllFieldNames();
+    private final Map<String, List<String>> reqLists = new HashMap<>();
+    private final Map<String, List<String>> optLists = new HashMap<>();
+    private final Map<String, List<String>> opt2Lists = new HashMap<>();
+    private final Set<String> defaulted = new HashSet<>();
+    private final Set<String> changed = new HashSet<>();
     protected GridBagLayout gbl = new GridBagLayout();
     protected GridBagConstraints con = new GridBagConstraints();
+    protected JButton helpButton;
+    protected JButton delete;
+    protected JButton importTypes;
+    protected JButton exportTypes;
     private FieldSetComponent reqComp;
     private FieldSetComponent optComp;
     private FieldSetComponent optComp2;
@@ -71,18 +60,7 @@ public class EntryCustomizationDialog extends JDialog implements ListSelectionLi
     private JButton ok;
     private JButton cancel;
     private JButton apply;
-    protected JButton helpButton;
-    protected JButton delete;
-    protected JButton importTypes;
-    protected JButton exportTypes;
-    private final List<String> preset = InternalBibtexFields.getAllFieldNames();
     private String lastSelected;
-    private final Map<String, List<String>> reqLists = new HashMap<>();
-    private final Map<String, List<String>> optLists = new HashMap<>();
-    private final Map<String, List<String>> opt2Lists = new HashMap<>();
-    private final Set<String> defaulted = new HashSet<>();
-    private final Set<String> changed = new HashSet<>();
-
     private boolean biblatexMode;
     private BibDatabaseContext bibDatabaseContext;
 
@@ -94,6 +72,26 @@ public class EntryCustomizationDialog extends JDialog implements ListSelectionLi
 
         this.frame = frame;
         initGui();
+    }
+
+    private static boolean equalLists(List<String> one, List<String> two) {
+        if ((one == null) && (two == null)) {
+            return true; // Both null.
+        }
+        if ((one == null) || (two == null)) {
+            return false; // One of them null, the other not.
+        }
+        if (one.size() != two.size()) {
+            return false; // Different length.
+        }
+        // If we get here, we know that both are non-null, and that they have the same length.
+        for (int i = 0; i < one.size(); i++) {
+            if (!one.get(i).equals(two.get(i))) {
+                return false;
+            }
+        }
+        // If we get here, all entries have matched.
+        return true;
     }
 
     private void initGui() {
@@ -325,7 +323,7 @@ public class EntryCustomizationDialog extends JDialog implements ListSelectionLi
         Optional<EntryType> type = EntryTypes.getType(name, bibDatabaseContext.getMode());
 
         if (type.isPresent() && type.get() instanceof CustomEntryType) {
-            if (! EntryTypes.getStandardType(name, bibDatabaseContext.getMode()).isPresent()) {
+            if (!EntryTypes.getStandardType(name, bibDatabaseContext.getMode()).isPresent()) {
                 int reply = JOptionPane.showConfirmDialog
                         (frame, Localization.lang("All entries of this "
                                         + "type will be declared "
@@ -346,26 +344,6 @@ public class EntryCustomizationDialog extends JDialog implements ListSelectionLi
                 opt2Lists.remove(name);
             }
         }
-    }
-
-    private static boolean equalLists(List<String> one, List<String> two) {
-        if ((one == null) && (two == null)) {
-            return true; // Both null.
-        }
-        if ((one == null) || (two == null)) {
-            return false; // One of them null, the other not.
-        }
-        if (one.size() != two.size()) {
-            return false; // Different length.
-        }
-        // If we get here, we know that both are non-null, and that they have the same length.
-        for (int i = 0; i < one.size(); i++) {
-            if (!one.get(i).equals(two.get(i))) {
-                return false;
-            }
-        }
-        // If we get here, all entries have matched.
-        return true;
     }
 
     @Override

@@ -1,17 +1,14 @@
 package net.sf.jabref.gui.search;
 
-import java.beans.PropertyChangeEvent;
-import java.util.Objects;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 /**
  * Taken from http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
@@ -24,14 +21,14 @@ public class JTextFieldChangeListenerUtil {
      * {@link DocumentListener} on the text component's {@link Document},
      * and a {@link PropertyChangeListener} on the text component to detect
      * if the {@code Document} itself is replaced.
-     *
+     * <p>
      * Taken from
      *
-     * @param text any text component, such as a {@link JTextField}
-     *        or {@link JTextArea}
+     * @param text           any text component, such as a {@link JTextField}
+     *                       or {@link JTextArea}
      * @param changeListener a listener to receive {@link ChangeEvent}s
-     *        when the text is changed; the source object for the events
-     *        will be the text component
+     *                       when the text is changed; the source object for the events
+     *                       will be the text component
      * @throws NullPointerException if either parameter is null
      */
     public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
@@ -64,8 +61,8 @@ public class JTextFieldChangeListenerUtil {
             }
         };
         text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
-            Document d1 = (Document)e.getOldValue();
-            Document d2 = (Document)e.getNewValue();
+            Document d1 = (Document) e.getOldValue();
+            Document d2 = (Document) e.getNewValue();
             if (d1 != null) {
                 d1.removeDocumentListener(dl);
             }

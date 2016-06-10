@@ -16,17 +16,16 @@
 
 package net.sf.jabref.logic.util.io;
 
+import net.sf.jabref.JabRefPreferences;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import net.sf.jabref.JabRefPreferences;
-
 public class FileHistory {
 
+    private static final int HISTORY_SIZE = 8;
     private final JabRefPreferences prefs;
     private final List<String> history = new LinkedList<>();
-
-    private static final int HISTORY_SIZE = 8;
 
 
     public FileHistory(JabRefPreferences prefs) {

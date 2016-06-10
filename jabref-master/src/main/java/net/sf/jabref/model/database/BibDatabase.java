@@ -29,26 +29,16 @@ Modified for use in JabRef
  */
 package net.sf.jabref.model.database;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexString;
 import net.sf.jabref.model.entry.EntryUtil;
 import net.sf.jabref.model.entry.MonthUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * A bibliography database.
@@ -56,37 +46,87 @@ import org.apache.commons.logging.LogFactory;
 public class BibDatabase {
 
     private static final Log LOGGER = LogFactory.getLog(BibDatabase.class);
-
+    private static final Pattern RESOLVE_CONTENT_PATTERN = Pattern.compile(".*#[^#]+#.*");
     /**
      * State attributes
      */
     private final List<BibEntry> entries = Collections.synchronizedList(new ArrayList<>());
-
-    private String preamble;
-    // All file contents below the last entry in the file
-    private String epilog = "";
     private final Map<String, BibtexString> bibtexStrings = new ConcurrentHashMap<>();
-
     /**
      * this is kept in sync with the database (upon adding/removing an entry, it is updated as well)
      */
     private final DuplicationChecker duplicationChecker = new DuplicationChecker();
-
     /**
      * contains all entry.getID() of the current database
      */
     private final Set<String> internalIDs = new HashSet<>();
-
-
+    /**
+     * Behavior
+     */
+    private final Set<DatabaseChangeListener> changeListeners = new HashSet<>();
+    private String preamble;
+    // All file contents below the last entry in the file
+    private String epilog = "";
     /**
      * Configuration
      */
     private boolean followCrossrefs = true;
 
     /**
-     * Behavior
+     * Returns the text stored in the given field of the given bibtex entry
+     * which belongs to the given database.
+     * <p>
+     * If a database is given, this function will try to resolve any string
+     * references in the field-value.
+     * Also, if a database is given, this function will try to find values for
+     * unset fields in the entry linked by the "crossref" field, if any.
+     *
+     * @param field    The field to return the value of.
+     * @param entry    maybenull
+     *                 The bibtex entry which contains the field.
+     * @param database maybenull
+     *                 The database of the bibtex entry.
+     * @return The resolved field value or null if not found.
      */
-    private final Set<DatabaseChangeListener> changeListeners = new HashSet<>();
+    public static String getResolvedField(String field, BibEntry entry, BibDatabase database) {
+        if ("bibtextype".equals(field)) {
+            return EntryUtil.capitalizeFirst(entry.getType());
+        }
+
+        // TODO: Changed this to also consider alias fields, which is the expected
+        // behavior for the preview layout and for the check whatever all fields are present.
+        // But there might be unwanted side-effects?!
+        Object o = entry.getFieldOrAlias(field);
+
+        // If this field is not set, and the entry has a crossref, try to look up the
+        // field in the referred entry: Do not do this for the bibtex key.
+        if ((o == null) && (database != null) && database.followCrossrefs && !field.equals(BibEntry.KEY_FIELD)) {
+            if (entry.hasField("crossref")) {
+                BibEntry referred = database.getEntryByKey(entry.getField("crossref"));
+                if (referred != null) {
+                    // Ok, we found the referred entry. Get the field value from that
+                    // entry. If it is unset there, too, stop looking:
+                    o = referred.getField(field);
+                }
+            }
+        }
+
+        return BibDatabase.getText((String) o, database);
+    }
+
+    /**
+     * Returns a text with references resolved according to an optionally given database.
+     *
+     * @param toResolve maybenull The text to resolve.
+     * @param database  maybenull The database to use for resolving the text.
+     * @return The resolved text or the original text if either the text or the database are null
+     */
+    public static String getText(String toResolve, BibDatabase database) {
+        if ((toResolve != null) && (database != null)) {
+            return database.resolveForStrings(toResolve);
+        }
+        return toResolve;
+    }
 
     /**
      * Returns the number of entries.
@@ -195,7 +235,7 @@ public class BibDatabase {
     public synchronized void removeEntry(BibEntry toBeDeleted) {
         Objects.requireNonNull(toBeDeleted);
 
-        boolean anyRemoved =  entries.removeIf(entry -> entry.getId().equals(toBeDeleted.getId()));
+        boolean anyRemoved = entries.removeIf(entry -> entry.getId().equals(toBeDeleted.getId()));
         if (anyRemoved) {
             internalIDs.remove(toBeDeleted.getId());
             duplicationChecker.removeKeyFromSet(toBeDeleted.getCiteKey());
@@ -218,17 +258,17 @@ public class BibDatabase {
     }
 
     /**
-     * Sets the database's preamble.
-     */
-    public synchronized void setPreamble(String preamble) {
-        this.preamble = preamble;
-    }
-
-    /**
      * Returns the database's preamble.
      */
     public synchronized String getPreamble() {
         return preamble;
+    }
+
+    /**
+     * Sets the database's preamble.
+     */
+    public synchronized void setPreamble(String preamble) {
+        this.preamble = preamble;
     }
 
     /**
@@ -429,8 +469,6 @@ public class BibDatabase {
         }
     }
 
-    private static final Pattern RESOLVE_CONTENT_PATTERN = Pattern.compile(".*#[^#]+#.*");
-
     private String resolveContent(String result, Set<String> usedIds) {
         String res = result;
         if (RESOLVE_CONTENT_PATTERN.matcher(res).matches()) {
@@ -479,8 +517,6 @@ public class BibDatabase {
         return res;
     }
 
-
-
     private void fireDatabaseChanged(DatabaseChangeEvent e) {
         for (DatabaseChangeListener tmpListener : changeListeners) {
             tmpListener.databaseChanged(e);
@@ -495,71 +531,15 @@ public class BibDatabase {
         changeListeners.remove(l);
     }
 
-    /**
-     * Returns the text stored in the given field of the given bibtex entry
-     * which belongs to the given database.
-     * <p>
-     * If a database is given, this function will try to resolve any string
-     * references in the field-value.
-     * Also, if a database is given, this function will try to find values for
-     * unset fields in the entry linked by the "crossref" field, if any.
-     *
-     * @param field    The field to return the value of.
-     * @param entry    maybenull
-     *                 The bibtex entry which contains the field.
-     * @param database maybenull
-     *                 The database of the bibtex entry.
-     * @return The resolved field value or null if not found.
-     */
-    public static String getResolvedField(String field, BibEntry entry, BibDatabase database) {
-        if ("bibtextype".equals(field)) {
-            return EntryUtil.capitalizeFirst(entry.getType());
-        }
-
-        // TODO: Changed this to also consider alias fields, which is the expected
-        // behavior for the preview layout and for the check whatever all fields are present.
-        // But there might be unwanted side-effects?!
-        Object o = entry.getFieldOrAlias(field);
-
-        // If this field is not set, and the entry has a crossref, try to look up the
-        // field in the referred entry: Do not do this for the bibtex key.
-        if ((o == null) && (database != null) && database.followCrossrefs && !field.equals(BibEntry.KEY_FIELD)) {
-            if (entry.hasField("crossref")) {
-                BibEntry referred = database.getEntryByKey(entry.getField("crossref"));
-                if (referred != null) {
-                    // Ok, we found the referred entry. Get the field value from that
-                    // entry. If it is unset there, too, stop looking:
-                    o = referred.getField(field);
-                }
-            }
-        }
-
-        return BibDatabase.getText((String) o, database);
-    }
-
-    /**
-     * Returns a text with references resolved according to an optionally given database.
-     *
-     * @param toResolve maybenull The text to resolve.
-     * @param database  maybenull The database to use for resolving the text.
-     * @return The resolved text or the original text if either the text or the database are null
-     */
-    public static String getText(String toResolve, BibDatabase database) {
-        if ((toResolve != null) && (database != null)) {
-            return database.resolveForStrings(toResolve);
-        }
-        return toResolve;
-    }
-
     public void setFollowCrossrefs(boolean followCrossrefs) {
         this.followCrossrefs = followCrossrefs;
     }
 
-    public void setEpilog(String epilog) {
-        this.epilog = epilog;
-    }
-
     public String getEpilog() {
         return epilog;
+    }
+
+    public void setEpilog(String epilog) {
+        this.epilog = epilog;
     }
 }

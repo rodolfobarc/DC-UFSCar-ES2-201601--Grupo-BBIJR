@@ -24,21 +24,6 @@
 
 package net.sf.jabref.importer.fetcher;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.Charset;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.importer.ImportInspector;
 import net.sf.jabref.importer.OutputPrinter;
@@ -47,12 +32,19 @@ import net.sf.jabref.importer.fileformat.BibtexParser;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.Charset;
+
 /**
- *
  * This class handles accessing and obtaining BibTeX entry
  * from ADS(The NASA Astrophysics Data System).
  * Fetching using DOI(Document Object Identifier) is only supported.
@@ -63,6 +55,9 @@ public class ADSFetcher implements EntryFetcher {
 
     private static final Log LOGGER = LogFactory.getLog(ADSFetcher.class);
 
+    private static String constructUrl(String key) {
+        return "http://adsabs.harvard.edu/doi/" + key;
+    }
 
     @Override
     public JPanel getOptionsPanel() {
@@ -137,10 +132,6 @@ public class ADSFetcher implements EntryFetcher {
             LOGGER.warn("Problem fetching from ADS", e);
         }
         return null;
-    }
-
-    private static String constructUrl(String key) {
-        return "http://adsabs.harvard.edu/doi/" + key;
     }
 
     private void importADSAbstract(String key, BibEntry entry, OutputPrinter status) {

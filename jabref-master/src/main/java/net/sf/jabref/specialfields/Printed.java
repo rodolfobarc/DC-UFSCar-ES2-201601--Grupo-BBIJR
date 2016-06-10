@@ -15,13 +15,12 @@
  */
 package net.sf.jabref.specialfields;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
-
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Printed extends SpecialField {
 
@@ -37,16 +36,16 @@ public class Printed extends SpecialField {
         TEXT_DONE_PATTERN = "Toggled print status for %0 entries";
     }
 
-    @Override
-    public String getFieldName() {
-        return SpecialFieldsUtils.FIELDNAME_PRINTED;
-    }
-
     public static Printed getInstance() {
         if (Printed.INSTANCE == null) {
             Printed.INSTANCE = new Printed();
         }
         return Printed.INSTANCE;
+    }
+
+    @Override
+    public String getFieldName() {
+        return SpecialFieldsUtils.FIELDNAME_PRINTED;
     }
 
     @Override

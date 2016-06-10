@@ -15,22 +15,6 @@
 */
 package net.sf.jabref.gui.labelpattern;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -45,17 +29,19 @@ import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.EntryType;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LabelPatternPanel extends JPanel {
 
     // used by both LabelPatternPanel and TabLabelPAttern
     protected final GridBagLayout gbl = new GridBagLayout();
     protected final GridBagConstraints con = new GridBagConstraints();
-
-    private final HelpAction help;
-
     // default pattern
     protected final JTextField defaultPat = new JTextField();
-
+    private final HelpAction help;
     // one field for each type
     private final Map<String, JTextField> textFields = new HashMap<>();
     private final BasePanel panel;
@@ -65,6 +51,14 @@ public class LabelPatternPanel extends JPanel {
         this.panel = panel;
         help = new HelpAction(Localization.lang("Help on key patterns"), HelpFiles.LABEL_PATTERN);
         buildGUI();
+    }
+
+    private static void setValue(JTextField tf, String fieldName, AbstractLabelPattern keypatterns) {
+        if (keypatterns.isDefaultValue(fieldName)) {
+            tf.setText("");
+        } else {
+            tf.setText(keypatterns.getValue(fieldName).get(0));
+        }
     }
 
     private void buildGUI() {
@@ -266,14 +260,6 @@ public class LabelPatternPanel extends JPanel {
             defaultPat.setText("");
         } else {
             defaultPat.setText(keypatterns.getDefaultValue().get(0));
-        }
-    }
-
-    private static void setValue(JTextField tf, String fieldName, AbstractLabelPattern keypatterns) {
-        if (keypatterns.isDefaultValue(fieldName)) {
-            tf.setText("");
-        } else {
-            tf.setText(keypatterns.getValue(fieldName).get(0));
         }
     }
 

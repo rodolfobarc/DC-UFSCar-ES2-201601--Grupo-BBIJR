@@ -15,14 +15,6 @@
 */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -31,6 +23,13 @@ import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.ParserResultWarningDialog;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Runnable task that prompts the user for what to do about files loaded at startup,
@@ -58,9 +57,9 @@ public class AutosaveStartupPrompter implements Runnable {
             boolean tryingAutosave;
             if (Globals.prefs.getBoolean(JabRefPreferences.PROMPT_BEFORE_USING_AUTOSAVE)) {
                 int answer = JOptionPane.showConfirmDialog(null, "<html>" +
-                        Localization.lang("An autosave file was found for this database. This could indicate "
-                                + "that JabRef didn't shut down cleanly last time the file was used.") + "<br>"
-                        + Localization.lang("Do you want to recover the database from the autosave file?") + "</html>",
+                                Localization.lang("An autosave file was found for this database. This could indicate "
+                                        + "that JabRef didn't shut down cleanly last time the file was used.") + "<br>"
+                                + Localization.lang("Do you want to recover the database from the autosave file?") + "</html>",
                         Localization.lang("Autosave of file '%0'", file.getName()), JOptionPane.YES_NO_OPTION);
                 tryingAutosave = answer == JOptionPane.YES_OPTION;
             } else {

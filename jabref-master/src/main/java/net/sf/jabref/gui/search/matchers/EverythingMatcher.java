@@ -15,9 +15,8 @@
 */
 package net.sf.jabref.gui.search.matchers;
 
-import net.sf.jabref.model.entry.BibEntry;
-
 import ca.odell.glazedlists.matchers.Matcher;
+import net.sf.jabref.model.entry.BibEntry;
 
 /**
  * Matcher that accepts all entries. Used for filtering when so search is

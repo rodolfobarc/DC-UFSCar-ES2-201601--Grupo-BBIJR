@@ -1,11 +1,10 @@
 package net.sf.jabref.gui.maintable;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.matchers.Matcher;
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.gui.groups.GroupMatcher;
 import net.sf.jabref.gui.search.HitOrMissComparator;
@@ -15,11 +14,11 @@ import net.sf.jabref.gui.util.comparator.IsMarkedComparator;
 import net.sf.jabref.model.database.DatabaseChangeListener;
 import net.sf.jabref.model.entry.BibEntry;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.matchers.Matcher;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MainTableDataModel {
 
@@ -172,7 +171,7 @@ public class MainTableDataModel {
     }
 
     public void updateGroupFilter() {
-        if(getGroupingState() == DisplayOption.FILTER) {
+        if (getGroupingState() == DisplayOption.FILTER) {
             filterGroupToggle.start();
         } else {
             filterGroupToggle.stop();

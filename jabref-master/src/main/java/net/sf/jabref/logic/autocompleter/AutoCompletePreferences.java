@@ -15,22 +15,25 @@
 */
 package net.sf.jabref.logic.autocompleter;
 
+import net.sf.jabref.JabRefPreferences;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import net.sf.jabref.JabRefPreferences;
-
 public class AutoCompletePreferences {
-
-    private final JabRefPreferences preferences;
 
     private static final String PREF_SHORTEST_TO_COMPLETE = "shortestToComplete";
     private static final String PREF_FIRSTNAME_MODE = "autoCompFirstNameMode";
     private static final String PREF_LAST_FIRST = "autoCompLF";
     private static final String PREF_FIRST_LAST = "autoCompFF";
     private static final String PREF_COMPLETE_FIELDS = "autoCompleteFields";
+    private final JabRefPreferences preferences;
 
+
+    public AutoCompletePreferences(JabRefPreferences preferences) {
+        this.preferences = Objects.requireNonNull(preferences);
+    }
 
     public static void putDefaults(Map<String, Object> defaults) {
         defaults.put(PREF_SHORTEST_TO_COMPLETE, 1);
@@ -38,10 +41,6 @@ public class AutoCompletePreferences {
         defaults.put(PREF_FIRST_LAST, Boolean.FALSE); // "Autocomplete names in 'Firstname Lastname' format only"
         defaults.put(PREF_LAST_FIRST, Boolean.FALSE); // "Autocomplete names in 'Lastname, Firstname' format only"
         defaults.put(PREF_COMPLETE_FIELDS, "author;editor;title;journal;publisher;keywords;crossref");
-    }
-
-    public AutoCompletePreferences(JabRefPreferences preferences) {
-        this.preferences = Objects.requireNonNull(preferences);
     }
 
     public int getShortestLengthToComplete() {
@@ -91,11 +90,11 @@ public class AutoCompletePreferences {
         return preferences.getStringList(PREF_COMPLETE_FIELDS);
     }
 
-    public String getCompleteNamesAsString() {
-        return preferences.get(PREF_COMPLETE_FIELDS);
-    }
-
     public void setCompleteNames(String value) {
         preferences.put(PREF_COMPLETE_FIELDS, value);
+    }
+
+    public String getCompleteNamesAsString() {
+        return preferences.get(PREF_COMPLETE_FIELDS);
     }
 }

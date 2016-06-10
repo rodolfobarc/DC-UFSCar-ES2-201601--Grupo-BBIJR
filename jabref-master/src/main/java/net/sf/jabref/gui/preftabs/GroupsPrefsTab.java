@@ -15,21 +15,15 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.l10n.Localization;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 class GroupsPrefsTab extends JPanel implements PrefsTab {
 
@@ -67,8 +61,8 @@ class GroupsPrefsTab extends JPanel implements PrefsTab {
         });
 
         FormLayout layout = new FormLayout("9dlu, pref", //500px",
-        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, " +
-                "p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, " +
+                        "p, 3dlu, p");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.appendSeparator(Localization.lang("View"));
         builder.nextLine();

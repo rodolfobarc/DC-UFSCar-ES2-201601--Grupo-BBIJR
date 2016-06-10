@@ -1,5 +1,14 @@
 package net.sf.jabref.logic.openoffice;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefMain;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
+import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
@@ -7,29 +16,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefMain;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
-import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class StyleLoaderTest {
 
-    private JabRefPreferences backup;
     private static int numberOfInternalStyles = 2;
+    private JabRefPreferences backup;
     private StyleLoader loader;
 
     private OpenOfficePreferences preferences;
+
     @Before
     public void setUp() {
         backup = JabRefPreferences.getInstance();

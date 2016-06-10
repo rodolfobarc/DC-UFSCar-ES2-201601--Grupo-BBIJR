@@ -15,13 +15,15 @@
 */
 package net.sf.jabref.logic.search.matchers;
 
+import net.sf.jabref.logic.search.SearchMatcher;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
-import net.sf.jabref.logic.search.SearchMatcher;
-
 public abstract class MatcherSet implements SearchMatcher {
+
+    protected final List<SearchMatcher> matchers = new Vector<>();
 
     @Override
     public boolean equals(Object o) {
@@ -42,8 +44,6 @@ public abstract class MatcherSet implements SearchMatcher {
     public int hashCode() {
         return matchers.hashCode();
     }
-
-    protected final List<SearchMatcher> matchers = new Vector<>();
 
     public void addRule(SearchMatcher newRule) {
         matchers.add(Objects.requireNonNull(newRule));

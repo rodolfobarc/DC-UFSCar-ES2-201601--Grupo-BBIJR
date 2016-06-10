@@ -33,10 +33,10 @@ public class Languages {
     }
 
     public static Optional<String> convertToKnownLocale(String language) {
-        if(!LANGUAGES.values().contains(Objects.requireNonNull(language))) {
-            if(language.contains("_")) {
+        if (!LANGUAGES.values().contains(Objects.requireNonNull(language))) {
+            if (language.contains("_")) {
                 String lang = language.split("_")[0];
-                if(LANGUAGES.values().contains(lang)) {
+                if (LANGUAGES.values().contains(lang)) {
                     return Optional.of(lang);
                 } else {
                     return Optional.empty();

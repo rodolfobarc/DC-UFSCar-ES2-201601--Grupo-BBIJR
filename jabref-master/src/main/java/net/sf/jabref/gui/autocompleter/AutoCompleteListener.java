@@ -15,20 +15,14 @@
 */
 package net.sf.jabref.gui.autocompleter;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.List;
+import net.sf.jabref.logic.autocompleter.AutoCompleter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
-
-import net.sf.jabref.logic.autocompleter.AutoCompleter;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.awt.event.*;
+import java.util.List;
 
 /**
  * Created by Morten O. Alver, 16 Feb. 2007
@@ -164,7 +158,7 @@ public class AutoCompleteListener extends KeyAdapter implements FocusListener {
         int nextCharPosition = textField.getCaretPosition();
 
         // position not at the end of input
-        if(nextCharPosition < textField.getText().length()) {
+        if (nextCharPosition < textField.getText().length()) {
             char nextChar = textField.getText().charAt(nextCharPosition);
             if (!Character.isWhitespace(nextChar)) {
                 return false;
@@ -176,13 +170,13 @@ public class AutoCompleteListener extends KeyAdapter implements FocusListener {
     /**
      * If user cancels autocompletion by a) entering another letter than the completed word (and there is no other auto
      * completion) b) space the casing of the letters has to be kept
-     *
+     * <p>
      * Global variable "lastBeginning" keeps track of typed letters. We rely on this variable to reconstruct the text
      *
      * @param wordSeperatorTyped indicates whether the user has typed a white space character or a
      */
     private void setUnmodifiedTypedLetters(JTextComponent comp, boolean lastBeginningContainsTypedCharacter,
-            boolean wordSeperatorTyped) {
+                                           boolean wordSeperatorTyped) {
         if (lastBeginning == null) {
             LOGGER.debug("No last beginning found");
             // There was no previous input (if the user typed a word, where no autocompletion is available)

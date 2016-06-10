@@ -22,14 +22,13 @@ import java.util.List;
 
 /**
  * Container class for lists with keywords where the case should be kept independent of bibstyle
- *
  */
 public class CaseKeeperList {
 
 
     // @formatter:off
     // Common words in IEEE Xplore that should always be in the given case
-    private static final String[] wordListIEEEXplore = new String[] {
+    private static final String[] wordListIEEEXplore = new String[]{
             "1-D",
             "1D",
             "2-D",
@@ -672,7 +671,7 @@ public class CaseKeeperList {
     };
 
     // Weekdays and months
-    private static final String[] wordListDayMonth = new String[] {
+    private static final String[] wordListDayMonth = new String[]{
             "Monday",
             "Tuesday",
             "Wednesday",
@@ -694,7 +693,7 @@ public class CaseKeeperList {
             "December"
     };
 
-    private static final String[] wordListCountries = new String[] {
+    private static final String[] wordListCountries = new String[]{
             "Andorra",
             "United Arab Emirates",
             "UAE",
@@ -985,13 +984,13 @@ public class CaseKeeperList {
     };
 
     // List of all keyword lists
-    private static final String[][] allLists = new String[][] {
+    private static final String[][] allLists = new String[][]{
             wordListIEEEXplore,
             wordListDayMonth,
             wordListCountries
     };
 
-    private static final String[][] genericLists = new String[][] {
+    private static final String[][] genericLists = new String[][]{
             wordListDayMonth,
             wordListCountries
     };

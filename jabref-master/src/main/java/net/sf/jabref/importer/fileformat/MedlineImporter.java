@@ -15,29 +15,23 @@
 */
 package net.sf.jabref.importer.fileformat;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Importer for the Refer/Endnote format.
- *
+ * <p>
  * check here for details on the format
  * http://www.ecst.csuchico.edu/~jacobsd/bib/formats/endnote.html
  */
@@ -45,6 +39,23 @@ public class MedlineImporter extends ImportFormat {
 
     private static final Log LOGGER = LogFactory.getLog(MedlineImporter.class);
 
+    /**
+     * Fetch and parse an medline item from eutils.ncbi.nlm.nih.gov.
+     *
+     * @param id One or several ids, separated by ","
+     * @return Will return an empty list on error.
+     */
+    public static List<BibEntry> fetchMedline(String id, OutputPrinter status) {
+        String baseUrl = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&rettype=citation&id=" +
+                id;
+        try {
+            URL url = new URL(baseUrl);
+            URLConnection data = url.openConnection();
+            return new MedlineImporter().importEntries(data.getInputStream(), status);
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
+    }
 
     @Override
     public String getFormatName() {
@@ -80,25 +91,6 @@ public class MedlineImporter extends ImportFormat {
             }
         }
         return false;
-    }
-
-    /**
-     * Fetch and parse an medline item from eutils.ncbi.nlm.nih.gov.
-     *
-     * @param id One or several ids, separated by ","
-     *
-     * @return Will return an empty list on error.
-     */
-    public static List<BibEntry> fetchMedline(String id, OutputPrinter status) {
-        String baseUrl = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&rettype=citation&id=" +
-                id;
-        try {
-            URL url = new URL(baseUrl);
-            URLConnection data = url.openConnection();
-            return new MedlineImporter().importEntries(data.getInputStream(), status);
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
     }
 
     /**

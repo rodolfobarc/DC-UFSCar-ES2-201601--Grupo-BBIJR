@@ -14,10 +14,10 @@
 
 package net.sf.jabref.logic.cleanup;
 
-import java.util.List;
-
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.List;
 
 @FunctionalInterface
 public interface CleanupJob {

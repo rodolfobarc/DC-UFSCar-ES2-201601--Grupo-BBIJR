@@ -15,16 +15,6 @@
  */
 package net.sf.jabref.external;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.xml.transform.TransformerException;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.FileListEntry;
@@ -36,6 +26,14 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileUtil;
 import net.sf.jabref.logic.xmp.XMPUtil;
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.*;
+import javax.xml.transform.TransformerException;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Write XMP action for EntryEditor toolbar.

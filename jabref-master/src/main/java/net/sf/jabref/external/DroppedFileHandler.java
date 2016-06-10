@@ -15,21 +15,8 @@
 */
 package net.sf.jabref.external;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.FileListEntry;
@@ -45,11 +32,16 @@ import net.sf.jabref.logic.xmp.XMPUtil;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
-
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class holds the functionality of autolinking to a file that's dropped
@@ -65,13 +57,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DroppedFileHandler {
 
-    private static final Log LOGGER = LogFactory.getLog(DroppedFileHandler.class);
-
     public static final String DFH_LEAVE = "DroppedFileHandler_LeaveFileInDir";
     public static final String DFH_COPY = "DroppedFileHandler_CopyFile";
     public static final String DFH_MOVE = "DroppedFileHandler_MoveFile";
     public static final String DFH_RENAME = "DroppedFileHandler_RenameFile";
-
+    private static final Log LOGGER = LogFactory.getLog(DroppedFileHandler.class);
     private final JabRefFrame frame;
 
     private final BasePanel panel;
@@ -128,9 +118,9 @@ public class DroppedFileHandler {
     }
 
     /**
-     * @param fileName  The name of the dragged file.
-     * @param fileType  The FileType associated with the file.
-     * @param entry     The target entry for the drop.
+     * @param fileName The name of the dragged file.
+     * @param fileType The FileType associated with the file.
+     * @param entry    The target entry for the drop.
      */
     public void handleDroppedfile(String fileName, ExternalFileType fileType, BibEntry entry) {
         NamedCompound edits = new NamedCompound(Localization.lang("Drop %0", fileType.getExtension()));
@@ -313,7 +303,7 @@ public class DroppedFileHandler {
     // @return true if user pushed "OK", false otherwise
     //
     private boolean showLinkMoveCopyRenameDialog(String linkFileName, ExternalFileType fileType, BibEntry entry,
-            BibDatabase database) {
+                                                 BibDatabase database) {
 
         String dialogTitle = Localization.lang("Link to file %0", linkFileName);
         List<String> dirs = panel.getBibDatabaseContext().getFileDirectory();

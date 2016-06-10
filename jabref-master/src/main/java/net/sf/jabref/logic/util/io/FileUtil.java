@@ -15,27 +15,6 @@
 */
 package net.sf.jabref.logic.util.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-import java.util.regex.Pattern;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
@@ -47,9 +26,12 @@ import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class FileUtil {
 
@@ -142,7 +124,7 @@ public class FileUtil {
             return false;
         }
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(source));
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dest))) {
+             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dest))) {
 
 
             int el;
@@ -181,7 +163,7 @@ public class FileUtil {
      * </ul>
      *
      * @param databaseContext The database this file belongs to.
-     * @param name     The filename, may also be a relative path to the file
+     * @param name            The filename, may also be a relative path to the file
      */
     public static Optional<File> expandFilename(final BibDatabaseContext databaseContext, String name) {
         Optional<String> extension = getFileExtension(name);
@@ -330,7 +312,8 @@ public class FileUtil {
 
         boolean exactOnly = Globals.prefs.getBoolean(JabRefPreferences.AUTOLINK_EXACT_KEY_ONLY);
         // Now look for keys
-        nextFile: for (File file : filesWithExtension) {
+        nextFile:
+        for (File file : filesWithExtension) {
 
             String name = file.getName();
             int dot = name.lastIndexOf('.');
@@ -361,9 +344,8 @@ public class FileUtil {
     /**
      * Returns the list of linked files. The files have the absolute filename
      *
-     * @param bes list of BibTeX entries
+     * @param bes      list of BibTeX entries
      * @param fileDirs list of directories to try for expansion
-     *
      * @return list of files. May be empty
      */
     public static List<File> getListOfLinkedFiles(List<BibEntry> bes, List<String> fileDirs) {
@@ -384,13 +366,13 @@ public class FileUtil {
     /**
      * Determines filename provided by an entry in a database
      *
-     * @param database the database, where the entry is located
-     * @param entry    the entry to which the file should be linked to
+     * @param database   the database, where the entry is located
+     * @param entry      the entry to which the file should be linked to
      * @param repository
      * @return a suggested fileName
      */
     public static String getLinkedFileName(BibDatabase database, BibEntry entry,
-            JournalAbbreviationRepository repository) {
+                                           JournalAbbreviationRepository repository) {
         String targetName = entry.getCiteKey() == null ? "default" : entry.getCiteKey();
         StringReader sr = new StringReader(Globals.prefs.get(JabRefPreferences.PREF_IMPORT_FILENAMEPATTERN));
         Layout layout = null;

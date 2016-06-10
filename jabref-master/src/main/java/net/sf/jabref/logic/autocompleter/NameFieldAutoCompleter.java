@@ -15,14 +15,14 @@
 */
 package net.sf.jabref.logic.autocompleter;
 
+import net.sf.jabref.model.entry.Author;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import net.sf.jabref.model.entry.Author;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
 
 /**
  * Delivers possible completions for a given string.
@@ -53,7 +53,7 @@ class NameFieldAutoCompleter extends AbstractAutoCompleter {
     }
 
     public NameFieldAutoCompleter(List<String> fieldNames, boolean lastNameOnlyAndSeparationBySpace,
-            AutoCompletePreferences preferences) {
+                                  AutoCompletePreferences preferences) {
         super(preferences);
 
         this.fieldNames = Objects.requireNonNull(fieldNames);
@@ -125,34 +125,34 @@ class NameFieldAutoCompleter extends AbstractAutoCompleter {
         } else {
             if (autoCompLF) {
                 switch (autoCompFirstnameMode) {
-                case ONLY_ABBREVIATED:
-                    addItemToIndex(author.getLastFirst(true));
-                    break;
-                case ONLY_FULL:
-                    addItemToIndex(author.getLastFirst(false));
-                    break;
-                case BOTH:
-                    addItemToIndex(author.getLastFirst(true));
-                    addItemToIndex(author.getLastFirst(false));
-                    break;
-                default:
-                    break;
+                    case ONLY_ABBREVIATED:
+                        addItemToIndex(author.getLastFirst(true));
+                        break;
+                    case ONLY_FULL:
+                        addItemToIndex(author.getLastFirst(false));
+                        break;
+                    case BOTH:
+                        addItemToIndex(author.getLastFirst(true));
+                        addItemToIndex(author.getLastFirst(false));
+                        break;
+                    default:
+                        break;
                 }
             }
             if (autoCompFF) {
                 switch (autoCompFirstnameMode) {
-                case ONLY_ABBREVIATED:
-                    addItemToIndex(author.getFirstLast(true));
-                    break;
-                case ONLY_FULL:
-                    addItemToIndex(author.getFirstLast(false));
-                    break;
-                case BOTH:
-                    addItemToIndex(author.getFirstLast(true));
-                    addItemToIndex(author.getFirstLast(false));
-                    break;
-                default:
-                    break;
+                    case ONLY_ABBREVIATED:
+                        addItemToIndex(author.getFirstLast(true));
+                        break;
+                    case ONLY_FULL:
+                        addItemToIndex(author.getFirstLast(false));
+                        break;
+                    case BOTH:
+                        addItemToIndex(author.getFirstLast(true));
+                        addItemToIndex(author.getFirstLast(false));
+                        break;
+                    default:
+                        break;
                 }
             }
         }

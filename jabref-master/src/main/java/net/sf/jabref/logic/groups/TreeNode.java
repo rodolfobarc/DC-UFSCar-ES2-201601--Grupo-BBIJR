@@ -1,11 +1,6 @@
 package net.sf.jabref.logic.groups;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +22,8 @@ import java.util.function.Consumer;
  * @param <T> the type of the class
  */
 // We use some explicit casts of the form "(T) this". The constructor ensures that this cast is valid.
-@SuppressWarnings("unchecked") public abstract class TreeNode<T extends TreeNode<T>> {
+@SuppressWarnings("unchecked")
+public abstract class TreeNode<T extends TreeNode<T>> {
 
     /**
      * This node's parent, or null if this node has no parent
@@ -37,6 +33,11 @@ import java.util.function.Consumer;
      * Array of children, may be empty if this node has no children (but never null)
      */
     private List<T> children;
+    /**
+     * The function which is invoked when something changed in the subtree.
+     */
+    private Consumer<T> onDescendantChanged = t -> {
+    };
 
     /**
      * Constructs a tree node without parent and no children.
@@ -415,7 +416,7 @@ import java.util.function.Consumer;
         children.remove(child);
         child.setParent(null);
 
-        notifyAboutDescendantChange((T)this);
+        notifyAboutDescendantChange((T) this);
     }
 
     /**
@@ -432,7 +433,7 @@ import java.util.function.Consumer;
             child.get().setParent(null);
         }
 
-        notifyAboutDescendantChange((T)this);
+        notifyAboutDescendantChange((T) this);
     }
 
     /**
@@ -464,7 +465,7 @@ import java.util.function.Consumer;
         child.setParent((T) this);
         children.add(index, child);
 
-        notifyAboutDescendantChange((T)this);
+        notifyAboutDescendantChange((T) this);
 
         return child;
     }
@@ -574,17 +575,13 @@ import java.util.function.Consumer;
     public abstract T copyNode();
 
     /**
-     * The function which is invoked when something changed in the subtree.
-     */
-    private Consumer<T> onDescendantChanged = t -> {};
-
-    /**
      * Adds the given function to the list of subscribers which are notified when something changes in the subtree.
-     *
+     * <p>
      * The following events are supported (the text in parentheses specifies which node is passed as the source):
-     *  - addChild (new parent)
-     *  - removeChild (old parent)
-     *  - move (old parent and new parent)
+     * - addChild (new parent)
+     * - removeChild (old parent)
+     * - move (old parent and new parent)
+     *
      * @param subscriber function to be invoked upon a change
      */
     public void subscribeToDescendantChanged(Consumer<T> subscriber) {
@@ -593,12 +590,13 @@ import java.util.function.Consumer;
 
     /**
      * Helper method which notifies all subscribers about a change in the subtree and bubbles the event to all parents.
+     *
      * @param source the node which changed
      */
     protected void notifyAboutDescendantChange(T source) {
         onDescendantChanged.accept(source);
 
-        if(! isRoot()) {
+        if (!isRoot()) {
             parent.notifyAboutDescendantChange(source);
         }
     }

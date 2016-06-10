@@ -15,6 +15,17 @@
 */
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.gui.help.HelpFiles;
+import net.sf.jabref.importer.ImportInspector;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.importer.ParserResult;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.database.BibDatabase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,45 +36,28 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
-import net.sf.jabref.gui.help.HelpFiles;
-import net.sf.jabref.importer.ImportInspector;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.importer.ParserResult;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.database.BibDatabase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- *
  * This class allows to access the Slac INSPIRE database. It is just a port of the original SPIRES Fetcher.
- *
+ * <p>
  * It can either be a GeneralFetcher to pose requests to the database or fetch individual entries.
  *
  * @author Fedor Bezrukov
  * @author Sheer El-Showk
- *
  * @version $Id$
- *
  */
 public class INSPIREFetcher implements EntryFetcher {
 
     private static final String INSPIRE_HOST = "inspirehep.net";
 
     private static final Log LOGGER = LogFactory.getLog(INSPIREFetcher.class);
+
     /**
      * Construct the query URL
-     *
+     * <p>
      * NOTE: we truncate at 1000 returned entries but its likely INSPIRE returns fewer anyway. This shouldn't be a
      * problem since users should probably do more specific searches.
      *
      * @param key The key of the OAI2 entry that the url should point to.
-     *
      * @return a String denoting the query URL
      */
     private String constructUrl(String key) {

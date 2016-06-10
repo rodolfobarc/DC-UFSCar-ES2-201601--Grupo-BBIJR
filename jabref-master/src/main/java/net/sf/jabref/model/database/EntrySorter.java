@@ -15,14 +15,13 @@
 */
 package net.sf.jabref.model.database;
 
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class EntrySorter implements DatabaseChangeListener {
 
@@ -96,29 +95,29 @@ public class EntrySorter implements DatabaseChangeListener {
         synchronized (set) {
             int pos;
             switch (e.getType()) {
-            case ADDED_ENTRY:
-                pos = -Collections.binarySearch(set, e.getEntry(), comp) - 1;
-                LOGGER.debug("Insert position = " + pos);
-                if (pos >= 0) {
-                    set.add(pos, e.getEntry());
-                } else {
-                    set.add(0, e.getEntry());
-                }
-                break;
-            case REMOVED_ENTRY:
-                set.remove(e.getEntry());
-                changed = true;
-                break;
-            case CHANGED_ENTRY:
-                pos = Collections.binarySearch(set, e.getEntry(), comp);
-                int posOld = set.indexOf(e.getEntry());
-                if (pos < 0) {
-                    set.remove(posOld);
-                    set.add(-posOld - 1, e.getEntry());
-                }
-                break;
-            default:
-                break;
+                case ADDED_ENTRY:
+                    pos = -Collections.binarySearch(set, e.getEntry(), comp) - 1;
+                    LOGGER.debug("Insert position = " + pos);
+                    if (pos >= 0) {
+                        set.add(pos, e.getEntry());
+                    } else {
+                        set.add(0, e.getEntry());
+                    }
+                    break;
+                case REMOVED_ENTRY:
+                    set.remove(e.getEntry());
+                    changed = true;
+                    break;
+                case CHANGED_ENTRY:
+                    pos = Collections.binarySearch(set, e.getEntry(), comp);
+                    int posOld = set.indexOf(e.getEntry());
+                    if (pos < 0) {
+                        set.remove(posOld);
+                        set.add(-posOld - 1, e.getEntry());
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }

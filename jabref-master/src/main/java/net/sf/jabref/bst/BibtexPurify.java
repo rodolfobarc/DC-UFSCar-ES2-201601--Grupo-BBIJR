@@ -17,22 +17,18 @@
 package net.sf.jabref.bst;
 
 /**
- *
  * The |built_in| function {\.{purify\$}} pops the top (string) literal, removes
  * nonalphanumeric characters except for |white_space| and |sep_char| characters
  * (these get converted to a |space|) and removes certain alphabetic characters
  * contained in the control sequences associated with a special character, and
  * pushes the resulting string. If the literal isn't a string, it complains and
  * pushes the null string.
- *
  */
 public class BibtexPurify {
 
     /**
-     *
      * @param toPurify
-     * @param warn
-     *            may-be-null
+     * @param warn     may-be-null
      * @return
      */
     public static String purify(String toPurify, Warn warn) {

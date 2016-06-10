@@ -15,27 +15,17 @@
  */
 package net.sf.jabref.gui.autocompleter;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.util.List;
+import net.sf.jabref.logic.autocompleter.AutoCompleter;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
-
-import net.sf.jabref.logic.autocompleter.AutoCompleter;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
 
 /**
  * Endows a textbox with the ability to autocomplete the input. Based on code by Santhosh Kumar
@@ -46,21 +36,21 @@ import net.sf.jabref.logic.autocompleter.AutoCompleter;
 public class AutoCompleteSupport<E> {
 
     private final AutoCompleteRenderer<E> renderer;
-    private AutoCompleter<E> autoCompleter;
     private final JTextComponent textComp;
     private final JPopupMenu popup = new JPopupMenu();
+    private AutoCompleter<E> autoCompleter;
     private boolean selectsTextOnFocusGain = true;
 
 
     /**
      * Constructs a new AutoCompleteSupport for the textbox using the autocompleter and a renderer.
      *
-     * @param textComp the textbox component for which autocompletion should be enabled
+     * @param textComp      the textbox component for which autocompletion should be enabled
      * @param autoCompleter the autocompleter providing the data
-     * @param renderer the renderer displaying the popup
+     * @param renderer      the renderer displaying the popup
      */
     public AutoCompleteSupport(JTextComponent textComp, AutoCompleter<E> autoCompleter,
-            AutoCompleteRenderer<E> renderer) {
+                               AutoCompleteRenderer<E> renderer) {
         this.renderer = renderer;
         this.textComp = textComp;
         this.autoCompleter = autoCompleter;
@@ -82,7 +72,7 @@ public class AutoCompleteSupport<E> {
      * Constructs a new AutoCompleteSupport for the textbox using the autocompleter and a renderer. The possible
      * autocomplete items are displayed as a simple list.
      *
-     * @param textComp the textbox component for which autocompletion should be enabled
+     * @param textComp      the textbox component for which autocompletion should be enabled
      * @param autoCompleter the autocompleter providing the data
      */
     public AutoCompleteSupport(JTextComponent textComp, AutoCompleter<E> autoCompleter) {
@@ -240,6 +230,14 @@ public class AutoCompleteSupport<E> {
         }
     }
 
+    /**
+     * Sets the autocompleter used to present autocomplete suggestions.
+     *
+     * @param autoCompleter the autocompleter providing the data
+     */
+    public void setAutoCompleter(AutoCompleter<E> autoCompleter) {
+        this.autoCompleter = autoCompleter;
+    }
 
     /**
      * The action invoked by hitting the up or down arrow key. If the popup is currently shown, that the action is
@@ -283,15 +281,5 @@ public class AutoCompleteSupport<E> {
         public void focusLost(FocusEvent e) {
             // Do nothing
         }
-    }
-
-
-    /**
-     * Sets the autocompleter used to present autocomplete suggestions.
-     *
-     * @param autoCompleter the autocompleter providing the data
-     */
-    public void setAutoCompleter(AutoCompleter<E> autoCompleter) {
-        this.autoCompleter = autoCompleter;
     }
 }

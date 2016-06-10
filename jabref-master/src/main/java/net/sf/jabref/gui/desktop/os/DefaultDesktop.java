@@ -1,12 +1,12 @@
 package net.sf.jabref.gui.desktop.os;
 
-import java.awt.Desktop;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class DefaultDesktop implements NativeDesktop {
     private static final Log LOGGER = LogFactory.getLog(NativeDesktop.class);

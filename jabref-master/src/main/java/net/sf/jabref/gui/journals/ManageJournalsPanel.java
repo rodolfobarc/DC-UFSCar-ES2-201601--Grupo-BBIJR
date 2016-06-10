@@ -15,43 +15,10 @@
  */
 package net.sf.jabref.gui.journals;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.table.AbstractTableModel;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.ButtonStackBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
@@ -65,13 +32,18 @@ import net.sf.jabref.gui.net.MonitoredURLDownload;
 import net.sf.jabref.logic.journals.Abbreviation;
 import net.sf.jabref.logic.journals.JournalAbbreviationLoader;
 import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.ButtonStackBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: alver Date: Sep 19, 2005 Time: 7:57:29 PM To browseOld this template use File |
@@ -84,7 +56,6 @@ class ManageJournalsPanel extends JPanel {
     private final JabRefFrame frame;
     private final JTextField personalFile = new JTextField();
     private final AbbreviationsTableModel tableModel = new AbbreviationsTableModel();
-    private JTable userTable; // builtInTable
     private final JPanel userPanel = new JPanel();
     private final JPanel journalEditPanel;
     private final JPanel externalFilesPanel = new JPanel();
@@ -96,9 +67,9 @@ class ManageJournalsPanel extends JPanel {
     private final JDialog dialog;
     private final JRadioButton newFile = new JRadioButton(Localization.lang("New file"));
     private final JRadioButton oldFile = new JRadioButton(Localization.lang("Existing file"));
-
     private final JButton add = new JButton(IconTheme.JabRefIcon.ADD_NOBOX.getIcon());
     private final JButton remove = new JButton(IconTheme.JabRefIcon.REMOVE_NOBOX.getIcon());
+    private JTable userTable; // builtInTable
 
 
     public ManageJournalsPanel(final JabRefFrame frame) {
@@ -121,8 +92,8 @@ class ManageJournalsPanel extends JPanel {
         JLabel description = new JLabel(
                 "<HTML>" + Localization.lang("JabRef includes a built-in list of journal abbreviations.") + "<br>"
                         + Localization
-                                .lang("You can add additional journal names by setting up a personal journal list,<br>as "
-                                        + "well as linking to external journal lists.")
+                        .lang("You can add additional journal names by setting up a personal journal list,<br>as "
+                                + "well as linking to external journal lists.")
                         + "</HTML>");
         description.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         builder.add(description).xyw(2, 2, 6);
@@ -373,7 +344,7 @@ class ManageJournalsPanel extends JPanel {
                 throw new FileNotFoundException(f.getAbsolutePath());
             }
             try (FileOutputStream stream = new FileOutputStream(f, false);
-                    OutputStreamWriter writer = new OutputStreamWriter(stream, Globals.prefs.getDefaultEncoding())) {
+                 OutputStreamWriter writer = new OutputStreamWriter(stream, Globals.prefs.getDefaultEncoding())) {
                 for (JournalEntry entry : tableModel.getJournals()) {
                     writer.write(entry.getName());
                     writer.write(" = ");
@@ -407,6 +378,54 @@ class ManageJournalsPanel extends JPanel {
 
     }
 
+    static class JournalEntry implements Comparable<JournalEntry> {
+
+        private String name;
+        private String abbreviation;
+
+
+        public JournalEntry(String name, String abbreviation) {
+            this.name = name;
+            this.abbreviation = abbreviation;
+        }
+
+        @Override
+        public int compareTo(JournalEntry other) {
+            return this.name.compareTo(other.name);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o instanceof JournalEntry) {
+                return this.name.equals(((JournalEntry) o).name);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAbbreviation() {
+            return abbreviation;
+        }
+
+        public void setAbbreviation(String abbreviation) {
+            this.abbreviation = abbreviation;
+        }
+    }
 
     class DownloadAction extends AbstractAction {
 
@@ -476,9 +495,13 @@ class ManageJournalsPanel extends JPanel {
 
     class AbbreviationsTableModel extends AbstractTableModel implements ActionListener {
 
-        private final String[] names = new String[] {Localization.lang("Journal name"),
+        private final String[] names = new String[]{Localization.lang("Journal name"),
                 Localization.lang("Abbreviation")};
         private List<JournalEntry> journals;
+
+        public List<JournalEntry> getJournals() {
+            return journals;
+        }
 
         public void setJournals(List<Abbreviation> abbreviations) {
             this.journals = new ArrayList<>();
@@ -486,10 +509,6 @@ class ManageJournalsPanel extends JPanel {
                 this.journals.add(new JournalEntry(abbreviation.getName(), abbreviation.getIsoAbbreviation()));
             }
             fireTableDataChanged();
-        }
-
-        public List<JournalEntry> getJournals() {
-            return journals;
         }
 
         @Override
@@ -580,12 +599,12 @@ class ManageJournalsPanel extends JPanel {
 
     class ExternalFileEntry {
 
-        private JPanel pan;
         private final JTextField tf;
         private final JButton browse = new JButton(Localization.lang("Browse"));
         private final JButton view = new JButton(Localization.lang("Preview"));
         private final JButton clear = new JButton(IconTheme.JabRefIcon.DELETE_ENTRY.getIcon());
         private final JButton download = new JButton(Localization.lang("Download"));
+        private JPanel pan;
 
 
         public ExternalFileEntry() {
@@ -642,54 +661,6 @@ class ManageJournalsPanel extends JPanel {
 
         public String getValue() {
             return tf.getText();
-        }
-    }
-
-    static class JournalEntry implements Comparable<JournalEntry> {
-
-        private String name;
-        private String abbreviation;
-
-
-        public JournalEntry(String name, String abbreviation) {
-            this.name = name;
-            this.abbreviation = abbreviation;
-        }
-
-        @Override
-        public int compareTo(JournalEntry other) {
-            return this.name.compareTo(other.name);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o instanceof JournalEntry) {
-                return this.name.equals(((JournalEntry) o).name);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.name.hashCode();
-        }
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getAbbreviation() {
-            return abbreviation;
-        }
-
-        public void setAbbreviation(String abbreviation) {
-            this.abbreviation = abbreviation;
         }
     }
 }

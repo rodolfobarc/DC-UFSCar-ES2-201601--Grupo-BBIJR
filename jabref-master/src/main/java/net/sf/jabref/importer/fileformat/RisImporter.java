@@ -15,6 +15,13 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.MonthUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,13 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.MonthUtil;
 
 /**
  * Imports a Biblioscape Tag File. The format is described on

@@ -20,9 +20,9 @@ import java.util.Optional;
 public class CitationEntry implements Comparable<CitationEntry> {
 
     private final String refMarkName;
-    private Optional<String> pageInfo;
     private final String context;
     private final Optional<String> origPageInfo;
+    private Optional<String> pageInfo;
 
 
     // Only used for testing...
@@ -44,6 +44,10 @@ public class CitationEntry implements Comparable<CitationEntry> {
 
     public Optional<String> getPageInfo() {
         return pageInfo;
+    }
+
+    public void setPageInfo(String trim) {
+        pageInfo = Optional.ofNullable(trim);
     }
 
     public String getRefMarkName() {
@@ -84,9 +88,5 @@ public class CitationEntry implements Comparable<CitationEntry> {
 
     public String getContext() {
         return context;
-    }
-
-    public void setPageInfo(String trim) {
-        pageInfo = Optional.ofNullable(trim);
     }
 }

@@ -1,17 +1,14 @@
 package net.sf.jabref.logic.groups;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -20,9 +17,9 @@ public class TreeNodeTest {
     /**
      * Gets the marked node in the following tree:
      * Root
-     *      A
-     *      A (= parent)
-     *          B (<-- this)
+     * A
+     * A (= parent)
+     * B (<-- this)
      */
     public TreeNodeMock getNodeInSimpleTree(TreeNodeMock root) {
         root.addChild(new TreeNodeMock());
@@ -40,19 +37,19 @@ public class TreeNodeTest {
     /**
      * Gets the marked node in the following tree:
      * Root
-     *      A
-     *      A
-     *      A (= grand parent)
-     *          B
-     *          B (= parent)
-     *              C (<-- this)
-     *                  D (= child)
-     *              C
-     *              C
-     *              C
-     *          B
-     *          B
-     *      A
+     * A
+     * A
+     * A (= grand parent)
+     * B
+     * B (= parent)
+     * C (<-- this)
+     * D (= child)
+     * C
+     * C
+     * C
+     * B
+     * B
+     * A
      */
     public TreeNodeMock getNodeInComplexTree(TreeNodeMock root) {
         root.addChild(new TreeNodeMock());
@@ -84,10 +81,10 @@ public class TreeNodeTest {
     /**
      * Gets the marked in the following tree:
      * Root
-     *      A
-     *      A
-     *      A (<- this)
-     *      A
+     * A
+     * A
+     * A (<- this)
+     * A
      */
     public TreeNodeMock getNodeAsChild(TreeNodeMock root) {
         root.addChild(new TreeNodeMock());
@@ -177,7 +174,7 @@ public class TreeNodeTest {
     public void getIndexOfChild() {
         TreeNodeMock root = new TreeNodeMock();
         TreeNodeMock node = getNodeAsChild(root);
-        assertEquals((Integer)2, root.getIndexOfChild(node).get());
+        assertEquals((Integer) 2, root.getIndexOfChild(node).get());
     }
 
     @Test
@@ -215,7 +212,7 @@ public class TreeNodeTest {
         TreeNodeMock root = new TreeNodeMock();
         TreeNodeMock node = getNodeInSimpleTree(root);
         node.moveTo(root);
-        assertEquals((Integer)2, root.getIndexOfChild(node).get());
+        assertEquals((Integer) 2, root.getIndexOfChild(node).get());
     }
 
     @Test
@@ -223,7 +220,7 @@ public class TreeNodeTest {
         TreeNodeMock root = new TreeNodeMock();
         TreeNodeMock node = getNodeInComplexTree(root);
         node.moveTo(root);
-        assertEquals((Integer)4, root.getIndexOfChild(node).get());
+        assertEquals((Integer) 4, root.getIndexOfChild(node).get());
     }
 
     @Test

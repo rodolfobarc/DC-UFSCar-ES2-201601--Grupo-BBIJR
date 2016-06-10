@@ -15,18 +15,6 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.undo.CompoundEdit;
-
 import net.sf.jabref.external.ExternalFileType;
 import net.sf.jabref.external.ExternalFileTypes;
 import net.sf.jabref.gui.BasePanel;
@@ -37,14 +25,21 @@ import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryType;
 import net.sf.jabref.model.entry.IdGenerator;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.undo.CompoundEdit;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.*;
+
 /**
  * The class EntryFromFileCreatorManager manages entry creators.
  * The manager knows all existing implementations of the interface EntryFromFileCreator.
  * Given a file, the manager can then provide a creator, which is able to create a Bibtex entry for his file.
  * Knowing all implementations of the interface, the manager also knows the set of all files, of which Bibtex entries can be created.
  * The GUI uses this capability for offering the user only such files, of which entries could actually be created.
- * @author Dan&Nosh
  *
+ * @author Dan&Nosh
  */
 public final class EntryFromFileCreatorManager {
 
@@ -110,8 +105,8 @@ public final class EntryFromFileCreatorManager {
      * @return List of unexpected import event messages including failures.
      */
     public List<String> addEntrysFromFiles(List<File> files,
-            BibDatabase database, EntryType entryType,
-            boolean generateKeywordsFromPathToFile) {
+                                           BibDatabase database, EntryType entryType,
+                                           boolean generateKeywordsFromPathToFile) {
         List<String> importGUIMessages = new LinkedList<>();
         addEntriesFromFiles(files, database, null, entryType,
                 generateKeywordsFromPathToFile, null, importGUIMessages);
@@ -127,14 +122,14 @@ public final class EntryFromFileCreatorManager {
      * @param entryType
      * @param generateKeywordsFromPathToFile
      * @param changeListener
-     * @param importGUIMessages list of unexpected import event - Messages including
-     *         failures
+     * @param importGUIMessages              list of unexpected import event - Messages including
+     *                                       failures
      * @return Returns The number of entries added
      */
     public int addEntriesFromFiles(List<File> files,
-            BibDatabase database, BasePanel panel, EntryType entryType,
-            boolean generateKeywordsFromPathToFile,
-            ChangeListener changeListener, List<String> importGUIMessages) {
+                                   BibDatabase database, BasePanel panel, EntryType entryType,
+                                   boolean generateKeywordsFromPathToFile,
+                                   ChangeListener changeListener, List<String> importGUIMessages) {
 
         int count = 0;
         CompoundEdit ce = new CompoundEdit();
@@ -194,7 +189,7 @@ public final class EntryFromFileCreatorManager {
      * "All supported files".
      *
      * @return A {@link FileFilter} that accepts all files for which creators
-     *         exist.
+     * exist.
      */
     private FileFilter getFileFilter() {
         return new FileFilter() {

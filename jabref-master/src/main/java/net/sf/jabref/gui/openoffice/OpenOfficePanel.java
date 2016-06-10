@@ -15,42 +15,14 @@
  */
 package net.sf.jabref.gui.openoffice;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.container.NoSuchElementException;
+import com.sun.star.lang.WrappedTargetException;
 import net.sf.jabref.Globals;
-import net.sf.jabref.gui.BasePanel;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.SidePaneComponent;
-import net.sf.jabref.gui.SidePaneManager;
+import net.sf.jabref.gui.*;
 import net.sf.jabref.gui.actions.BrowseAction;
 import net.sf.jabref.gui.help.HelpAction;
 import net.sf.jabref.gui.help.HelpFiles;
@@ -64,15 +36,23 @@ import net.sf.jabref.logic.openoffice.UndefinedParagraphFormatException;
 import net.sf.jabref.logic.util.OS;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import com.sun.star.beans.UnknownPropertyException;
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.lang.WrappedTargetException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This test panel can be opened by reflection from JabRef, passing the JabRefFrame as an
@@ -82,9 +62,10 @@ import org.apache.commons.logging.LogFactory;
 public class OpenOfficePanel extends AbstractWorker {
 
     private static final Log LOGGER = LogFactory.getLog(OpenOfficePanel.class);
-
-    private OOPanel comp;
-    private JDialog diag;
+    // The methods addFile and associated final Class[] parameters were gratefully copied from
+    // anthony_miguel @ http://forum.java.sun.com/thread.jsp?forum=32&thread=300557&tstart=0&trange=15
+    private static final Class<?>[] CLASS_PARAMETERS = new Class[]{URL.class};
+    private static OpenOfficePanel instance;
     private final JButton connect;
     private final JButton manualConnect;
     private final JButton selectDocument;
@@ -99,6 +80,10 @@ public class OpenOfficePanel extends AbstractWorker {
     private final JButton settingsB = new JButton(Localization.lang("Settings"));
     private final JButton help = new HelpAction(Localization.lang("OpenOffice/LibreOffice integration"),
             HelpFiles.OPENOFFICE_LIBREOFFICE).getHelpButton();
+    private final OpenOfficePreferences preferences;
+    private final StyleLoader loader;
+    private OOPanel comp;
+    private JDialog diag;
     private OOBibBase ooBase;
     private JabRefFrame frame;
     private SidePaneManager manager;
@@ -108,11 +93,6 @@ public class OpenOfficePanel extends AbstractWorker {
     private boolean autoDetected;
     private String sOffice;
     private IOException connectException;
-    private final OpenOfficePreferences preferences;
-    private final StyleLoader loader;
-
-    private static OpenOfficePanel instance;
-
 
     private OpenOfficePanel() {
         Icon connectImage = IconTheme.JabRefIcon.CONNECT_OPEN_OFFICE.getSmallIcon();
@@ -135,6 +115,23 @@ public class OpenOfficePanel extends AbstractWorker {
             OpenOfficePanel.instance = new OpenOfficePanel();
         }
         return OpenOfficePanel.instance;
+    }
+
+    private static void addURL(List<URL> jarList) throws IOException {
+        URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Class<URLClassLoader> sysclass = URLClassLoader.class;
+        try {
+            Method method = sysclass.getDeclaredMethod("addURL", CLASS_PARAMETERS);
+            method.setAccessible(true);
+            for (URL anU : jarList) {
+                method.invoke(sysloader, anU);
+            }
+        } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException e) {
+            LOGGER.error("Could not add URL to system classloader", e);
+            throw new IOException("Error, could not add URL to system classloader", e);
+
+        }
     }
 
     public SidePaneComponent getSidePaneComponent() {
@@ -444,31 +441,6 @@ public class OpenOfficePanel extends AbstractWorker {
         }
     }
 
-
-
-    // The methods addFile and associated final Class[] parameters were gratefully copied from
-    // anthony_miguel @ http://forum.java.sun.com/thread.jsp?forum=32&thread=300557&tstart=0&trange=15
-    private static final Class<?>[] CLASS_PARAMETERS = new Class[] {URL.class};
-
-
-    private static void addURL(List<URL> jarList) throws IOException {
-        URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class<URLClassLoader> sysclass = URLClassLoader.class;
-        try {
-            Method method = sysclass.getDeclaredMethod("addURL", CLASS_PARAMETERS);
-            method.setAccessible(true);
-            for (URL anU : jarList) {
-                method.invoke(sysloader, anU);
-            }
-        } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException e) {
-            LOGGER.error("Could not add URL to system classloader", e);
-            throw new IOException("Error, could not add URL to system classloader", e);
-
-        }
-    }
-
-
     private void showConnectDialog() {
 
         dialogOkPressed = false;
@@ -607,12 +579,12 @@ public class OpenOfficePanel extends AbstractWorker {
                 .showMessageDialog(
                         frame, "<html>"
                                 + Localization.lang(
-                                        "Your style file specifies the paragraph format '%0', "
-                                                + "which is undefined in your current OpenOffice/LibreOffice document.",
-                                        ex.getFormatName())
+                                "Your style file specifies the paragraph format '%0', "
+                                        + "which is undefined in your current OpenOffice/LibreOffice document.",
+                                ex.getFormatName())
                                 + "<br>"
                                 + Localization
-                                        .lang("The paragraph format is controlled by the property 'ReferenceParagraphFormat' or 'ReferenceHeaderParagraphFormat' in the style file.")
+                                .lang("The paragraph format is controlled by the property 'ReferenceParagraphFormat' or 'ReferenceHeaderParagraphFormat' in the style file.")
                                 + "</html>",
                         "", JOptionPane.ERROR_MESSAGE);
     }
@@ -622,12 +594,12 @@ public class OpenOfficePanel extends AbstractWorker {
                 .showMessageDialog(
                         frame, "<html>"
                                 + Localization.lang(
-                                        "Your style file specifies the character format '%0', "
-                                                + "which is undefined in your current OpenOffice/LibreOffice document.",
-                                        ex.getFormatName())
+                                "Your style file specifies the character format '%0', "
+                                        + "which is undefined in your current OpenOffice/LibreOffice document.",
+                                ex.getFormatName())
                                 + "<br>"
                                 + Localization
-                                        .lang("The character format is controlled by the citation property 'CitationCharacterFormat' in the style file.")
+                                .lang("The character format is controlled by the citation property 'CitationCharacterFormat' in the style file.")
                                 + "</html>",
                         "", JOptionPane.ERROR_MESSAGE);
     }

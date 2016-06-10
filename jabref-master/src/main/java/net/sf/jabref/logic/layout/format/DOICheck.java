@@ -20,7 +20,7 @@ import net.sf.jabref.logic.util.DOI;
 
 /**
  * Used to fix [ 1588028 ] export HTML table DOI URL.
- *
+ * <p>
  * Will prepend "http://doi.org/" if only DOI and not an URL is given.
  */
 public class DOICheck implements LayoutFormatter {

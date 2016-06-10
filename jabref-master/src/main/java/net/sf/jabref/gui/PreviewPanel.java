@@ -15,40 +15,6 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.print.PrinterException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.JobName;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.HyperlinkEvent;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
@@ -62,9 +28,25 @@ import net.sf.jabref.logic.layout.Layout;
 import net.sf.jabref.logic.layout.LayoutHelper;
 import net.sf.jabref.logic.search.SearchQueryHighlightListener;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.JobName;
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.print.PrinterException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Displays an BibEntry using the given layout format.
@@ -72,51 +54,36 @@ import org.apache.commons.logging.LogFactory;
 public class PreviewPanel extends JPanel implements VetoableChangeListener, SearchQueryHighlightListener, EntryContainer {
 
     private static final Log LOGGER = LogFactory.getLog(PreviewPanel.class);
-
+    private final Optional<BasePanel> basePanel;
+    private final JScrollPane scrollPane;
+    private final PrintAction printAction;
+    private final CloseAction closeAction;
+    private final CopyPreviewAction copyPreviewAction;
     /**
      * The bibtex entry currently shown
      */
     private Optional<BibEntry> entry = Optional.empty();
-
     /**
      * If a database is set, the preview will attempt to resolve strings in the
      * previewed entry using that database.
      */
     private Optional<BibDatabaseContext> databaseContext = Optional.empty();
-
     private Optional<Layout> layout = Optional.empty();
-
     /**
      * must not be null, must always be set during constructor, but can change over time
      */
     private String layoutFile;
-
-    private final Optional<BasePanel> basePanel;
-
     private JEditorPane previewPane;
-
-    private final JScrollPane scrollPane;
-
-    private final PrintAction printAction;
-
-    private final CloseAction closeAction;
-
-    private final CopyPreviewAction copyPreviewAction;
-
     private Optional<Pattern> highlightPattern = Optional.empty();
 
 
     /**
-     * @param databaseContext
-     *            (may be null) Optionally used to resolve strings and for resolving pdf directories for links.
-     * @param entry
-     *            (may be null) If given this entry is shown otherwise you have
-     *            to call setEntry to make something visible.
-     * @param panel
-     *            (may be null) If not given no toolbar is shown on the right
-     *            hand side.
-     * @param layoutFile
-     *            (must be given) Used for layout
+     * @param databaseContext (may be null) Optionally used to resolve strings and for resolving pdf directories for links.
+     * @param entry           (may be null) If given this entry is shown otherwise you have
+     *                        to call setEntry to make something visible.
+     * @param panel           (may be null) If not given no toolbar is shown on the right
+     *                        hand side.
+     * @param layoutFile      (must be given) Used for layout
      */
     public PreviewPanel(BibDatabaseContext databaseContext, BibEntry entry,
                         BasePanel panel, String layoutFile) {
@@ -125,14 +92,10 @@ public class PreviewPanel extends JPanel implements VetoableChangeListener, Sear
     }
 
     /**
-     *
-     * @param panel
-     *            (may be null) If not given no toolbar is shown on the right
-     *            hand side.
-     * @param databaseContext
-     *            (may be null) Used for resolving pdf directories for links.
-     * @param layoutFile
-     *            (must be given) Used for layout
+     * @param panel           (may be null) If not given no toolbar is shown on the right
+     *                        hand side.
+     * @param databaseContext (may be null) Used for resolving pdf directories for links.
+     * @param layoutFile      (must be given) Used for layout
      */
     public PreviewPanel(BasePanel panel, BibDatabaseContext databaseContext, String layoutFile) {
         super(new BorderLayout(), true);
@@ -175,7 +138,7 @@ public class PreviewPanel extends JPanel implements VetoableChangeListener, Sear
         this.createKeyBindings();
     }
 
-    private void createKeyBindings(){
+    private void createKeyBindings() {
         ActionMap actionMap = this.getActionMap();
         InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -274,8 +237,13 @@ public class PreviewPanel extends JPanel implements VetoableChangeListener, Sear
         this.layout = Optional.of(layout);
     }
 
+    @Override
+    public BibEntry getEntry() {
+        return this.entry.orElse(null);
+    }
+
     public void setEntry(BibEntry newEntry) {
-        if(entry.isPresent() && (entry.get() != newEntry)) {
+        if (entry.isPresent() && (entry.get() != newEntry)) {
             entry.ifPresent(e -> e.removePropertyChangeListener(this));
             newEntry.addPropertyChangeListener(this);
         }
@@ -283,11 +251,6 @@ public class PreviewPanel extends JPanel implements VetoableChangeListener, Sear
 
         updateLayout();
         update();
-    }
-
-    @Override
-    public BibEntry getEntry() {
-        return this.entry.orElse(null);
     }
 
     public void update() {
@@ -367,6 +330,7 @@ public class PreviewPanel extends JPanel implements VetoableChangeListener, Sear
             super(Localization.lang("Close window"), IconTheme.JabRefIcon.CLOSE.getSmallIcon());
             putValue(Action.SHORT_DESCRIPTION, Localization.lang("Close window"));
         }
+
         @Override
         public void actionPerformed(ActionEvent e) {
             basePanel.ifPresent(BasePanel::hideBottomComponent);

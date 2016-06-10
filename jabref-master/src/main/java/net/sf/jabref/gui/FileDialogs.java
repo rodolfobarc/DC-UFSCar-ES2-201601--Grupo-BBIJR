@@ -15,18 +15,15 @@
 */
 package net.sf.jabref.gui;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.logic.util.OS;
+
+import javax.swing.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.logic.util.OS;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,7 +37,7 @@ public class FileDialogs {
     /**
      * Will return the names of multiple files selected in the given directory
      * and the given extensions.
-     *
+     * <p>
      * Will return an empty String array if no entry is found.
      *
      * @param owner
@@ -50,7 +47,7 @@ public class FileDialogs {
      * @return an array of selected file paths, or an empty array if no selection is made.
      */
     public static List<String> getMultipleFiles(JFrame owner, File directory, String extension,
-            boolean updateWorkingdirectory) {
+                                                boolean updateWorkingdirectory) {
 
         OpenFileFilter off = null;
         if (extension == null) {
@@ -183,7 +180,7 @@ public class FileDialogs {
     }
 
     private static String getNewFileForMac(JFrame owner, File directory, int dialogType,
-            boolean updateWorkingDirectory) {
+                                           boolean updateWorkingDirectory) {
 
         java.awt.FileDialog fc = new java.awt.FileDialog(owner);
 

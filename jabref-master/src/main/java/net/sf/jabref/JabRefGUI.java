@@ -16,22 +16,8 @@
 
 package net.sf.jabref;
 
-import java.awt.Font;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.FontUIResource;
-
+import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
+import com.jgoodies.looks.plastic.theme.SkyBluer;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.JabRefFrame;
@@ -43,11 +29,15 @@ import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.preferences.LastFocusedTabPreferences;
 import net.sf.jabref.migrations.PreferencesMigrations;
-
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
-import com.jgoodies.looks.plastic.theme.SkyBluer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
+import java.awt.*;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 
 public class JabRefGUI {
 
@@ -67,6 +57,15 @@ public class JabRefGUI {
         this.loaded = loaded;
         this.isBlank = isBlank;
         openWindow();
+    }
+
+    public static JabRefFrame getMainFrame() {
+        return mainFrame;
+    }
+
+    // Only used for testing, other than that do NOT set the mainFrame...
+    public static void setMainFrame(JabRefFrame mainFrame) {
+        JabRefGUI.mainFrame = mainFrame;
     }
 
     private void openWindow() {
@@ -107,7 +106,7 @@ public class JabRefGUI {
         // Add all loaded databases to the frame:
         boolean first = true;
         if (!loaded.isEmpty()) {
-            for (Iterator<ParserResult> i = loaded.iterator(); i.hasNext();) {
+            for (Iterator<ParserResult> i = loaded.iterator(); i.hasNext(); ) {
                 ParserResult pr = i.next();
 
                 if (new LastFocusedTabPreferences(Globals.prefs).hadLastFocus(pr.getFile())) {
@@ -204,7 +203,8 @@ public class JabRefGUI {
     private void openLastEditedDatabase() {
         // How to handle errors in the databases to open?
         List<String> names = Globals.prefs.getStringList(JabRefPreferences.LAST_EDITED);
-        lastEdLoop: for (String name : names) {
+        lastEdLoop:
+        for (String name : names) {
             File fileToOpen = new File(name);
 
             for (ParserResult pr : loaded) {
@@ -288,15 +288,6 @@ public class JabRefGUI {
                 }
             }
         }
-    }
-
-    public static JabRefFrame getMainFrame() {
-        return mainFrame;
-    }
-
-    // Only used for testing, other than that do NOT set the mainFrame...
-    public static void setMainFrame(JabRefFrame mainFrame) {
-        JabRefGUI.mainFrame = mainFrame;
     }
 
 }

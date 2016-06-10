@@ -15,31 +15,6 @@
 */
 package net.sf.jabref.gui.openoffice;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.Optional;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.keyboard.KeyBinding;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.logic.openoffice.CitationEntry;
-
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.gui.TableFormat;
@@ -55,21 +30,33 @@ import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.WrappedTargetException;
+import net.sf.jabref.Globals;
+import net.sf.jabref.gui.JabRefFrame;
+import net.sf.jabref.gui.keyboard.KeyBinding;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.logic.openoffice.CitationEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Dialog for modifying existing citations.
  */
 class CitationManager {
 
+    private static final Log LOGGER = LogFactory.getLog(CitationManager.class);
     private final OOBibBase ooBase;
     private final JDialog diag;
     private final EventList<CitationEntry> list;
     private final JTable table;
     private final DefaultEventTableModel<CitationEntry> tableModel;
-
-    private static final Log LOGGER = LogFactory.getLog(CitationManager.class);
 
 
     public CitationManager(final JabRefFrame frame, OOBibBase ooBase)
@@ -146,7 +133,6 @@ class CitationManager {
         diag.setLocationRelativeTo(diag.getParent());
         diag.setVisible(true);
     }
-
 
 
     private static class CitationEntryFormat implements TableFormat<CitationEntry> {

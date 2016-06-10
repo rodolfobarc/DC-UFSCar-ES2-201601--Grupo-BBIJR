@@ -15,26 +15,6 @@
 */
 package net.sf.jabref.gui.entryeditor;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.FieldProperties;
@@ -58,6 +38,20 @@ import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.MonthUtil;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
+
 public class FieldExtraComponents {
 
     private static final String ABBREVIATION_TOOLTIP_TEXT = "<HTML>"
@@ -79,7 +73,7 @@ public class FieldExtraComponents {
      * @return
      */
     public static Optional<JComponent> getJournalExtraComponent(JabRefFrame frame, BasePanel panel, FieldEditor editor,
-            BibEntry entry, Set<FieldContentSelector> contentSelectors, StoreFieldAction storeFieldAction) {
+                                                                BibEntry entry, Set<FieldContentSelector> contentSelectors, StoreFieldAction storeFieldAction) {
         JPanel controls = new JPanel();
         controls.setLayout(new BorderLayout());
         if (!panel.getBibDatabaseContext().getMetaData().getContentSelectors(editor.getFieldName()).isEmpty()) {
@@ -187,12 +181,12 @@ public class FieldExtraComponents {
         // lookup doi
         JButton doiButton = new JButton(Localization.lang("Lookup DOI"));
         doiButton.addActionListener(actionEvent -> {
-                Optional<DOI> doi = CrossRef.findDOI(entryEditor.getEntry());
-                if (doi.isPresent()) {
-                    entryEditor.getEntry().setField("doi", doi.get().getDOI());
-                } else {
-                    panel.frame().setStatus(Localization.lang("No DOI found"));
-                }
+            Optional<DOI> doi = CrossRef.findDOI(entryEditor.getEntry());
+            if (doi.isPresent()) {
+                entryEditor.getEntry().setField("doi", doi.get().getDOI());
+            } else {
+                panel.frame().setStatus(Localization.lang("No DOI found"));
+            }
         });
         // fetch bibtex data
         JButton fetchButton = new JButton(Localization.lang("Get BibTeX data from DOI"));
@@ -224,7 +218,7 @@ public class FieldExtraComponents {
 
             private void checkDoi() {
                 Optional<DOI> doiUrl = DOI.build(doi.getText());
-                if(doiUrl.isPresent()) {
+                if (doiUrl.isPresent()) {
                     button.setEnabled(true);
                     fetchButton.setEnabled(true);
                 } else {
@@ -291,12 +285,13 @@ public class FieldExtraComponents {
 
     /**
      * Return a button which sets the owner if the field for fields with EXTRA_SET_OWNER
+     *
      * @param fieldEditor
      * @param storeFieldAction
      * @return
      */
     public static Optional<JComponent> getSetOwnerExtraComponent(FieldEditor fieldEditor,
-            StoreFieldAction storeFieldAction) {
+                                                                 StoreFieldAction storeFieldAction) {
         JButton button = new JButton(Localization.lang("Auto"));
         button.addActionListener(actionEvent -> {
             fieldEditor.setText(Globals.prefs.get(JabRefPreferences.DEFAULT_OWNER));
@@ -314,7 +309,7 @@ public class FieldExtraComponents {
      * @return
      */
     public static Optional<JComponent> getURLExtraComponent(FieldEditor fieldEditor,
-            StoreFieldAction storeFieldAction) {
+                                                            StoreFieldAction storeFieldAction) {
         ((JComponent) fieldEditor).setDropTarget(new DropTarget((Component) fieldEditor, DnDConstants.ACTION_NONE,
                 new SimpleUrlDragDrop(fieldEditor, storeFieldAction)));
 
@@ -332,7 +327,7 @@ public class FieldExtraComponents {
      * @return
      */
     public static Optional<JComponent> getSelectorExtraComponent(JabRefFrame frame, BasePanel panel, FieldEditor editor,
-            Set<FieldContentSelector> contentSelectors, StoreFieldAction storeFieldAction) {
+                                                                 Set<FieldContentSelector> contentSelectors, StoreFieldAction storeFieldAction) {
         FieldContentSelector ws = new FieldContentSelector(frame, panel, frame, editor, panel.getBibDatabaseContext().getMetaData(),
                 storeFieldAction, false,
                 InternalBibtexFields.getFieldExtras(editor.getFieldName())
@@ -424,13 +419,13 @@ public class FieldExtraComponents {
      */
 
     public static Optional<JComponent> getTypeExtraComponent(FieldEditor fieldEditor, EntryEditor entryEditor,
-            boolean isPatent) {
+                                                             boolean isPatent) {
         String[] optionValues;
         String[] optionDescriptions;
         if (isPatent) {
-            optionValues = new String[] {"", "patent", "patentde", "patenteu", "patentfr", "patentuk", "patentus",
+            optionValues = new String[]{"", "patent", "patentde", "patenteu", "patentfr", "patentuk", "patentus",
                     "patreq", "patreqde", "patreqeu", "patreqfr", "patrequk", "patrequs"};
-            optionDescriptions = new String[] {Localization.lang("Select"), Localization.lang("Patent"),
+            optionDescriptions = new String[]{Localization.lang("Select"), Localization.lang("Patent"),
                     Localization.lang("German patent"), Localization.lang("European patent"),
                     Localization.lang("French patent"), Localization.lang("British patent"),
                     Localization.lang("U.S. patent"), Localization.lang("Patent request"),
@@ -438,9 +433,9 @@ public class FieldExtraComponents {
                     Localization.lang("French patent request"), Localization.lang("British patent request"),
                     Localization.lang("U.S. patent request")};
         } else {
-            optionValues = new String[] {"", "mathesis", "phdthesis", "candthesis", "techreport", "resreport",
+            optionValues = new String[]{"", "mathesis", "phdthesis", "candthesis", "techreport", "resreport",
                     "software", "datacd", "audiocd"};
-            optionDescriptions = new String[] {Localization.lang("Select"), Localization.lang("Master's thesis"),
+            optionDescriptions = new String[]{Localization.lang("Select"), Localization.lang("Master's thesis"),
                     Localization.lang("PhD thesis"), Localization.lang("Candidate thesis"),
                     Localization.lang("Technical report"), Localization.lang("Research report"),
                     Localization.lang("Software"), Localization.lang("Data CD"), Localization.lang("Audio CD")};

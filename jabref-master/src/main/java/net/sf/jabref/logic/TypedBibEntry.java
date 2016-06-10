@@ -15,21 +15,17 @@
 */
 package net.sf.jabref.logic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import net.sf.jabref.BibDatabaseContext;
 import net.sf.jabref.Globals;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.database.BibDatabaseMode;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.EntryType;
-import net.sf.jabref.model.entry.EntryUtil;
-import net.sf.jabref.model.entry.FileField;
-import net.sf.jabref.model.entry.ParsedFileField;
+import net.sf.jabref.model.entry.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class TypedBibEntry {
 
@@ -61,7 +57,7 @@ public class TypedBibEntry {
      */
     public boolean hasAllRequiredFields() {
         Optional<EntryType> type = EntryTypes.getType(entry.getType(), this.mode);
-        if(type.isPresent()) {
+        if (type.isPresent()) {
             return entry.allFieldsPresent(type.get().getRequiredFields(), database.orElse(null));
         } else {
             return true;
@@ -100,7 +96,7 @@ public class TypedBibEntry {
         Optional<String> oldValue = entry.getFieldOptional(Globals.FILE_FIELD);
         String newValue = FileField.getStringRepresentation(files);
 
-        if(oldValue.isPresent() && oldValue.get().equals(newValue)) {
+        if (oldValue.isPresent() && oldValue.get().equals(newValue)) {
             return Optional.empty();
         }
 

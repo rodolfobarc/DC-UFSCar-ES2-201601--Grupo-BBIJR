@@ -1,22 +1,20 @@
 package net.sf.jabref.importer.fetcher;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.bibtex.BibEntryAssert;
+import net.sf.jabref.model.entry.BibEntry;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.bibtex.BibEntryAssert;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.xml.sax.SAXException;
 
 public class GVKParserTest {
 

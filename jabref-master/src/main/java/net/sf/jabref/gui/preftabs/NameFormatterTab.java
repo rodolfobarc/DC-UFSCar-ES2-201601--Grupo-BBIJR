@@ -15,26 +15,8 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.gui.OSXCompatibleToolbar;
@@ -43,62 +25,27 @@ import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.layout.format.NameFormatter;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class NameFormatterTab extends JPanel implements PrefsTab {
 
     private final JabRefPreferences prefs;
-    private boolean tableChanged;
-
     private final JTable table;
-
-    private int rowCount = -1;
-
     private final List<TableRow> tableRows = new ArrayList<>(10);
-
-
-    static class TableRow {
-
-        private String name;
-
-        private String format;
-
-
-        public TableRow() {
-            this("");
-        }
-
-        public TableRow(String name) {
-            this(name, NameFormatter.DEFAULT_FORMAT);
-        }
-
-        public TableRow(String name, String format) {
-            this.name = name;
-            this.format = format;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getFormat() {
-            return format;
-        }
-
-        public void setFormat(String format) {
-            this.format = format;
-        }
-    }
+    private boolean tableChanged;
+    private int rowCount = -1;
 
 
     /**
      * Tab to create custom Name Formatters
-     *
      */
     public NameFormatterTab(JabRefPreferences prefs) {
         this.prefs = Objects.requireNonNull(prefs);
@@ -136,7 +83,7 @@ public class NameFormatterTab extends JPanel implements PrefsTab {
             @Override
             public String getColumnName(int col) {
                 return col == 0 ? Localization.lang("Formatter Name") :
-                    Localization.lang("Format String");
+                        Localization.lang("Format String");
             }
 
             @Override
@@ -225,6 +172,93 @@ public class NameFormatterTab extends JPanel implements PrefsTab {
         rowCount = tableRows.size() + 5;
     }
 
+    /**
+     * Store changes to table preferences. This method is called when the user
+     * clicks Ok.
+     */
+    @Override
+    public void storeSettings() {
+
+        if (table.isEditing()) {
+            int col = table.getEditingColumn();
+            int row = table.getEditingRow();
+            table.getCellEditor(row, col).stopCellEditing();
+        }
+
+        // Now we need to make sense of the contents the user has made to the
+        // table setup table.
+        if (tableChanged) {
+            // First we remove all rows with empty names.
+            int i = 0;
+            while (i < tableRows.size()) {
+                if (tableRows.get(i).getName().isEmpty()) {
+                    tableRows.remove(i);
+                } else {
+                    i++;
+                }
+            }
+            // Then we make lists
+
+            List<String> names = new ArrayList<>(tableRows.size());
+            List<String> formats = new ArrayList<>(tableRows.size());
+
+            for (TableRow tr : tableRows) {
+                names.add(tr.getName());
+                formats.add(tr.getFormat());
+            }
+
+            // Finally, we store the new preferences.
+            prefs.putStringList(NameFormatter.NAME_FORMATER_KEY, names);
+            prefs.putStringList(NameFormatter.NAME_FORMATTER_VALUE, formats);
+        }
+    }
+
+    @Override
+    public boolean validateSettings() {
+        return true;
+    }
+
+    @Override
+    public String getTabName() {
+        return Localization.lang("Name formatter");
+    }
+
+    static class TableRow {
+
+        private String name;
+
+        private String format;
+
+
+        public TableRow() {
+            this("");
+        }
+
+        public TableRow(String name) {
+            this(name, NameFormatter.DEFAULT_FORMAT);
+        }
+
+        public TableRow(String name, String format) {
+            this.name = name;
+            this.format = format;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public void setFormat(String format) {
+            this.format = format;
+        }
+    }
 
     class DeleteRowAction extends AbstractAction {
 
@@ -289,58 +323,5 @@ public class NameFormatterTab extends JPanel implements PrefsTab {
             table.repaint();
             tableChanged = true;
         }
-    }
-
-
-    /**
-     * Store changes to table preferences. This method is called when the user
-     * clicks Ok.
-     *
-     */
-    @Override
-    public void storeSettings() {
-
-        if (table.isEditing()) {
-            int col = table.getEditingColumn();
-            int row = table.getEditingRow();
-            table.getCellEditor(row, col).stopCellEditing();
-        }
-
-        // Now we need to make sense of the contents the user has made to the
-        // table setup table.
-        if (tableChanged) {
-            // First we remove all rows with empty names.
-            int i = 0;
-            while (i < tableRows.size()) {
-                if (tableRows.get(i).getName().isEmpty()) {
-                    tableRows.remove(i);
-                } else {
-                    i++;
-                }
-            }
-            // Then we make lists
-
-            List<String> names = new ArrayList<>(tableRows.size());
-            List<String> formats = new ArrayList<>(tableRows.size());
-
-            for (TableRow tr : tableRows) {
-                names.add(tr.getName());
-                formats.add(tr.getFormat());
-            }
-
-            // Finally, we store the new preferences.
-            prefs.putStringList(NameFormatter.NAME_FORMATER_KEY, names);
-            prefs.putStringList(NameFormatter.NAME_FORMATTER_VALUE, formats);
-        }
-    }
-
-    @Override
-    public boolean validateSettings() {
-        return true;
-    }
-
-    @Override
-    public String getTabName() {
-        return Localization.lang("Name formatter");
     }
 }

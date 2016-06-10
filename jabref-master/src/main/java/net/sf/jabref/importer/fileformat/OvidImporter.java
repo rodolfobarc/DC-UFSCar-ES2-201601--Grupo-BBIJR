@@ -15,6 +15,12 @@
  */
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+import net.sf.jabref.model.entry.IdGenerator;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
-import net.sf.jabref.model.entry.IdGenerator;
 
 /**
  * Imports an Ovid file.
@@ -55,6 +55,33 @@ public class OvidImporter extends ImportFormat {
     private static final Pattern OVID_PATTERN = Pattern.compile(OVID_PATTERN_STRING);
 
     private static final int MAX_ITEMS = 50;
+
+    /**
+     * Convert a string of author names into a BibTeX-compatible format.
+     *
+     * @param content The name string.
+     * @return The formatted names.
+     */
+    private static String fixNames(String content) {
+        String names;
+        if (content.indexOf(';') > 0) { //LN FN; [LN FN;]*
+            names = content.replaceAll("[^\\.A-Za-z,;\\- ]", "").replace(";", " and");
+        } else if (content.indexOf("  ") > 0) {
+            String[] sNames = content.split("  ");
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < sNames.length; i++) {
+                if (i > 0) {
+                    sb.append(" and ");
+                }
+                sb.append(sNames[i].replaceFirst(" ", ", "));
+            }
+            names = sb.toString();
+        } else {
+            names = content;
+        }
+        return AuthorList.fixAuthorLastNameFirst(names);
+    }
+
     /**
      * Return the name of this import format.
      */
@@ -71,8 +98,6 @@ public class OvidImporter extends ImportFormat {
     public String getCLIId() {
         return "ovid";
     }
-
-
 
     /**
      * Check whether the source is in the correct format for this importer.
@@ -245,31 +270,6 @@ public class OvidImporter extends ImportFormat {
         }
 
         return bibitems;
-    }
-
-    /**
-     * Convert a string of author names into a BibTeX-compatible format.
-     * @param content The name string.
-     * @return The formatted names.
-     */
-    private static String fixNames(String content) {
-        String names;
-        if (content.indexOf(';') > 0) { //LN FN; [LN FN;]*
-            names = content.replaceAll("[^\\.A-Za-z,;\\- ]", "").replace(";", " and");
-        } else if (content.indexOf("  ") > 0) {
-            String[] sNames = content.split("  ");
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < sNames.length; i++) {
-                if (i > 0) {
-                    sb.append(" and ");
-                }
-                sb.append(sNames[i].replaceFirst(" ", ", "));
-            }
-            names = sb.toString();
-        } else {
-            names = content;
-        }
-        return AuthorList.fixAuthorLastNameFirst(names);
     }
 
 }

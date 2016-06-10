@@ -15,25 +15,6 @@
  */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.text.JTextComponent;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.actions.Actions;
@@ -44,6 +25,11 @@ import net.sf.jabref.gui.undo.UndoablePreambleChange;
 import net.sf.jabref.gui.util.PositionWindow;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
+
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.event.*;
 
 class PreambleEditor extends JDialog {
     // A reference to the entry this object works on.
@@ -133,6 +119,13 @@ class PreambleEditor extends JDialog {
         ed.setText(base.getPreamble());
     }
 
+    public FieldEditor getFieldEditor() {
+        return ed;
+    }
+
+    public void storeCurrentEdit() {
+        storeFieldAction.actionPerformed(null);
+    }
 
     private class FieldListener extends FocusAdapter {
 
@@ -148,8 +141,6 @@ class PreambleEditor extends JDialog {
         }
 
     }
-
-
 
     class StoreFieldAction extends AbstractAction {
 
@@ -193,8 +184,6 @@ class PreambleEditor extends JDialog {
         }
     }
 
-
-
     class UndoAction extends AbstractAction {
 
         public UndoAction() {
@@ -207,8 +196,6 @@ class PreambleEditor extends JDialog {
             panel.runCommand(Actions.UNDO);
         }
     }
-
-
 
     class RedoAction extends AbstractAction {
 
@@ -223,8 +210,6 @@ class PreambleEditor extends JDialog {
         }
     }
 
-
-
     class CloseAction extends AbstractAction {
 
         public CloseAction() {
@@ -237,15 +222,6 @@ class PreambleEditor extends JDialog {
             panel.preambleEditorClosing();
             dispose();
         }
-    }
-
-
-    public FieldEditor getFieldEditor() {
-        return ed;
-    }
-
-    public void storeCurrentEdit() {
-        storeFieldAction.actionPerformed(null);
     }
 
 }

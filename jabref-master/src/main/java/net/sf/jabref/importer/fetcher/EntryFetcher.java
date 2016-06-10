@@ -15,22 +15,22 @@
 */
 package net.sf.jabref.importer.fetcher;
 
-import javax.swing.JPanel;
-
 import net.sf.jabref.gui.ImportInspectionDialog;
 import net.sf.jabref.gui.help.HelpFiles;
 import net.sf.jabref.importer.ImportInspector;
 import net.sf.jabref.importer.OutputPrinter;
+
+import javax.swing.*;
 
 /**
  * Implement this interface to add another activeFetcher (something that grabs records
  * from the Web for JabRef). Have a look at the existing implemenations
  * OAI2Fetcher, IEEEXploreFetcher, MedlineFetcher, JStorFetcher and
  * CiteSeerEntryFetcher.
- *
+ * <p>
  * Note: You also need to implement the method stopFetching from
  * ImportInspectionDialog.Callback
- *
+ * <p>
  * A Fetcher should not execute any GUI Operations, because it might be run in
  * headless mode, but rather use the OutputPrinter for talking to the user.
  */
@@ -38,20 +38,16 @@ public interface EntryFetcher extends ImportInspectionDialog.CallBack {
 
     /**
      * Handle a query entered by the user.
-     *
+     * <p>
      * The method is expected to block the caller until all entries have been
      * reported to the inspector.
      *
-     * @param query
-     *            The query text.
-     * @param inspector
-     *            The dialog to add imported entries to.
-     * @param status
-     *            An OutputPrinter passed to the activeFetcher for reporting about the
-     *            status of the fetching.
-     *
+     * @param query     The query text.
+     * @param inspector The dialog to add imported entries to.
+     * @param status    An OutputPrinter passed to the activeFetcher for reporting about the
+     *                  status of the fetching.
      * @return True if the query was completed successfully, false if an error
-     *         occurred.
+     * occurred.
      */
     boolean processQuery(String query, ImportInspector inspector, OutputPrinter status);
 
@@ -64,7 +60,7 @@ public interface EntryFetcher extends ImportInspectionDialog.CallBack {
 
     /**
      * Get the name of the help page for this activeFetcher.
-     *
+     * <p>
      * If given, a question mark is displayed in the side pane which leads to
      * the help page.
      *
@@ -78,7 +74,7 @@ public interface EntryFetcher extends ImportInspectionDialog.CallBack {
      * to the side pane component automatically.
      *
      * @return Options panel for this activeFetcher or null if this activeFetcher does not
-     *         have any options.
+     * have any options.
      */
     JPanel getOptionsPanel();
 }

@@ -15,15 +15,15 @@
 */
 package net.sf.jabref.logic.groups;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import net.sf.jabref.logic.search.SearchMatcher;
 import net.sf.jabref.logic.search.matchers.MatcherSet;
 import net.sf.jabref.logic.search.matchers.MatcherSets;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A node in the groups tree that holds exactly one AbstractGroup.
@@ -76,7 +76,7 @@ public class GroupTreeNode extends TreeNode<GroupTreeNode> {
         representation.add(this.toString());
 
         // Append children
-        for(GroupTreeNode child : getChildren()) {
+        for (GroupTreeNode child : getChildren()) {
             representation.addAll(child.getTreeAsString());
         }
 
@@ -152,18 +152,18 @@ public class GroupTreeNode extends TreeNode<GroupTreeNode> {
         List<GroupTreeNode> groups = new ArrayList<>();
 
         // Add myself if I contain the entries
-        if(requireAll) {
-            if(this.group.containsAll(entries)) {
+        if (requireAll) {
+            if (this.group.containsAll(entries)) {
                 groups.add(this);
             }
         } else {
-            if(this.group.containsAny(entries)) {
+            if (this.group.containsAny(entries)) {
                 groups.add(this);
             }
         }
 
         // Traverse children
-        for(GroupTreeNode child : getChildren()) {
+        for (GroupTreeNode child : getChildren()) {
             groups.addAll(child.getContainingGroups(entries, requireAll));
         }
 
@@ -183,7 +183,7 @@ public class GroupTreeNode extends TreeNode<GroupTreeNode> {
         }
 
         // Traverse children
-        for(GroupTreeNode child : getChildren()) {
+        for (GroupTreeNode child : getChildren()) {
             groups.addAll(child.getMatchingGroups(entries));
         }
 

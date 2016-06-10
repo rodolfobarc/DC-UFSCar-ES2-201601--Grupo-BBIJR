@@ -13,14 +13,7 @@
 */
 package net.sf.jabref.logic.autocompleter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Delivers possible completions for a given string.
@@ -54,13 +47,27 @@ public abstract class AbstractAutoCompleter implements AutoCompleter<String> {
     }
 
     /**
+     * Increments the last character of a string.
+     * <p>
+     * Example: incrementLastCharacter("abc") returns "abd".
+     */
+    private static String incrementLastCharacter(String toIncrement) {
+        if (toIncrement.isEmpty()) {
+            return "";
+        }
+
+        char lastChar = toIncrement.charAt(toIncrement.length() - 1);
+        return toIncrement.substring(0, toIncrement.length() - 1) + Character.toString((char) (lastChar + 1));
+    }
+
+    /**
      * {@inheritDoc}
      * The completion is case sensitive if the string contains upper case letters.
      * Otherwise the completion is case insensitive.
      */
     @Override
     public List<String> complete(String toComplete) {
-        if(toComplete == null) {
+        if (toComplete == null) {
             return new ArrayList<>();
         }
         if (isTooShortToComplete(toComplete)) {
@@ -87,20 +94,6 @@ public abstract class AbstractAutoCompleter implements AutoCompleter<String> {
             SortedSet<String> subset = indexCaseSensitive.subSet(toComplete, ender);
             return new ArrayList<>(subset);
         }
-    }
-
-    /**
-     * Increments the last character of a string.
-     *
-     * Example: incrementLastCharacter("abc") returns "abd".
-     */
-    private static String incrementLastCharacter(String toIncrement) {
-        if (toIncrement.isEmpty()) {
-            return "";
-        }
-
-        char lastChar = toIncrement.charAt(toIncrement.length() - 1);
-        return toIncrement.substring(0, toIncrement.length() - 1) + Character.toString((char) (lastChar + 1));
     }
 
     /**

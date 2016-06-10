@@ -1,21 +1,20 @@
 package net.sf.jabref.importer;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.importer.fileformat.BibtexParser;
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.importer.fileformat.BibtexParser;
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * @author Nosh&Dan
@@ -35,7 +34,7 @@ public class DatabaseFileLookupTest {
         Globals.prefs = JabRefPreferences.getInstance();
 
         try (FileInputStream stream = new FileInputStream(ImportDataTest.UNLINKED_FILES_TEST_BIB);
-                InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             ParserResult result = BibtexParser.parse(reader);
             database = result.getDatabase();
             entries = database.getEntries();

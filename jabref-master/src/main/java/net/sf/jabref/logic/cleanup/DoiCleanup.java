@@ -14,14 +14,14 @@
 
 package net.sf.jabref.logic.cleanup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.formatter.bibtexfields.ClearFormatter;
 import net.sf.jabref.logic.util.DOI;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Formats the DOI (e.g. removes http part) and also moves DOIs from note, url or ee field to the doi field.

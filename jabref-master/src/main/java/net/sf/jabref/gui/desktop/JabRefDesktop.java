@@ -1,5 +1,23 @@
 package net.sf.jabref.gui.desktop;
 
+import net.sf.jabref.BibDatabaseContext;
+import net.sf.jabref.Globals;
+import net.sf.jabref.external.ExternalFileType;
+import net.sf.jabref.external.ExternalFileTypeEntryEditor;
+import net.sf.jabref.external.ExternalFileTypes;
+import net.sf.jabref.external.UnknownExternalFileType;
+import net.sf.jabref.gui.*;
+import net.sf.jabref.gui.desktop.os.*;
+import net.sf.jabref.gui.undo.UndoableFieldChange;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.logic.util.DOI;
+import net.sf.jabref.logic.util.OS;
+import net.sf.jabref.logic.util.io.FileUtil;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,34 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import javax.swing.JOptionPane;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Globals;
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypeEntryEditor;
-import net.sf.jabref.external.ExternalFileTypes;
-import net.sf.jabref.external.UnknownExternalFileType;
-import net.sf.jabref.gui.FileListEntry;
-import net.sf.jabref.gui.FileListEntryEditor;
-import net.sf.jabref.gui.FileListTableModel;
-import net.sf.jabref.gui.IconTheme;
-import net.sf.jabref.gui.JabRefFrame;
-import net.sf.jabref.gui.desktop.os.DefaultDesktop;
-import net.sf.jabref.gui.desktop.os.Linux;
-import net.sf.jabref.gui.desktop.os.NativeDesktop;
-import net.sf.jabref.gui.desktop.os.OSX;
-import net.sf.jabref.gui.desktop.os.Windows;
-import net.sf.jabref.gui.undo.UndoableFieldChange;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.logic.util.DOI;
-import net.sf.jabref.logic.util.OS;
-import net.sf.jabref.logic.util.io.FileUtil;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * TODO: Replace by http://docs.oracle.com/javase/7/docs/api/java/awt/Desktop.html
@@ -52,7 +42,7 @@ public class JabRefDesktop {
      * Open a http/pdf/ps viewer for the given link string.
      */
     public static void openExternalViewer(BibDatabaseContext databaseContext, String initialLink,
-            String initialFieldName) throws IOException {
+                                          String initialFieldName) throws IOException {
         String link = initialLink;
         String fieldName = initialFieldName;
         if ("ps".equals(fieldName) || "pdf".equals(fieldName)) {
@@ -122,14 +112,12 @@ public class JabRefDesktop {
     /**
      * Open an external file, attempting to use the correct viewer for it.
      *
-     * @param databaseContext
-     *            The database this file belongs to.
-     * @param link
-     *            The filename.
+     * @param databaseContext The database this file belongs to.
+     * @param link            The filename.
      * @return false if the link couldn't be resolved, true otherwise.
      */
     public static boolean openExternalFileAnyFormat(final BibDatabaseContext databaseContext, String link,
-            final Optional<ExternalFileType> type) throws IOException {
+                                                    final Optional<ExternalFileType> type) throws IOException {
         boolean httpLink = false;
 
         if (REMOTE_LINK_PATTERN.matcher(link.toLowerCase()).matches()) {
@@ -172,10 +160,10 @@ public class JabRefDesktop {
     }
 
     public static boolean openExternalFileUnknown(JabRefFrame frame, BibEntry entry, BibDatabaseContext databaseContext,
-            String link, UnknownExternalFileType fileType) throws IOException {
+                                                  String link, UnknownExternalFileType fileType) throws IOException {
 
         String cancelMessage = Localization.lang("Unable to open file.");
-        String[] options = new String[] {Localization.lang("Define '%0'", fileType.getName()),
+        String[] options = new String[]{Localization.lang("Define '%0'", fileType.getName()),
                 Localization.lang("Change file type"), Localization.lang("Cancel")};
         String defOption = options[0];
         int answer = JOptionPane.showOptionDialog(frame,
@@ -247,6 +235,7 @@ public class JabRefDesktop {
 
     /**
      * Opens a file browser of the folder of the given file. If possible, the file is selected
+     *
      * @param fileLink the location of the file
      * @throws IOException
      */

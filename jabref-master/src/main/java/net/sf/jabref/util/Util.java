@@ -20,13 +20,6 @@
 
 package net.sf.jabref.util;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.gui.worker.AbstractWorker;
 import net.sf.jabref.gui.worker.CallBack;
@@ -34,6 +27,12 @@ import net.sf.jabref.gui.worker.Worker;
 import net.sf.jabref.logic.groups.AbstractGroup;
 import net.sf.jabref.logic.groups.KeywordGroup;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * utility functions
@@ -106,7 +105,7 @@ public class Util {
         // show a warning, then return
         StringBuilder message = new StringBuilder(
                 Localization.lang("This action will modify the following field(s) in at least one entry each:"))
-                        .append('\n');
+                .append('\n');
         for (String affectedField : affectedFields) {
             message.append(affectedField).append('\n');
         }

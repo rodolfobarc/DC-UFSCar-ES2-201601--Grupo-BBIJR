@@ -15,20 +15,16 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Dimension;
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.logic.l10n.Localization;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Class for generating a dialog showing warnings from ParserResult
- *
  */
 public class ParserResultWarningDialog {
 
@@ -36,7 +32,7 @@ public class ParserResultWarningDialog {
      * Shows a dialog with the warnings from an import or open of a file
      *
      * @param parserResult - ParserResult for the current import/open
-     * @param jabRefFrame - the JabRefFrame
+     * @param jabRefFrame  - the JabRefFrame
      */
     public static void showParserResultWarningDialog(final ParserResult parserResult, final JabRefFrame jabRefFrame) {
         Objects.requireNonNull(parserResult);
@@ -47,12 +43,12 @@ public class ParserResultWarningDialog {
     /**
      * Shows a dialog with the warnings from an import or open of a file
      *
-     * @param parserResult - ParserResult for the current import/open
-     * @param jabRefFrame - the JabRefFrame
+     * @param parserResult   - ParserResult for the current import/open
+     * @param jabRefFrame    - the JabRefFrame
      * @param dataBaseNumber - Database tab number to activate when showing the warning dialog
      */
     public static void showParserResultWarningDialog(final ParserResult parserResult, final JabRefFrame jabRefFrame,
-            final int dataBaseNumber) {
+                                                     final int dataBaseNumber) {
         Objects.requireNonNull(parserResult);
         Objects.requireNonNull(jabRefFrame);
         // Return if no warnings

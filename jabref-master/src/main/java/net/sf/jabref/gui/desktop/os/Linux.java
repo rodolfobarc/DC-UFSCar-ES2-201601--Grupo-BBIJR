@@ -1,14 +1,14 @@
 package net.sf.jabref.gui.desktop.os;
 
+import net.sf.jabref.external.ExternalFileType;
+import net.sf.jabref.external.ExternalFileTypes;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import net.sf.jabref.external.ExternalFileType;
-import net.sf.jabref.external.ExternalFileTypes;
 
 public class Linux implements NativeDesktop {
     @Override
@@ -21,7 +21,7 @@ public class Linux implements NativeDesktop {
         } else {
             viewer = "xdg-open";
         }
-        String[] cmdArray = { viewer, filePath };
+        String[] cmdArray = {viewer, filePath};
         Runtime.getRuntime().exec(cmdArray);
     }
 
@@ -32,7 +32,7 @@ public class Linux implements NativeDesktop {
         if ((application != null) && !application.isEmpty()) {
             openWith = application.split(" ");
         } else {
-            openWith = new String[] {"xdg-open"};
+            openWith = new String[]{"xdg-open"};
         }
 
         String[] cmdArray = new String[openWith.length + 1];

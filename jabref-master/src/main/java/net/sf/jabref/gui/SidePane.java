@@ -15,17 +15,9 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
-
-import javax.swing.Box;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 /**
  * The side pane is displayed at the left side of JabRef and shows instances of
@@ -79,7 +71,7 @@ public class SidePane extends JPanel {
             gridBagLayout.setConstraints(c, constraint);
             mainPanel.add(c);
         }
-        if(totalWeights <= 0) {
+        if (totalWeights <= 0) {
             // Fill vertical space so that components start at top
             constraint.weighty = 1;
             Component bx = Box.createVerticalGlue();

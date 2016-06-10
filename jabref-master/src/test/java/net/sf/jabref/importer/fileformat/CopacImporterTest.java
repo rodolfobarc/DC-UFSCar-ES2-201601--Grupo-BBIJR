@@ -1,5 +1,13 @@
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.JabRefPreferences;
+import net.sf.jabref.importer.OutputPrinterToNull;
+import net.sf.jabref.model.entry.BibEntry;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
@@ -11,22 +19,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.importer.OutputPrinterToNull;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public class CopacImporterTest {
 
     private final String FILEFORMAT_PATH = "src/test/resources/net/sf/jabref/importer/fileformat";
 
+    @BeforeClass
+    public static void setUp() {
+        Globals.prefs = JabRefPreferences.getInstance();
+    }
 
     /**
      * Generates a List of all files in the package "/src/test/resources/net/sf/jabref/importer/fileformat"
+     *
      * @return A list of Names
      * @throws IOException
      */
@@ -36,11 +40,6 @@ public class CopacImporterTest {
             stream.forEach(n -> files.add(n.getFileName().toString()));
         }
         return files;
-    }
-
-    @BeforeClass
-    public static void setUp() {
-        Globals.prefs = JabRefPreferences.getInstance();
     }
 
     @Test(expected = IOException.class)

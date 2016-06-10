@@ -1,5 +1,7 @@
 package net.sf.jabref;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -10,11 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestIconsProperties {
 
@@ -33,7 +31,7 @@ public class TestIconsProperties {
                 properties.entrySet().isEmpty());
 
         // check that each key references an existing file
-        for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             String name = entry.getKey().toString();
             String value = entry.getValue().toString();
 
@@ -42,7 +40,7 @@ public class TestIconsProperties {
 
         // check that each image in the folder is referenced by a key
         List<String> imagesReferencedFromProperties = new ArrayList<>();
-        for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             imagesReferencedFromProperties.add(entry.getValue().toString());
         }
 

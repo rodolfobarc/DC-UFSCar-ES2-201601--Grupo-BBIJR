@@ -15,25 +15,9 @@
 */
 package net.sf.jabref.external;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.FileDialogs;
@@ -41,18 +25,19 @@ import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.OS;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * This class produces a dialog box for editing an external file type.
  */
 public class ExternalFileTypeEntryEditor {
 
-    private JFrame fParent;
-    private JDialog dParent;
-    private JDialog diag;
     private final JTextField extension = new JTextField();
     private final JTextField name = new JTextField();
     private final JTextField mimeType = new JTextField();
@@ -64,7 +49,9 @@ public class ExternalFileTypeEntryEditor {
     private final JRadioButton other = new JRadioButton("");
     private final String editFileTitle = Localization.lang("Edit file type");
     private final String newFileTitle = Localization.lang("Add new file type");
-
+    private JFrame fParent;
+    private JDialog dParent;
+    private JDialog diag;
     private ExternalFileType entry;
     private boolean okPressed;
 

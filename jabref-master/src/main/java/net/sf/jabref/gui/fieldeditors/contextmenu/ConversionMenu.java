@@ -17,18 +17,17 @@
 */
 package net.sf.jabref.gui.fieldeditors.contextmenu;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.text.JTextComponent;
-
 import net.sf.jabref.logic.formatter.BibtexFieldFormatters;
 import net.sf.jabref.logic.formatter.Formatter;
 import net.sf.jabref.logic.l10n.Localization;
 
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
+
 /**
  * @author Oscar Gustafsson
- *
- * Menu to show up on right-click in a text field for converting text formats
+ *         <p>
+ *         Menu to show up on right-click in a text field for converting text formats
  */
 public class ConversionMenu extends JMenu {
 

@@ -15,13 +15,12 @@
 */
 package net.sf.jabref.gui.groups;
 
-import java.util.List;
-
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.logic.groups.AbstractGroup;
 import net.sf.jabref.logic.groups.GroupTreeNode;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.undo.AbstractUndoableEdit;
+import java.util.List;
 
 class UndoableModifyGroup extends AbstractUndoableEdit {
 
@@ -33,14 +32,12 @@ class UndoableModifyGroup extends AbstractUndoableEdit {
 
 
     /**
-     * @param node
-     *            The node which still contains the old group.
-     * @param newGroup
-     *            The new group to replace the one currently stored in <b>node
-     *            </b>.
+     * @param node     The node which still contains the old group.
+     * @param newGroup The new group to replace the one currently stored in <b>node
+     *                 </b>.
      */
     public UndoableModifyGroup(GroupSelector gs, GroupTreeNodeViewModel groupsRoot,
-            GroupTreeNodeViewModel node, AbstractGroup newGroup) {
+                               GroupTreeNodeViewModel node, AbstractGroup newGroup) {
         groupSelector = gs;
         m_oldGroupBackup = node.getNode().getGroup().deepCopy();
         m_newGroupBackup = newGroup.deepCopy();

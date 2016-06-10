@@ -15,33 +15,33 @@
 */
 package net.sf.jabref.gui.groups;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.gui.undo.NamedCompound;
 import net.sf.jabref.gui.undo.UndoableFieldChange;
 import net.sf.jabref.logic.FieldChange;
 import net.sf.jabref.logic.groups.EntriesGroupChange;
 import net.sf.jabref.logic.l10n.Localization;
 
+import javax.swing.undo.AbstractUndoableEdit;
+
 public class UndoableChangeEntriesOfGroup {
 
-   public static AbstractUndoableEdit getUndoableEdit(GroupTreeNodeViewModel node, EntriesGroupChange change) {
+    public static AbstractUndoableEdit getUndoableEdit(GroupTreeNodeViewModel node, EntriesGroupChange change) {
 
-       if(change.getOldEntries().size() != change.getNewEntries().size()) {
-           return new UndoableChangeAssignment(node, change.getOldEntries(), change.getNewEntries());
-       }
+        if (change.getOldEntries().size() != change.getNewEntries().size()) {
+            return new UndoableChangeAssignment(node, change.getOldEntries(), change.getNewEntries());
+        }
 
-       boolean hasEntryChanges = false;
-       NamedCompound entryChangeCompound = new NamedCompound(Localization.lang("change entries of group"));
-       for(FieldChange fieldChange : change.getEntryChanges()) {
-           hasEntryChanges = true;
-           entryChangeCompound.addEdit(new UndoableFieldChange(fieldChange));
-       }
-       if (hasEntryChanges) {
-           entryChangeCompound.end();
-           return entryChangeCompound;
-       }
+        boolean hasEntryChanges = false;
+        NamedCompound entryChangeCompound = new NamedCompound(Localization.lang("change entries of group"));
+        for (FieldChange fieldChange : change.getEntryChanges()) {
+            hasEntryChanges = true;
+            entryChangeCompound.addEdit(new UndoableFieldChange(fieldChange));
+        }
+        if (hasEntryChanges) {
+            entryChangeCompound.end();
+            return entryChangeCompound;
+        }
 
-       return null;
-   }
+        return null;
+    }
 }

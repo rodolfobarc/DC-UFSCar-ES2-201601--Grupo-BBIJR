@@ -15,13 +15,13 @@
 */
 package net.sf.jabref.logic.groups;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import net.sf.jabref.logic.search.SearchMatcher;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A group of BibtexEntries.

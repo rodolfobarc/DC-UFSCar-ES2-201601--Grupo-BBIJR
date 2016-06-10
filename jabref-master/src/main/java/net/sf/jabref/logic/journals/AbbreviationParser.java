@@ -16,14 +16,10 @@
 package net.sf.jabref.logic.journals;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -31,17 +27,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Reads abbreviation files (property files using NAME = ABBREVIATION as a format) into a list of Abbreviations.
  */
 public class AbbreviationParser {
 
-    private final List<Abbreviation> abbreviations = new LinkedList<>();
-
     private static final Log LOGGER = LogFactory.getLog(AbbreviationParser.class);
+    private final List<Abbreviation> abbreviations = new LinkedList<>();
 
     public void readJournalListFromResource(String resourceFileName) {
         URL url = Objects.requireNonNull(JournalAbbreviationRepository.class.getResource(Objects.requireNonNull(resourceFileName)));
@@ -53,7 +45,7 @@ public class AbbreviationParser {
     }
 
     public void readJournalListFromFile(File file) throws FileNotFoundException {
-        try(FileReader reader = new FileReader(Objects.requireNonNull(file))) {
+        try (FileReader reader = new FileReader(Objects.requireNonNull(file))) {
             readJournalList(reader);
         } catch (FileNotFoundException e) {
             throw e;
@@ -64,7 +56,7 @@ public class AbbreviationParser {
 
     public void readJournalListFromFile(File file, Charset encoding) throws FileNotFoundException {
         try (FileInputStream stream = new FileInputStream(Objects.requireNonNull(file));
-                InputStreamReader reader = new InputStreamReader(stream, Objects.requireNonNull(encoding))) {
+             InputStreamReader reader = new InputStreamReader(stream, Objects.requireNonNull(encoding))) {
             readJournalList(reader);
         } catch (FileNotFoundException e) {
             throw e;
@@ -80,7 +72,7 @@ public class AbbreviationParser {
      * @param in
      */
     private void readJournalList(Reader in) {
-        try(BufferedReader reader = new BufferedReader(in)){
+        try (BufferedReader reader = new BufferedReader(in)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 addLine(line);

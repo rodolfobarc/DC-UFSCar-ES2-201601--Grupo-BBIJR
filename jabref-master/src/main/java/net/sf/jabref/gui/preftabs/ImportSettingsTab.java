@@ -15,40 +15,27 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.util.Objects;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.pdfimport.ImportDialog;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Objects;
 
 public class ImportSettingsTab extends JPanel implements PrefsTab {
 
     public static final int DEFAULT_STYLE = ImportDialog.CONTENT;
-
-    private static final String[] DEFAULT_FILENAMEPATTERNS_DISPLAY = new String[] {
-            "bibtexkey",
-            "bibtexkey - title",
-    };
-    public static final String[] DEFAULT_FILENAMEPATTERNS = new String[] {
+    public static final String[] DEFAULT_FILENAMEPATTERNS = new String[]{
             "\\bibtexkey",
             "\\bibtexkey\\begin{title} - \\format[RemoveBrackets]{\\title}\\end{title}"
     };
-
+    private static final String[] DEFAULT_FILENAMEPATTERNS_DISPLAY = new String[]{
+            "bibtexkey",
+            "bibtexkey - title",
+    };
     private final JabRefPreferences prefs;
     private final JRadioButton radioButtonXmp;
     private final JRadioButton radioButtonPDFcontent;
@@ -122,22 +109,22 @@ public class ImportSettingsTab extends JPanel implements PrefsTab {
         useDefaultPDFImportStyle.setSelected(prefs.getBoolean(JabRefPreferences.PREF_IMPORT_ALWAYSUSE));
         int style = prefs.getInt(JabRefPreferences.PREF_IMPORT_DEFAULT_PDF_IMPORT_STYLE);
         switch (style) {
-        case ImportDialog.NOMETA:
-            radioButtonNoMeta.setSelected(true);
-            break;
-        case ImportDialog.XMP:
-            radioButtonXmp.setSelected(true);
-            break;
-        case ImportDialog.CONTENT:
-            radioButtonPDFcontent.setSelected(true);
-            break;
-        case ImportDialog.ONLYATTACH:
-            radioButtononlyAttachPDF.setSelected(true);
-            break;
-        default:
-            // fallback
-            radioButtonPDFcontent.setSelected(true);
-            break;
+            case ImportDialog.NOMETA:
+                radioButtonNoMeta.setSelected(true);
+                break;
+            case ImportDialog.XMP:
+                radioButtonXmp.setSelected(true);
+                break;
+            case ImportDialog.CONTENT:
+                radioButtonPDFcontent.setSelected(true);
+                break;
+            case ImportDialog.ONLYATTACH:
+                radioButtononlyAttachPDF.setSelected(true);
+                break;
+            default:
+                // fallback
+                radioButtonPDFcontent.setSelected(true);
+                break;
         }
         fileNamePattern.setText(prefs.get(JabRefPreferences.PREF_IMPORT_FILENAMEPATTERN));
     }

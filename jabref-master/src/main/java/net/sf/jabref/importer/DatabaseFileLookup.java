@@ -15,14 +15,6 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.logic.util.io.FileUtil;
@@ -31,12 +23,15 @@ import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.FileField;
 import net.sf.jabref.model.entry.ParsedFileField;
 
+import java.io.File;
+import java.util.*;
+
 /**
  * Search class for files. <br>
  * <br>
  * This class provides some functionality to search in a {@link BibDatabase} for
  * files. <br>
-
+ *
  * @author Nosh&Dan
  */
 class DatabaseFileLookup {
@@ -68,10 +63,9 @@ class DatabaseFileLookup {
      * <br>
      * For the matching, the absolute file paths will be used.
      *
-     * @param file
-     *            A {@link File} Object.
+     * @param file A {@link File} Object.
      * @return <code>true</code>, if the file Object is stored in at least one
-     *         entry in the database, otherwise <code>false</code>.
+     * entry in the database, otherwise <code>false</code>.
      */
     public boolean lookupDatabase(File file) {
         return fileCache.contains(file);
@@ -88,7 +82,7 @@ class DatabaseFileLookup {
             String link = field.getLink();
 
             // Do not query external file links (huge performance leak)
-            if(link.contains("//")) {
+            if (link.contains("//")) {
                 continue;
             }
 

@@ -15,19 +15,18 @@
  */
 package net.sf.jabref.importer;
 
-import java.io.File;
-import java.util.Optional;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefGUI;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.io.File;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 

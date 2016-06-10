@@ -15,70 +15,7 @@
 */
 package net.sf.jabref.gui;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JRootPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileSystemView;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefExecutorService;
 import net.sf.jabref.JabRefGUI;
@@ -92,40 +29,51 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.EntryTypes;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.EntryType;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * GUI Dialog for the feature "Find unlinked files".
  *
  * @author Nosh&Dan
  * @version 25.11.2008 | 23:13:29
- *
  */
 public class FindUnlinkedFilesDialog extends JDialog {
-
-    private static final Log LOGGER = LogFactory.getLog(FindUnlinkedFilesDialog.class);
 
     /**
      * Keys to be used for referencing this Action.
      */
     public static final String ACTION_COMMAND = "findUnlinkedFiles";
     public static final String ACTION_MENU_TITLE = Localization.menuTitle("Find unlinked files...");
-
     public static final String ACTION_SHORT_DESCRIPTION = Localization
             .lang("Searches for unlinked PDF files on the file system");
+    private static final Log LOGGER = LogFactory.getLog(FindUnlinkedFilesDialog.class);
     private static final String GLOBAL_PREFS_WORKING_DIRECTORY_KEY = "findUnlinkedFilesWD";
 
     private static final String GLOBAL_PREFS_DIALOG_SIZE_KEY = "findUnlinkedFilesDialogSize";
+    private final AtomicBoolean threadState = new AtomicBoolean();
     private JabRefFrame frame;
     private BibDatabase database;
     private EntryFromFileCreatorManager creatorManager;
-
     private UnlinkedFilesCrawler crawler;
     private Path lastSelectedDirectory;
-
     private TreeModel treeModel;
     /* PANELS */
     private JPanel panelDirectory;
@@ -134,19 +82,16 @@ public class FindUnlinkedFilesDialog extends JDialog {
     private JPanel panelOptions;
     private JPanel panelButtons;
     private JPanel panelEntryTypesSelection;
-
     private JPanel panelImportArea;
     private JButton buttonBrowse;
     private JButton buttonScan;
     private JButton buttonApply;
-
     private JButton buttonClose;
     /* Options for the TreeView */
     private JButton buttonOptionSelectAll;
     private JButton buttonOptionUnselectAll;
     private JButton buttonOptionExpandAll;
     private JButton buttonOptionCollapseAll;
-
     private JCheckBox checkboxCreateKeywords;
     private JTextField textfieldDirectoryPath;
     private JLabel labelDirectoryDescription;
@@ -154,27 +99,20 @@ public class FindUnlinkedFilesDialog extends JDialog {
     private JLabel labelFilesDescription;
     private JLabel labelEntryTypeDescription;
     private JLabel labelSearchingDirectoryInfo;
-
     private JLabel labelImportingInfo;
     private JTree tree;
     private JScrollPane scrollpaneTree;
     private JComboBox<FileFilter> comboBoxFileTypeSelection;
-
     private JComboBox<BibtexEntryTypeWrapper> comboBoxEntryTypeSelection;
     private JProgressBar progressBarSearching;
     private JProgressBar progressBarImporting;
     private JFileChooser fileChooser;
-
     private MouseListener treeMouseListener;
     private Action actionSelectAll;
     private Action actionUnselectAll;
     private Action actionExpandTree;
-
     private Action actionCollapseTree;
-
     private ComponentListener dialogPositionListener;
-    private final AtomicBoolean threadState = new AtomicBoolean();
-
     private boolean checkBoxWhyIsThereNoGetSelectedStupidSwing;
 
 
@@ -202,6 +140,57 @@ public class FindUnlinkedFilesDialog extends JDialog {
 
         initialize();
         buttonApply.setEnabled(false);
+    }
+
+    /**
+     * Adds a component to a container, using the specified gridbag-layout and
+     * the supplied parameters. <br>
+     * <br>
+     * This method is simply used to ged rid of thousands of lines of code,
+     * which inevitably rise when layouts such as the gridbag-layout is being
+     * used.
+     *
+     * @param layout    The layout to be used.
+     * @param container The {@link Container}, to which the component will be added.
+     * @param component An AWT {@link Component}, that will be added to the container.
+     * @param fill      A constant describing the fill behaviour (see
+     *                  {@link GridBagConstraints}). Can be <code>null</code>, if no
+     *                  filling wants to be specified.
+     * @param anchor    A constant describing the anchor of the element in its parent
+     *                  container (see {@link GridBagConstraints}). Can be
+     *                  <code>null</code>, if no specification is needed.
+     * @param gridX     The relative grid-X coordinate.
+     * @param gridY     The relative grid-Y coordinate.
+     * @param width     The relative width of the component.
+     * @param height    The relative height of the component.
+     * @param weightX   A value for the horizontal weight.
+     * @param weightY   A value for the vertical weight.
+     * @param insets    Insets of the component. Can be <code>null</code>.
+     */
+    private static void addComponent(GridBagLayout layout, Container container, Component component, Integer fill,
+                                     Integer anchor, Insets insets, int gridX, int gridY, int width, int height, double weightX, double weightY,
+                                     int ipadX, int ipadY) {
+        container.setLayout(layout);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = gridX;
+        constraints.gridy = gridY;
+        constraints.gridwidth = width;
+        constraints.gridheight = height;
+        constraints.weightx = weightX;
+        constraints.weighty = weightY;
+        constraints.ipadx = ipadX;
+        constraints.ipady = ipadY;
+        if (fill != null) {
+            constraints.fill = fill;
+        }
+        if (insets != null) {
+            constraints.insets = insets;
+        }
+        if (anchor != null) {
+            constraints.anchor = anchor;
+        }
+        layout.setConstraints(component, constraints);
+        container.add(component);
     }
 
     /**
@@ -335,8 +324,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * Stores the working directory path for this view in the global
      * preferences.
      *
-     * @param lastSelectedDir
-     *            directory that is used as the working directory in this view.
+     * @param lastSelectedDir directory that is used as the working directory in this view.
      */
     private void storeLastSelectedDirectory(Path lastSelectedDir) {
         lastSelectedDirectory = lastSelectedDir;
@@ -380,7 +368,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * preset at the next time this dialog is opened.
      *
      * @return The selected directory from the user, or <code>null</code>, if
-     *         the user has aborted the selection.
+     * the user has aborted the selection.
      */
     private Path chooseDirectory() {
 
@@ -421,9 +409,8 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * This also removes the {@link MouseListener} from the Tree-View to prevent
      * it from receiving mouse events when in disabled-state.
      *
-     * @param enable
-     *            <code>true</code> when the elements shall get enabled,
-     *            <code>false</code> when they shall get disabled.
+     * @param enable <code>true</code> when the elements shall get enabled,
+     *               <code>false</code> when they shall get disabled.
      */
     private void disOrEnableDialog(boolean enable) {
 
@@ -441,11 +428,9 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * dialog, starting with but not including the container
      * <code>startContainer</code>.
      *
-     * @param startContainer
-     *            The GUI Element to start with.
-     * @param enable
-     *            <code>true</code>, if all elements will get enabled,
-     *            <code>false</code> if all elements will get disabled.
+     * @param startContainer The GUI Element to start with.
+     * @param enable         <code>true</code>, if all elements will get enabled,
+     *                       <code>false</code> if all elements will get disabled.
      */
     private void disOrEnableAllElements(Container startContainer, boolean enable) {
         Component[] children = startContainer.getComponents();
@@ -464,7 +449,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
     private void expandTree(JTree currentTree, TreePath parent, boolean expand) {
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() >= 0) {
-            for (Enumeration<TreeNode> e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<TreeNode> e = node.children(); e.hasMoreElements(); ) {
                 TreePath path = parent.pathByAddingChild(e.nextElement());
                 expandTree(currentTree, path, expand);
             }
@@ -600,7 +585,6 @@ public class FindUnlinkedFilesDialog extends JDialog {
     }
 
     /**
-     *
      * @param errors
      */
     private void importFinishedHandler(List<String> errors) {
@@ -628,8 +612,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * processed. As the result of the search, the root node of the determined
      * file structure is passed.
      *
-     * @param rootNode
-     *            The root of the file structure as the result of the search.
+     * @param rootNode The root of the file structure as the result of the search.
      */
     private void searchFinishedHandler(CheckableTreeNode rootNode) {
         treeModel = new DefaultTreeModel(rootNode);
@@ -680,11 +663,10 @@ public class FindUnlinkedFilesDialog extends JDialog {
      * <br>
      * <code>Selected</code> nodes correspond to those entries in the tree,
      * whose checkbox is <code>checked</code>.
-     *
+     * <p>
      * SIDE EFFECT: The checked nodes are removed from the tree.
      *
-     * @param node
-     *            The root node representing a tree structure.
+     * @param node The root node representing a tree structure.
      * @return A list of files of all checked leaf nodes.
      */
     private List<File> getFileListFromNode(CheckableTreeNode node) {
@@ -903,69 +885,6 @@ public class FindUnlinkedFilesDialog extends JDialog {
     }
 
     /**
-     * Adds a component to a container, using the specified gridbag-layout and
-     * the supplied parameters. <br>
-     * <br>
-     * This method is simply used to ged rid of thousands of lines of code,
-     * which inevitably rise when layouts such as the gridbag-layout is being
-     * used.
-     *
-     * @param layout
-     *            The layout to be used.
-     * @param container
-     *            The {@link Container}, to which the component will be added.
-     * @param component
-     *            An AWT {@link Component}, that will be added to the container.
-     * @param fill
-     *            A constant describing the fill behaviour (see
-     *            {@link GridBagConstraints}). Can be <code>null</code>, if no
-     *            filling wants to be specified.
-     * @param anchor
-     *            A constant describing the anchor of the element in its parent
-     *            container (see {@link GridBagConstraints}). Can be
-     *            <code>null</code>, if no specification is needed.
-     * @param gridX
-     *            The relative grid-X coordinate.
-     * @param gridY
-     *            The relative grid-Y coordinate.
-     * @param width
-     *            The relative width of the component.
-     * @param height
-     *            The relative height of the component.
-     * @param weightX
-     *            A value for the horizontal weight.
-     * @param weightY
-     *            A value for the vertical weight.
-     * @param insets
-     *            Insets of the component. Can be <code>null</code>.
-     */
-    private static void addComponent(GridBagLayout layout, Container container, Component component, Integer fill,
-            Integer anchor, Insets insets, int gridX, int gridY, int width, int height, double weightX, double weightY,
-            int ipadX, int ipadY) {
-        container.setLayout(layout);
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = gridX;
-        constraints.gridy = gridY;
-        constraints.gridwidth = width;
-        constraints.gridheight = height;
-        constraints.weightx = weightX;
-        constraints.weighty = weightY;
-        constraints.ipadx = ipadX;
-        constraints.ipady = ipadY;
-        if (fill != null) {
-            constraints.fill = fill;
-        }
-        if (insets != null) {
-            constraints.insets = insets;
-        }
-        if (anchor != null) {
-            constraints.anchor = anchor;
-        }
-        layout.setConstraints(component, constraints);
-        container.add(component);
-    }
-
-    /**
      * Creates the tree view, that holds the data structure. <br>
      * <br>
      * Initially, the root node is <b>not</b> visible, so that the tree appears empty at the beginning.
@@ -1046,7 +965,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
              */
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
+                                                          boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
                         cellHasFocus);
                 if (value instanceof EntryFromFileCreator) {
@@ -1083,7 +1002,6 @@ public class FindUnlinkedFilesDialog extends JDialog {
      *
      * @author Nosh&Dan
      * @version 12.11.2008 | 01:02:30
-     *
      */
     private static class BibtexEntryTypeWrapper {
 
@@ -1109,8 +1027,8 @@ public class FindUnlinkedFilesDialog extends JDialog {
 
     public static class CheckableTreeNode extends DefaultMutableTreeNode {
 
-        private boolean isSelected;
         private final JCheckBox checkbox;
+        private boolean isSelected;
 
 
         public CheckableTreeNode(Object userObject) {
@@ -1129,6 +1047,10 @@ public class FindUnlinkedFilesDialog extends JDialog {
             setSelected(!isSelected);
         }
 
+        public boolean isSelected() {
+            return isSelected;
+        }
+
         public void setSelected(boolean bSelected) {
             isSelected = bSelected;
             Enumeration<CheckableTreeNode> tmpChildren = this.children();
@@ -1136,10 +1058,6 @@ public class FindUnlinkedFilesDialog extends JDialog {
                 child.setSelected(bSelected);
             }
 
-        }
-
-        public boolean isSelected() {
-            return isSelected;
         }
 
     }
@@ -1151,7 +1069,7 @@ public class FindUnlinkedFilesDialog extends JDialog {
 
         @Override
         public Component getTreeCellRendererComponent(final JTree tree, Object value, boolean sel, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
+                                                      boolean leaf, int row, boolean hasFocus) {
 
             Component nodeComponent = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
                     hasFocus);

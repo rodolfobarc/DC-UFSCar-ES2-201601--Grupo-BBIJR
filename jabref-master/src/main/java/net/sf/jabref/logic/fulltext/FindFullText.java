@@ -1,16 +1,15 @@
 package net.sf.jabref.logic.fulltext;
 
+import net.sf.jabref.logic.io.MimeTypeDetector;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import net.sf.jabref.logic.io.MimeTypeDetector;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility class for trying to resolve URLs to full-text PDF for articles.

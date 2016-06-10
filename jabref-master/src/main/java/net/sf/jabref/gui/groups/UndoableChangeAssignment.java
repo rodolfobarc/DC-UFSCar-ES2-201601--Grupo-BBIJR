@@ -15,16 +15,15 @@
 */
 package net.sf.jabref.gui.groups;
 
+import net.sf.jabref.logic.groups.GroupTreeNode;
+import net.sf.jabref.logic.l10n.Localization;
+import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.undo.AbstractUndoableEdit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.swing.undo.AbstractUndoableEdit;
-
-import net.sf.jabref.logic.groups.GroupTreeNode;
-import net.sf.jabref.logic.l10n.Localization;
-import net.sf.jabref.model.entry.BibEntry;
 
 /**
  * @author jzieren
@@ -46,7 +45,7 @@ public class UndoableChangeAssignment extends AbstractUndoableEdit {
      * @param node The node whose assignments were edited.
      */
     public UndoableChangeAssignment(GroupTreeNodeViewModel node, Set<BibEntry> previousAssignments,
-            Set<BibEntry> newAssignments) {
+                                    Set<BibEntry> newAssignments) {
         this.previousAssignments = new ArrayList<>(previousAssignments);
         this.newAssignments = new ArrayList<>(newAssignments);
         this.root = node.getNode().getRoot();

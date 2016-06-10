@@ -15,12 +15,12 @@
 */
 package net.sf.jabref.logic.layout.format;
 
-import java.util.Map;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.logic.layout.LayoutFormatter;
 import net.sf.jabref.logic.util.strings.HTMLUnicodeConversionMaps;
 import net.sf.jabref.logic.util.strings.StringUtil;
+
+import java.util.Map;
 
 /**
  * This formatter escapes characters so they are suitable for HTML.
@@ -74,7 +74,8 @@ public class HTMLChars implements LayoutFormatter {
                     sb.append(c);
                 } else {
                     currentCommand.append(c);
-                    testCharCom: if ((currentCommand.length() == 1)
+                    testCharCom:
+                    if ((currentCommand.length() == 1)
                             && Globals.SPECIAL_COMMAND_CHARS.contains(currentCommand.toString())) {
                         // This indicates that we are in a command of the type
                         // \^o or \~{n}
@@ -175,7 +176,7 @@ public class HTMLChars implements LayoutFormatter {
                     System.out.printf("com term by }: '%s'\n", currentCommand.toString());
 
                     argument = "";
-                 }*/else {
+                 }*/ else {
                     /*
                      * TODO: this point is reached, apparently, if a command is
                      * terminated in a strange way, such as with "$\omega$".
@@ -198,43 +199,43 @@ public class HTMLChars implements LayoutFormatter {
     private String getHTMLTag(String latexCommand) {
         String result = "";
         switch (latexCommand) {
-        // Italic
-        case "textit":
-        case "it":
-            result = "i";
-            break;
-        // Emphasize
-        case "emph":
-        case "em":
-            result = "em";
-            break;
-        // Bold font
-        case "textbf":
-        case "bf":
-            result = "b";
-            break;
-        // Underline
-        case "underline":
-            result = "u";
-            break;
-        // Strikeout, sout is the "standard" command, although it is actually based on the package ulem
-        case "sout":
-            result = "s";
-            break;
-        // Monospace font
-        case "texttt":
-            result = "tt";
-            break;
-        // Superscript
-        case "textsuperscript":
-            result = "sup";
-            break;
-        // Subscript
-        case "textsubscript":
-            result = "sub";
-            break;
-        default:
-            break;
+            // Italic
+            case "textit":
+            case "it":
+                result = "i";
+                break;
+            // Emphasize
+            case "emph":
+            case "em":
+                result = "em";
+                break;
+            // Bold font
+            case "textbf":
+            case "bf":
+                result = "b";
+                break;
+            // Underline
+            case "underline":
+                result = "u";
+                break;
+            // Strikeout, sout is the "standard" command, although it is actually based on the package ulem
+            case "sout":
+                result = "s";
+                break;
+            // Monospace font
+            case "texttt":
+                result = "tt";
+                break;
+            // Superscript
+            case "textsuperscript":
+                result = "sup";
+                break;
+            // Subscript
+            case "textsubscript":
+                result = "sub";
+                break;
+            default:
+                break;
         }
         return result;
     }

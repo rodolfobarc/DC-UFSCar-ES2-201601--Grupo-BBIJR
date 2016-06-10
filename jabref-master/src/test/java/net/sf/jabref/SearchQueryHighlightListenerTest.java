@@ -15,17 +15,15 @@
  */
 package net.sf.jabref;
 
-import java.util.Optional;
-import java.util.regex.Pattern;
-
-import javax.swing.text.Highlighter;
-import javax.swing.text.Highlighter.Highlight;
-
 import net.sf.jabref.gui.fieldeditors.TextArea;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.Highlight;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class SearchQueryHighlightListenerTest {
 

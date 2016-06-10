@@ -15,13 +15,6 @@
 */
 package net.sf.jabref.exporter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import net.sf.jabref.bibtex.comparator.FieldComparator;
 import net.sf.jabref.bibtex.comparator.FieldComparatorStack;
 import net.sf.jabref.logic.layout.format.GetOpenOfficeType;
@@ -29,23 +22,26 @@ import net.sf.jabref.logic.layout.format.RemoveBrackets;
 import net.sf.jabref.logic.layout.format.RemoveWhitespace;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Morten O. Alver.
- * Based on net.sf.jabref.MODSDatabase by Michael Wrighton
- *
+ *         Based on net.sf.jabref.MODSDatabase by Michael Wrighton
  */
 class OOCalcDatabase {
 
-    private final List<BibEntry> entries;
-
     private static final Log LOGGER = LogFactory.getLog(OOCalcDatabase.class);
+    private final List<BibEntry> entries;
 
 
     public OOCalcDatabase(BibDatabase bibtex, List<BibEntry> entries) {
@@ -65,6 +61,20 @@ class OOCalcDatabase {
         }
         Collections.sort(entryList, new FieldComparatorStack<>(comparators));
         this.entries = entryList;
+    }
+
+    private static String getField(BibEntry e, String field) {
+        return e.getFieldOptional(field).orElse("");
+    }
+
+    private static void addTableCell(Document doc, Element parent, String content) {
+        Element cell = doc.createElement("table:table-cell");
+        Element text = doc.createElement("text:p");
+        Text textNode = doc.createTextNode(content);
+        text.appendChild(textNode);
+        //text.setTextContent(content);
+        cell.appendChild(text);
+        parent.appendChild(cell);
     }
 
     public Document getDOMrepresentation() {
@@ -204,19 +214,5 @@ class OOCalcDatabase {
             LOGGER.warn("Exception caught...", e);
         }
         return result;
-    }
-
-    private static String getField(BibEntry e, String field) {
-        return e.getFieldOptional(field).orElse("");
-    }
-
-    private static void addTableCell(Document doc, Element parent, String content) {
-        Element cell = doc.createElement("table:table-cell");
-        Element text = doc.createElement("text:p");
-        Text textNode = doc.createTextNode(content);
-        text.appendChild(textNode);
-        //text.setTextContent(content);
-        cell.appendChild(text);
-        parent.appendChild(cell);
     }
 }

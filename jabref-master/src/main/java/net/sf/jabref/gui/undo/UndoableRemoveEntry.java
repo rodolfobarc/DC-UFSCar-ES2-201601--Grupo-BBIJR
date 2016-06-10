@@ -15,14 +15,13 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 /**
  * This class represents the removal of an entry. The constructor needs
@@ -32,11 +31,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UndoableRemoveEntry extends AbstractUndoableEdit {
 
+    private static final Log LOGGER = LogFactory.getLog(UndoableRemoveEntry.class);
     private final BibDatabase base;
     private final BibEntry entry;
     private final BasePanel panel;
-
-    private static final Log LOGGER = LogFactory.getLog(UndoableRemoveEntry.class);
 
     public UndoableRemoveEntry(BibDatabase base, BibEntry entry,
                                BasePanel panel) {

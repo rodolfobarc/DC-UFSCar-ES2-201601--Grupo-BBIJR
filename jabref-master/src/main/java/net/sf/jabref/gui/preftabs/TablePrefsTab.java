@@ -15,29 +15,19 @@
  */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.bibtex.InternalBibtexFields;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 class TablePrefsTab extends JPanel implements PrefsTab {
 
@@ -69,8 +59,7 @@ class TablePrefsTab extends JPanel implements PrefsTab {
     /**
      * Customization of external program paths.
      *
-     * @param prefs
-     *            a <code>JabRefPreferences</code> value
+     * @param prefs a <code>JabRefPreferences</code> value
      */
     public TablePrefsTab(JabRefPreferences prefs) {
         this.prefs = prefs;
@@ -223,7 +212,7 @@ class TablePrefsTab extends JPanel implements PrefsTab {
     @Override
     public void setValues() {
         autoResizeMode
-        .setSelected(prefs.getInt(JabRefPreferences.AUTO_RESIZE_MODE) == JTable.AUTO_RESIZE_ALL_COLUMNS);
+                .setSelected(prefs.getInt(JabRefPreferences.AUTO_RESIZE_MODE) == JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         priField.setText(prefs.get(JabRefPreferences.TABLE_PRIMARY_SORT_FIELD));
         secField.setText(prefs.get(JabRefPreferences.TABLE_SECONDARY_SORT_FIELD));
@@ -270,7 +259,6 @@ class TablePrefsTab extends JPanel implements PrefsTab {
     /**
      * Store changes to table preferences. This method is called when the user
      * clicks Ok.
-     *
      */
     @Override
     public void storeSettings() {

@@ -15,22 +15,17 @@
 */
 package net.sf.jabref.collab;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.IconTheme;
 import net.sf.jabref.gui.SidePaneComponent;
 import net.sf.jabref.gui.SidePaneManager;
 import net.sf.jabref.logic.l10n.Localization;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class FileUpdatePanel extends SidePaneComponent implements ActionListener,
         ChangeScanner.DisplayResultCallback {
@@ -68,6 +63,7 @@ public class FileUpdatePanel extends SidePaneComponent implements ActionListener
     /**
      * We include a getter for the BasePanel this component refers to, because this
      * component needs to be closed if the BasePanel is closed.
+     *
      * @return the base panel this component refers to.
      */
     public BasePanel getPanel() {
@@ -91,8 +87,7 @@ public class FileUpdatePanel extends SidePaneComponent implements ActionListener
     /**
      * actionPerformed
      *
-     * @param e
-     *            ActionEvent
+     * @param e ActionEvent
      */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -111,6 +106,7 @@ public class FileUpdatePanel extends SidePaneComponent implements ActionListener
     /**
      * Callback method for signalling that the change scanner has displayed the
      * scan results to the user.
+     *
      * @param resolved true if there were no changes, or if the user has resolved them.
      */
     @Override

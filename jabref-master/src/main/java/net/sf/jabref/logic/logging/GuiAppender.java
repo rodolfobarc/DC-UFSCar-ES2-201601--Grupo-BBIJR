@@ -1,7 +1,5 @@
 package net.sf.jabref.logic.logging;
 
-import java.io.Serializable;
-
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -11,6 +9,8 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+
+import java.io.Serializable;
 
 @Plugin(name = "GuiAppender", category = "Core", elementType = "appender", printObject = true)
 public class GuiAppender extends AbstractAppender {
@@ -23,8 +23,8 @@ public class GuiAppender extends AbstractAppender {
 
     @PluginFactory
     public static GuiAppender createAppender(@PluginAttribute("name") String name,
-            @PluginElement("Layout") Layout<?> layout,
-            @PluginElement("Filters") Filter filter) {
+                                             @PluginElement("Layout") Layout<?> layout,
+                                             @PluginElement("Filters") Filter filter) {
 
         if (name == null) {
             LOGGER.error("No name provided for GuiAppender");

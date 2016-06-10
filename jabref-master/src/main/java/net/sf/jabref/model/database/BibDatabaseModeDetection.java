@@ -1,14 +1,14 @@
 package net.sf.jabref.model.database;
 
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibLatexEntryTypes;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
 import net.sf.jabref.model.entry.EntryType;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BibDatabaseModeDetection {
     private static final List<EntryType> bibtex = BibtexEntryTypes.ALL;
@@ -17,10 +17,10 @@ public class BibDatabaseModeDetection {
 
     /**
      * Tries to infer the database type by examining a BibDatabase database.
-     *
+     * <p>
      * All checks are based on the case-insensitive comparison of entry tag names.
      * Only standard BibTex and Biblatex entry types are considered in the decision process.
-     *
+     * <p>
      * 1. Check if any of the entries is a type exclusive to Biblatex
      * 2. Check if any exclusive Biblatex fields are present
      * 3. Otherwise return BibTex

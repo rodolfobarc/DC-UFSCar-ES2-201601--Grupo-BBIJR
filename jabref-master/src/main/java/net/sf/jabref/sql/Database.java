@@ -10,14 +10,14 @@ public interface Database {
 
     String getReadColumnNamesQuery();
 
-    enum Table {
-        JABREF_DATABASE, ENTRY_TYPES, ENTRIES, STRINGS, GROUP_TYPES, GROUPS, ENTRY_GROUP
-    }
-
     String getCreateTableSQL(Table table);
 
     Connection connectAndEnsureDatabaseExists(DBStrings dbStrings) throws SQLException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
     DatabaseType getType();
+
+    enum Table {
+        JABREF_DATABASE, ENTRY_TYPES, ENTRIES, STRINGS, GROUP_TYPES, GROUPS, ENTRY_GROUP
+    }
 
 }

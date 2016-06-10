@@ -16,10 +16,10 @@
 
 package net.sf.jabref.logic.preferences;
 
+import net.sf.jabref.JabRefPreferences;
+
 import java.io.File;
 import java.util.Objects;
-
-import net.sf.jabref.JabRefPreferences;
 
 public class LastFocusedTabPreferences {
 

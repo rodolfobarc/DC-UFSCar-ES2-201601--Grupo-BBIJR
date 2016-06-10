@@ -15,9 +15,9 @@
 */
 package net.sf.jabref.gui.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
-
 import net.sf.jabref.model.entry.BibEntry;
+
+import javax.swing.undo.AbstractUndoableEdit;
 
 /**
  * This class represents the change of type for an entry.

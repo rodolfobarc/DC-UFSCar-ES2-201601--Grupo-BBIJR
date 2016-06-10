@@ -15,30 +15,27 @@
 */
 package net.sf.jabref.logic.layout;
 
+import net.sf.jabref.BibDatabaseContext;
+import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.logic.journals.JournalAbbreviationRepository;
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Main class for formatting DOCUMENT ME!
  */
 public class Layout {
 
-    private final List<LayoutEntry> layoutEntries;
-
-    private final List<String> missingFormatters = new ArrayList<>();
-
     private static final Log LOGGER = LogFactory.getLog(Layout.class);
+    private final List<LayoutEntry> layoutEntries;
+    private final List<String> missingFormatters = new ArrayList<>();
 
 
     public Layout(List<StringInt> parsedEntries, JournalAbbreviationRepository repository) {
@@ -50,35 +47,35 @@ public class Layout {
 
         for (StringInt parsedEntry : parsedEntries) {
             switch (parsedEntry.i) {
-            case LayoutHelper.IS_LAYOUT_TEXT:
-            case LayoutHelper.IS_SIMPLE_FIELD:
-            case LayoutHelper.IS_OPTION_FIELD:
-                // Do nothing
-                break;
-            case LayoutHelper.IS_FIELD_START:
-            case LayoutHelper.IS_GROUP_START:
-                blockEntries = new ArrayList<>();
-                blockStart = parsedEntry.s;
-                break;
-            case LayoutHelper.IS_FIELD_END:
-            case LayoutHelper.IS_GROUP_END:
-                if ((blockStart != null) && (blockEntries != null)) {
-                    if (blockStart.equals(parsedEntry.s)) {
-                        blockEntries.add(parsedEntry);
-                        le = new LayoutEntry(blockEntries,
-                                parsedEntry.i == LayoutHelper.IS_FIELD_END ? LayoutHelper.IS_FIELD_START : LayoutHelper.IS_GROUP_START,
-                                repository);
-                        tmpEntries.add(le);
-                        blockEntries = null;
-                    } else {
-                        LOGGER.debug(blockStart + '\n' + parsedEntry.s);
-                        LOGGER.warn("Nested field/group entries are not implemented!");
-                        Thread.dumpStack();
+                case LayoutHelper.IS_LAYOUT_TEXT:
+                case LayoutHelper.IS_SIMPLE_FIELD:
+                case LayoutHelper.IS_OPTION_FIELD:
+                    // Do nothing
+                    break;
+                case LayoutHelper.IS_FIELD_START:
+                case LayoutHelper.IS_GROUP_START:
+                    blockEntries = new ArrayList<>();
+                    blockStart = parsedEntry.s;
+                    break;
+                case LayoutHelper.IS_FIELD_END:
+                case LayoutHelper.IS_GROUP_END:
+                    if ((blockStart != null) && (blockEntries != null)) {
+                        if (blockStart.equals(parsedEntry.s)) {
+                            blockEntries.add(parsedEntry);
+                            le = new LayoutEntry(blockEntries,
+                                    parsedEntry.i == LayoutHelper.IS_FIELD_END ? LayoutHelper.IS_FIELD_START : LayoutHelper.IS_GROUP_START,
+                                    repository);
+                            tmpEntries.add(le);
+                            blockEntries = null;
+                        } else {
+                            LOGGER.debug(blockStart + '\n' + parsedEntry.s);
+                            LOGGER.warn("Nested field/group entries are not implemented!");
+                            Thread.dumpStack();
+                        }
                     }
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
             }
 
             if (blockEntries == null) {

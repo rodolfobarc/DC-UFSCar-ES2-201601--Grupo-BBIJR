@@ -15,24 +15,28 @@
 */
 package net.sf.jabref.importer.fileformat;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import net.sf.jabref.logic.formatter.bibtexfields.UnicodeToLatexFormatter;
 import net.sf.jabref.logic.util.strings.StringUtil;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.IdGenerator;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.*;
 
 class MedlineHandler extends DefaultHandler {
 
     private static final UnicodeToLatexFormatter UNICODE_CONVERTER = new UnicodeToLatexFormatter();
+    private static final String KEYWORD_SEPARATOR = "; ";
     private final List<BibEntry> bibitems = new ArrayList<>();
+    private final String series = "";
+    private final String editor = "";
+    private final String booktitle = "";
+    private final String type = "article";
+    private final String key = "";
+    private final String address = "";
+    private final List<String> authors = new ArrayList<>();
+    private final Set<String> descriptors = new TreeSet<>(); // To gather keywords
     private boolean inTitle;
     private boolean inYear;
     private boolean inJournal;
@@ -76,12 +80,6 @@ class MedlineHandler extends DefaultHandler {
     private String number = "";
     private String page = "";
     private String medlineDate = "";
-    private final String series = "";
-    private final String editor = "";
-    private final String booktitle = "";
-    private final String type = "article";
-    private final String key = "";
-    private final String address = "";
     private String pubmedid = "";
     private String doi = "";
     private String pii = "";
@@ -90,11 +88,6 @@ class MedlineHandler extends DefaultHandler {
     private String minorTopics = "";
     private String language = "";
     private String pst = "";
-    private final List<String> authors = new ArrayList<>();
-    private final Set<String> descriptors = new TreeSet<>(); // To gather keywords
-
-    private static final String KEYWORD_SEPARATOR = "; ";
-
 
     public List<BibEntry> getItems() {
         return bibitems;
@@ -193,8 +186,7 @@ class MedlineHandler extends DefaultHandler {
     private String join(Object[] sa, String delim) {
         StringBuilder sb = new StringBuilder();
         sb.append(sa[0]);
-        for (int i = 1; i < sa.length; i++)
-        {
+        for (int i = 1; i < sa.length; i++) {
             sb.append(delim);
             sb.append(sa[i]);
         }
@@ -207,17 +199,17 @@ class MedlineHandler extends DefaultHandler {
             //bibitems.add( new Bibitem(null, makeBibtexString(), Globals.nextKey(),"-1" )	 );
             // check if year ="" then give medline date instead
             if ("".equals(year) && !"".equals(medlineDate)) {
-                    // multi-year date format
-                    //System.out.println(MedlineDate);
-                    year = medlineDate.substring(0, 4);
-                    //Matcher m = Pattern.compile("\\b[0-9]{4}\\b").matcher(MedlineDate);
-                    //if(m.matches())
-                    //year = m.group();
+                // multi-year date format
+                //System.out.println(MedlineDate);
+                year = medlineDate.substring(0, 4);
+                //Matcher m = Pattern.compile("\\b[0-9]{4}\\b").matcher(MedlineDate);
+                //if(m.matches())
+                //year = m.group();
             }
 
             // Build a string from the collected keywords:
             StringBuilder sb = new StringBuilder();
-            for (Iterator<String> iterator = descriptors.iterator(); iterator.hasNext();) {
+            for (Iterator<String> iterator = descriptors.iterator(); iterator.hasNext(); ) {
                 String s = iterator.next();
                 sb.append(s);
                 if (iterator.hasNext()) {
@@ -324,43 +316,31 @@ class MedlineHandler extends DefaultHandler {
             String url = "";
             medlineDate = "";
             descriptors.clear();
-        }
-
-        else if ("ArticleTitle".equals(localName)) {
+        } else if ("ArticleTitle".equals(localName)) {
             inTitle = false;
-        }
-        else if ("PubDate".equals(localName)) {
+        } else if ("PubDate".equals(localName)) {
             inPubDate = false;
-        }
-        else if ("Year".equals(localName)) {
+        } else if ("Year".equals(localName)) {
             inYear = false;
-        }
-        else if ("PMID".equals(localName)) {
+        } else if ("PMID".equals(localName)) {
             inPubMedID = false;
-        }
-        else if ("MedlineDate".equals(localName)) {
+        } else if ("MedlineDate".equals(localName)) {
             inMedlineDate = false;
-        }
-        else if ("MedlineTA".equals(localName)) {
+        } else if ("MedlineTA".equals(localName)) {
             inJournal = false;
         } //journal name
         else if ("Month".equals(localName)) {
             inMonth = false;
-        }
-        else if ("Volume".equals(localName)) {
+        } else if ("Volume".equals(localName)) {
             inVolume = false;
-        }
-        else if ("Language".equals(localName)) {
+        } else if ("Language".equals(localName)) {
             inLanguage = false;
-        }
-        else if ("PublicationStatus".equals(localName)) {
+        } else if ("PublicationStatus".equals(localName)) {
             inPst = false;
-        }
-        else if ("AuthorList".equals(localName)) {
+        } else if ("AuthorList".equals(localName)) {
             author = join(authors.toArray(), " and ");
             inAuthorList = false;
-        }
-        else if ("Author".equals(localName)) {
+        } else if ("Author".equals(localName)) {
             // forename sometimes has initials with " " in middle: is pattern [A-Z] [A-Z]
             // when above is the case replace it with initials
             if ((forename.length() == 3) && (forename.charAt(1) == ' ')) {
@@ -388,8 +368,7 @@ class MedlineHandler extends DefaultHandler {
             initials = "";
             lastname = "";
             suffix = "";
-        }
-        else if ("DescriptorName".equals(localName)) {
+        } else if ("DescriptorName".equals(localName)) {
             inDescriptorName = false;
         } else if ("QualifierName".equals(localName)) {
             inQualifierName = false;
@@ -400,36 +379,27 @@ class MedlineHandler extends DefaultHandler {
             } else {
                 descriptors.add(majorTopic + ", " + minorTopics);
             }
-        }
-        else if ("LastName".equals(localName)) {
+        } else if ("LastName".equals(localName)) {
             inLastName = false;
-        }
-        else if ("Suffix".equals(localName)) {
+        } else if ("Suffix".equals(localName)) {
             inSuffix = false;
-        }
-        else if ("ForeName".equals(localName) || "FirstName".equals(localName)) {
+        } else if ("ForeName".equals(localName) || "FirstName".equals(localName)) {
             inForename = false;
-        }
-        else if ("Issue".equals(localName)) {
+        } else if ("Issue".equals(localName)) {
             inIssue = false;
-        }
-        else if ("MedlinePgn".equals(localName)) {
+        } else if ("MedlinePgn".equals(localName)) {
             inMedlinePgn = false;
         }//pagenumber
         else if ("URL".equals(localName)) {
             inUrl = false;
-        }
-        else if ("Initials".equals(localName)) {
+        } else if ("Initials".equals(localName)) {
             //initials= '.' + initials + '.';
             inInitials = false;
-        }
-        else if ("AbstractText".equals(localName)) {
+        } else if ("AbstractText".equals(localName)) {
             inAbstractText = false;
-        }
-        else if ("Affiliation".equals(localName)) {
+        } else if ("Affiliation".equals(localName)) {
             inAffiliation = false;
-        }
-        else if ("ArticleId".equals(localName)) {
+        } else if ("ArticleId".equals(localName)) {
             if (inDoi) {
                 inDoi = false;
             } else if (inPii) {
@@ -448,56 +418,40 @@ class MedlineHandler extends DefaultHandler {
         boolean inMedlineID = false;
         if (inTitle) {
             title += new String(data, start, length);
-        }
-        else if (inYear) {
+        } else if (inYear) {
             year += new String(data, start, length);
-        }
-        else if (inJournal) {
+        } else if (inJournal) {
             journal += new String(data, start, length);
-        }
-        else if (inMonth) {
+        } else if (inMonth) {
             month += new String(data, start, length);
-        }
-        else if (inVolume) {
+        } else if (inVolume) {
             volume += new String(data, start, length);
-        }
-        else if (inLanguage) {
+        } else if (inLanguage) {
             language += new String(data, start, length).toLowerCase();
-        }
-        else if (inPst) {
+        } else if (inPst) {
             pst += new String(data, start, length);
-        }
-        else if (inLastName) {
+        } else if (inLastName) {
             lastname += new String(data, start, length);
-        }
-        else if (inSuffix) {
+        } else if (inSuffix) {
             suffix += new String(data, start, length);
-        }
-        else if (inInitials) {
+        } else if (inInitials) {
             initials += new String(data, start, length);
-        }
-        else if (inIssue) {
+        } else if (inIssue) {
             number += new String(data, start, length);
-        }
-        else if (inMedlinePgn) {
+        } else if (inMedlinePgn) {
             page += new String(data, start, length);
-        }
-        else if (inMedlineID) {
+        } else if (inMedlineID) {
             String medlineID = new String(data, start, length);
-        }
-        else if (inURL) {
+        } else if (inURL) {
             String url = new String(data, start, length);
-        }
-        else if (inPubMedID) {
+        } else if (inPubMedID) {
             pubmedid = new String(data, start, length);
-        }
-        else if (inQualifierName) {
+        } else if (inQualifierName) {
             if (!"".equals(minorTopics)) {
                 minorTopics = minorTopics + "/";
             }
             minorTopics = minorTopics + new String(data, start, length);
-        }
-        else if (inDescriptorName) {
+        } else if (inDescriptorName) {
             majorTopic = new String(data, start, length);
         }
 
@@ -505,23 +459,17 @@ class MedlineHandler extends DefaultHandler {
         else if (inForename) {
             forename += new String(data, start, length);
             //System.out.println("IN FORENAME: " + forename);
-        }
-        else if (inAbstractText) {
+        } else if (inAbstractText) {
             abstractText += new String(data, start, length);
-        }
-        else if (inMedlineDate) {
+        } else if (inMedlineDate) {
             medlineDate += new String(data, start, length);
-        }
-        else if (inDoi) {
+        } else if (inDoi) {
             doi = new String(data, start, length);
-        }
-        else if (inPii) {
+        } else if (inPii) {
             pii = new String(data, start, length);
-        }
-        else if (inPmc) {
+        } else if (inPmc) {
             pmc = new String(data, start, length);
-        }
-        else if (inAffiliation) {
+        } else if (inAffiliation) {
             affiliation = new String(data, start, length);
         }
     }

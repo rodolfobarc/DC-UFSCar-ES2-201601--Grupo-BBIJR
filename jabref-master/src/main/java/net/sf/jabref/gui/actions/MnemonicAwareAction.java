@@ -15,11 +15,9 @@
 */
 package net.sf.jabref.gui.actions;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-
 import net.sf.jabref.gui.IconTheme;
+
+import javax.swing.*;
 
 /**
  * This class extends {@link AbstractAction} with the ability to set
@@ -30,10 +28,11 @@ import net.sf.jabref.gui.IconTheme;
  */
 public abstract class MnemonicAwareAction extends AbstractAction {
 
-    public MnemonicAwareAction() {}
+    public MnemonicAwareAction() {
+    }
 
     public MnemonicAwareAction(Icon icon) {
-        if(icon instanceof IconTheme.FontBasedIcon) {
+        if (icon instanceof IconTheme.FontBasedIcon) {
             putValue(Action.SMALL_ICON, ((IconTheme.FontBasedIcon) icon).createSmallIcon());
             putValue(Action.LARGE_ICON_KEY, icon);
         } else {

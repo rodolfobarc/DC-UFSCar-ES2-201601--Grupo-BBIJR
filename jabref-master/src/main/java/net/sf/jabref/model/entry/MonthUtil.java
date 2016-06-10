@@ -24,45 +24,7 @@ public class MonthUtil {
             new Month("October", "oct", "10", "#oct#", 10, 9),
             new Month("November", "nov", "11", "#nov#", 11, 10),
             new Month("December", "dec", "12", "#dec#", 12, 11)
-            );
-
-
-    public static class Month {
-
-        public final String fullName;
-        public final String shortName;
-        public final String twoDigitNumber;
-        public final String bibtexFormat;
-        public final int number;
-        public final int index;
-
-
-        public Month(String fullName, String shortName, String twoDigitNumber, String bibtexFormat, int number, int index) {
-            this.fullName = fullName;
-            this.shortName = shortName;
-            this.twoDigitNumber = twoDigitNumber;
-            this.bibtexFormat = bibtexFormat;
-            this.number = number;
-            this.index = index;
-        }
-
-        public boolean isValid() {
-            return true;
-        }
-    }
-
-    private static class UnknownMonth extends Month {
-
-        public UnknownMonth() {
-            super(null, null, null, null, 0, -1);
-        }
-
-        @Override
-        public boolean isValid() {
-            return false;
-        }
-    }
-
+    );
 
     /**
      * Find month by number
@@ -133,6 +95,42 @@ public class MonthUtil {
             return MonthUtil.getMonthByNumber(number);
         } catch (NumberFormatException e) {
             return MonthUtil.NULL_OBJECT;
+        }
+    }
+
+    public static class Month {
+
+        public final String fullName;
+        public final String shortName;
+        public final String twoDigitNumber;
+        public final String bibtexFormat;
+        public final int number;
+        public final int index;
+
+
+        public Month(String fullName, String shortName, String twoDigitNumber, String bibtexFormat, int number, int index) {
+            this.fullName = fullName;
+            this.shortName = shortName;
+            this.twoDigitNumber = twoDigitNumber;
+            this.bibtexFormat = bibtexFormat;
+            this.number = number;
+            this.index = index;
+        }
+
+        public boolean isValid() {
+            return true;
+        }
+    }
+
+    private static class UnknownMonth extends Month {
+
+        public UnknownMonth() {
+            super(null, null, null, null, 0, -1);
+        }
+
+        @Override
+        public boolean isValid() {
+            return false;
         }
     }
 

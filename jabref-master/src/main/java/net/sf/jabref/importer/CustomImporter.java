@@ -28,6 +28,8 @@
 
 package net.sf.jabref.importer;
 
+import net.sf.jabref.importer.fileformat.ImportFormat;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,11 +38,9 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.jabref.importer.fileformat.ImportFormat;
-
 /**
  * Object with data for a custom importer.
- *
+ * <p>
  * <p>Is also responsible for instantiating the class loader.</p>
  */
 public class CustomImporter implements Comparable<CustomImporter> {
@@ -91,12 +91,12 @@ public class CustomImporter implements Comparable<CustomImporter> {
         this.className = className;
     }
 
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
-    }
-
     public String getBasePath() {
         return basePath;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 
     public File getFileFromBasePath() {
@@ -133,7 +133,7 @@ public class CustomImporter implements Comparable<CustomImporter> {
 
     public ImportFormat getInstance() throws IOException, MalformedURLException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
-        try (URLClassLoader cl = new URLClassLoader(new URL[] {getBasePathUrl()})) {
+        try (URLClassLoader cl = new URLClassLoader(new URL[]{getBasePathUrl()})) {
             Class<?> clazz = Class.forName(className, true, cl);
             ImportFormat importFormat = (ImportFormat) clazz.newInstance();
             importFormat.setIsCustomImporter(true);

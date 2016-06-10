@@ -20,6 +20,70 @@ package net.sf.jabref.model.entry;
  */
 public class BibtexString {
 
+    private String name;
+    private String content;
+    private String id;
+    private Type type;
+    private String parsedSerialization;
+    private boolean hasChanged;
+    public BibtexString(String id, String name, String content) {
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        hasChanged = true;
+        type = Type.get(name);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+        hasChanged = true;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        hasChanged = true;
+        type = Type.get(name);
+    }
+
+    public String getContent() {
+        return content == null ? "" : content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+        hasChanged = true;
+    }
+
+    @Override
+    public Object clone() {
+        return new BibtexString(id, name, content);
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String getParsedSerialization() {
+        return parsedSerialization;
+    }
+
+    public void setParsedSerialization(String parsedSerialization) {
+        this.parsedSerialization = parsedSerialization;
+        hasChanged = false;
+    }
+
+    public boolean hasChanged() {
+        return hasChanged;
+    }
+
     /**
      * Type of a \@String.
      * <p>
@@ -84,72 +148,5 @@ public class BibtexString {
             }
             return OTHER;
         }
-    }
-
-
-    private String name;
-    private String content;
-    private String id;
-    private Type type;
-    private String parsedSerialization;
-    private boolean hasChanged;
-
-
-    public BibtexString(String id, String name, String content) {
-        this.id = id;
-        this.name = name;
-        this.content = content;
-        hasChanged = true;
-        type = Type.get(name);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-        hasChanged = true;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        hasChanged = true;
-        type = Type.get(name);
-    }
-
-    public String getContent() {
-        return content == null ? "" : content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-        hasChanged = true;
-    }
-
-    @Override
-    public Object clone() {
-        return new BibtexString(id, name, content);
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setParsedSerialization(String parsedSerialization) {
-        this.parsedSerialization = parsedSerialization;
-        hasChanged = false;
-    }
-
-    public String getParsedSerialization() {
-        return parsedSerialization;
-    }
-
-    public boolean hasChanged(){
-        return hasChanged;
     }
 }

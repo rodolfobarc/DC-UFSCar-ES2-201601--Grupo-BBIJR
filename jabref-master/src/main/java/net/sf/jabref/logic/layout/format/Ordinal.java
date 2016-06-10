@@ -16,10 +16,10 @@
 
 package net.sf.jabref.logic.layout.format;
 
+import net.sf.jabref.logic.layout.LayoutFormatter;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.jabref.logic.layout.LayoutFormatter;
 
 /**
  * Converts number to ordinal
@@ -41,18 +41,18 @@ public class Ordinal implements LayoutFormatter {
             int value = Integer.parseInt(result);
             String ordinalString;
             switch (value) {
-            case 1:
-                ordinalString = "st";
-                break;
-            case 2:
-                ordinalString = "nd";
-                break;
-            case 3:
-                ordinalString = "rd";
-                break;
-            default:
-                ordinalString = "th";
-                break;
+                case 1:
+                    ordinalString = "st";
+                    break;
+                case 2:
+                    ordinalString = "nd";
+                    break;
+                case 3:
+                    ordinalString = "rd";
+                    break;
+                default:
+                    ordinalString = "th";
+                    break;
             }
             m.appendReplacement(sb, result + ordinalString);
         }

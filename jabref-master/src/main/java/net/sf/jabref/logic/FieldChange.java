@@ -1,8 +1,8 @@
 package net.sf.jabref.logic;
 
-import java.util.Objects;
-
 import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.Objects;
 
 /**
  *

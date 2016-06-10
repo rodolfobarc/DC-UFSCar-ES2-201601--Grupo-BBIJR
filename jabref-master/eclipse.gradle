@@ -411,7 +411,7 @@ tasks.eclipse.doFirst {
         org.eclipse.jdt.core.formatter.wrap_before_or_operator_multicatch=false
         org.eclipse.jdt.core.formatter.wrap_outer_expressions_when_nested=true
         org.eclipse.jdt.core.javaFormatter=org.eclipse.jdt.core.defaultJavaFormatter
-        '''. stripIndent())
+        '''.stripIndent())
 
     File jdt_ui_prefs = file("${project.projectDir}/.settings/org.eclipse.jdt.ui.prefs")
     if (jdt_ui_prefs.exists()) {
@@ -543,6 +543,6 @@ tasks.eclipse.doFirst {
             sp_cleanup.use_this_for_non_static_method_access=false
             sp_cleanup.use_this_for_non_static_method_access_only_if_necessary=false
             sp_cleanup.use_type_arguments=false
-            '''. stripIndent())
+            '''.stripIndent())
     }
 }

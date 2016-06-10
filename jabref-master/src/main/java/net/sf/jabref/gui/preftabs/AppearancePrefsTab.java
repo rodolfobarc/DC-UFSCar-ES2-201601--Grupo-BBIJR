@@ -15,32 +15,20 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.OS;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class AppearancePrefsTab extends JPanel implements PrefsTab {
     private static final Log LOGGER = LogFactory.getLog(AppearancePrefsTab.class);
@@ -51,39 +39,16 @@ class AppearancePrefsTab extends JPanel implements PrefsTab {
     private final JCheckBox overrideFonts;
     private final JCheckBox showGrid;
     private final ColorSetupPanel colorPanel = new ColorSetupPanel();
-    private Font usedFont = GUIGlobals.currentFont;
-    private int oldMenuFontSize;
-    private boolean oldOverrideFontSize;
     private final JTextField fontSize;
     private final JTextField rowPadding;
     // Look & Feel
     private final JComboBox<String> classNamesLAF;
+    private final JCheckBox customLAF;
+    private Font usedFont = GUIGlobals.currentFont;
+    private int oldMenuFontSize;
+    private boolean oldOverrideFontSize;
     private String currentLAF = "";
     private boolean useDefaultLAF;
-    private final JCheckBox customLAF;
-
-    static class LookAndFeel {
-        private static final List<String> looks = Arrays.asList(
-                UIManager.getSystemLookAndFeelClassName(),
-                UIManager.getCrossPlatformLookAndFeelClassName(),
-                "com.jgoodies.looks.plastic.Plastic3DLookAndFeel",
-                "com.jgoodies.looks.windows.WindowsLookAndFeel");
-
-        public static List<String> getAvailableLookAndFeels() {
-            List<String> lookAndFeels = new ArrayList<>();
-
-            for (String l : looks) {
-                try {
-                    // Try to find L&F
-                    Class.forName(l);
-                    lookAndFeels.add(l);
-                } catch (ClassNotFoundException ignored) {
-                    // Ignored
-                }
-            }
-            return lookAndFeels;
-        }
-    }
 
     /**
      * Customization of appearance parameters.
@@ -289,5 +254,28 @@ class AppearancePrefsTab extends JPanel implements PrefsTab {
     @Override
     public String getTabName() {
         return Localization.lang("Appearance");
+    }
+
+    static class LookAndFeel {
+        private static final List<String> looks = Arrays.asList(
+                UIManager.getSystemLookAndFeelClassName(),
+                UIManager.getCrossPlatformLookAndFeelClassName(),
+                "com.jgoodies.looks.plastic.Plastic3DLookAndFeel",
+                "com.jgoodies.looks.windows.WindowsLookAndFeel");
+
+        public static List<String> getAvailableLookAndFeels() {
+            List<String> lookAndFeels = new ArrayList<>();
+
+            for (String l : looks) {
+                try {
+                    // Try to find L&F
+                    Class.forName(l);
+                    lookAndFeels.add(l);
+                } catch (ClassNotFoundException ignored) {
+                    // Ignored
+                }
+            }
+            return lookAndFeels;
+        }
     }
 }

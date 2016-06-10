@@ -15,15 +15,6 @@
 */
 package net.sf.jabref.logic.openoffice;
 
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.sf.jabref.logic.layout.Layout;
-import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.entry.BibEntry;
-
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
@@ -34,6 +25,14 @@ import com.sun.star.text.XParagraphCursor;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.uno.UnoRuntime;
+import net.sf.jabref.logic.layout.Layout;
+import net.sf.jabref.model.database.BibDatabase;
+import net.sf.jabref.model.entry.BibEntry;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility methods for processing OO Writer documents.
@@ -48,23 +47,8 @@ public class OOUtil {
     private static final String CHAR_WEIGHT = "CharWeight";
     private static final String CHAR_ESCAPEMENT_HEIGHT = "CharEscapementHeight";
     private static final String CHAR_ESCAPEMENT = "CharEscapement";
-
-
-    public enum Formatting {
-        BOLD,
-        ITALIC,
-        SMALLCAPS,
-        SUPERSCRIPT,
-        SUBSCRIPT,
-        UNDERLINE,
-        STRIKEOUT,
-        MONOSPACE
-    }
-
     private static final Pattern HTML_TAG = Pattern.compile("</?[a-z]+>");
-
     private static final String UNIQUEFIER_FIELD = "uniq";
-
 
     private OOUtil() {
         // Just to hide the public constructor
@@ -72,19 +56,20 @@ public class OOUtil {
 
     /**
      * Insert a reference, formatted using a Layout, at the position of a given cursor.
-     * @param text The text to insert in.
-     * @param cursor The cursor giving the insert location.
-     * @param layout The Layout to format the reference with.
-     * @param parStyle The name of the paragraph style to use.
-     * @param entry The entry to insert.
-     * @param database The database the entry belongs to.
+     *
+     * @param text       The text to insert in.
+     * @param cursor     The cursor giving the insert location.
+     * @param layout     The Layout to format the reference with.
+     * @param parStyle   The name of the paragraph style to use.
+     * @param entry      The entry to insert.
+     * @param database   The database the entry belongs to.
      * @param uniquefier Uniqiefier letter, if any, to append to the entry's year.
      * @throws Exception
      */
     public static void insertFullReferenceAtCurrentLocation(XText text, XTextCursor cursor,
-            Layout layout, String parStyle, BibEntry entry, BibDatabase database, String uniquefier)
-                    throws UndefinedParagraphFormatException, UnknownPropertyException, PropertyVetoException,
-                    WrappedTargetException, IllegalArgumentException {
+                                                            Layout layout, String parStyle, BibEntry entry, BibDatabase database, String uniquefier)
+            throws UndefinedParagraphFormatException, UnknownPropertyException, PropertyVetoException,
+            WrappedTargetException, IllegalArgumentException {
 
         // Backup the value of the uniq field, just in case the entry already has it:
         String oldUniqVal = entry.getField(UNIQUEFIER_FIELD);
@@ -114,9 +99,10 @@ public class OOUtil {
     /**
      * Insert a text with formatting indicated by HTML-like tags, into a text at
      * the position given by a cursor.
-     * @param text The text to insert in.
-     * @param cursor The cursor giving the insert location.
-     * @param lText The marked-up text to insert.
+     *
+     * @param text     The text to insert in.
+     * @param cursor   The cursor giving the insert location.
+     * @param lText    The marked-up text to insert.
      * @param parStyle The name of the paragraph style to use.
      * @throws WrappedTargetException
      * @throws PropertyVetoException
@@ -124,8 +110,8 @@ public class OOUtil {
      * @throws IllegalArgumentException
      */
     public static void insertOOFormattedTextAtCurrentLocation(XText text, XTextCursor cursor, String lText,
-            String parStyle) throws UndefinedParagraphFormatException, UnknownPropertyException, PropertyVetoException,
-                    WrappedTargetException, IllegalArgumentException {
+                                                              String parStyle) throws UndefinedParagraphFormatException, UnknownPropertyException, PropertyVetoException,
+            WrappedTargetException, IllegalArgumentException {
 
         XParagraphCursor parCursor = UnoRuntime.queryInterface(
                 XParagraphCursor.class, cursor);
@@ -200,9 +186,9 @@ public class OOUtil {
     }
 
     public static void insertTextAtCurrentLocation(XText text, XTextCursor cursor, String string,
-            Set<Formatting> formatting)
-                    throws UnknownPropertyException, PropertyVetoException, WrappedTargetException,
-                    IllegalArgumentException {
+                                                   Set<Formatting> formatting)
+            throws UnknownPropertyException, PropertyVetoException, WrappedTargetException,
+            IllegalArgumentException {
         text.insertString(cursor, string, true);
         // Access the property set of the cursor, and set the currently selected text
         // (which is the string we just inserted) to be bold
@@ -227,7 +213,7 @@ public class OOUtil {
         if (formatting.contains(Formatting.SMALLCAPS)) {
             xCursorProps.setPropertyValue(CHAR_CASE_MAP,
                     com.sun.star.style.CaseMap.SMALLCAPS);
-        }        else {
+        } else {
             xCursorProps.setPropertyValue(CHAR_CASE_MAP,
                     com.sun.star.style.CaseMap.NONE);
         }
@@ -298,5 +284,16 @@ public class OOUtil {
         XPropertySet props = UnoRuntime.queryInterface(
                 XPropertySet.class, o);
         return props.getPropertyValue(property);
+    }
+
+    public enum Formatting {
+        BOLD,
+        ITALIC,
+        SMALLCAPS,
+        SUPERSCRIPT,
+        SUBSCRIPT,
+        UNDERLINE,
+        STRIKEOUT,
+        MONOSPACE
     }
 }

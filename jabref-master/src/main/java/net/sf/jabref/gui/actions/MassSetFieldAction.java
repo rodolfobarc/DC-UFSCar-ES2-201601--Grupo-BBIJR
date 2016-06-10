@@ -15,28 +15,9 @@
  */
 package net.sf.jabref.gui.actions;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.undo.UndoableEdit;
-
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
@@ -46,13 +27,17 @@ import net.sf.jabref.gui.undo.UndoableFieldChange;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.entry.BibEntry;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.undo.UndoableEdit;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An Action for launching mass field.
- *
+ * <p>
  * Functionality:
  * * Defaults to selected entries, or all entries if none are selected.
  * * Input field name
@@ -77,6 +62,78 @@ public class MassSetFieldAction extends MnemonicAwareAction {
     public MassSetFieldAction(JabRefFrame frame) {
         putValue(Action.NAME, Localization.menuTitle("Set/clear/rename fields") + "...");
         this.frame = frame;
+    }
+
+    /**
+     * Set a given field to a given value for all entries in a Collection. This method DOES NOT update any UndoManager,
+     * but returns a relevant CompoundEdit that should be registered by the caller.
+     *
+     * @param entries         The entries to set the field for.
+     * @param field           The name of the field to set.
+     * @param text            The value to set. This value can be null, indicating that the field should be cleared.
+     * @param overwriteValues Indicate whether the value should be set even if an entry already has the field set.
+     * @return A CompoundEdit for the entire operation.
+     */
+    private static UndoableEdit massSetField(Collection<BibEntry> entries, String field, String text,
+                                             boolean overwriteValues) {
+
+        NamedCompound ce = new NamedCompound(Localization.lang("Set field"));
+        for (BibEntry entry : entries) {
+            String oldVal = entry.getField(field);
+            // If we are not allowed to overwrite values, check if there is a
+            // nonempty
+            // value already for this entry:
+            if (!overwriteValues && (oldVal != null) && !oldVal.isEmpty()) {
+                continue;
+            }
+            if (text == null) {
+                entry.clearField(field);
+            } else {
+                entry.setField(field, text);
+            }
+            ce.addEdit(new UndoableFieldChange(entry, field, oldVal, text));
+        }
+        ce.end();
+        return ce;
+    }
+
+    /**
+     * Move contents from one field to another for a Collection of entries.
+     *
+     * @param entries         The entries to do this operation for.
+     * @param field           The field to move contents from.
+     * @param newField        The field to move contents into.
+     * @param overwriteValues If true, overwrites any existing values in the new field. If false, makes no change for
+     *                        entries with existing value in the new field.
+     * @return A CompoundEdit for the entire operation.
+     */
+    private static UndoableEdit massRenameField(Collection<BibEntry> entries, String field, String newField,
+                                                boolean overwriteValues) {
+        NamedCompound ce = new NamedCompound(Localization.lang("Rename field"));
+        for (BibEntry entry : entries) {
+            String valToMove = entry.getField(field);
+            // If there is no value, do nothing:
+            if ((valToMove == null) || valToMove.isEmpty()) {
+                continue;
+            }
+            // If we are not allowed to overwrite values, check if there is a
+            // non-empty value already for this entry for the new field:
+            String valInNewField = entry.getField(newField);
+            if (!overwriteValues && (valInNewField != null) && !valInNewField.isEmpty()) {
+                continue;
+            }
+
+            entry.setField(newField, valToMove);
+            ce.addEdit(new UndoableFieldChange(entry, newField, valInNewField, valToMove));
+            entry.clearField(field);
+            ce.addEdit(new UndoableFieldChange(entry, field, valToMove, null));
+        }
+        ce.end();
+        return ce;
+    }
+
+    private static String[] getFieldNames(String s) {
+        return s.split("[\\s;,]");
     }
 
     private void createDialog() {
@@ -106,16 +163,16 @@ public class MassSetFieldAction extends MnemonicAwareAction {
         }
 
         set.addChangeListener(e ->
-        // Entering a text is only relevant if we are setting, not clearing:
-        text.setEnabled(set.isSelected()));
+                // Entering a text is only relevant if we are setting, not clearing:
+                text.setEnabled(set.isSelected()));
 
         clear.addChangeListener(e ->
-        // Overwrite protection makes no sense if we are clearing the field:
-        overwrite.setEnabled(!clear.isSelected()));
+                // Overwrite protection makes no sense if we are clearing the field:
+                overwrite.setEnabled(!clear.isSelected()));
 
         rename.addChangeListener(e ->
-        // Entering a text is only relevant if we are renaming
-        renameTo.setEnabled(rename.isSelected()));
+                // Entering a text is only relevant if we are renaming
+                renameTo.setEnabled(rename.isSelected()));
 
         overwrite = new JCheckBox(Localization.lang("Overwrite existing field values"), true);
         ButtonGroup bg = new ButtonGroup();
@@ -243,83 +300,11 @@ public class MassSetFieldAction extends MnemonicAwareAction {
             for (String field1 : fields) {
                 ce.addEdit(MassSetFieldAction.massSetField(entryList, field1,
                         set.isSelected() ? toSet : null,
-                                overwrite.isSelected()));
+                        overwrite.isSelected()));
             }
         }
         ce.end();
         bp.undoManager.addEdit(ce);
         bp.markBaseChanged();
-    }
-
-    /**
-     * Set a given field to a given value for all entries in a Collection. This method DOES NOT update any UndoManager,
-     * but returns a relevant CompoundEdit that should be registered by the caller.
-     *
-     * @param entries         The entries to set the field for.
-     * @param field           The name of the field to set.
-     * @param text            The value to set. This value can be null, indicating that the field should be cleared.
-     * @param overwriteValues Indicate whether the value should be set even if an entry already has the field set.
-     * @return A CompoundEdit for the entire operation.
-     */
-    private static UndoableEdit massSetField(Collection<BibEntry> entries, String field, String text,
-            boolean overwriteValues) {
-
-        NamedCompound ce = new NamedCompound(Localization.lang("Set field"));
-        for (BibEntry entry : entries) {
-            String oldVal = entry.getField(field);
-            // If we are not allowed to overwrite values, check if there is a
-            // nonempty
-            // value already for this entry:
-            if (!overwriteValues && (oldVal != null) && !oldVal.isEmpty()) {
-                continue;
-            }
-            if (text == null) {
-                entry.clearField(field);
-            } else {
-                entry.setField(field, text);
-            }
-            ce.addEdit(new UndoableFieldChange(entry, field, oldVal, text));
-        }
-        ce.end();
-        return ce;
-    }
-
-    /**
-     * Move contents from one field to another for a Collection of entries.
-     *
-     * @param entries         The entries to do this operation for.
-     * @param field           The field to move contents from.
-     * @param newField        The field to move contents into.
-     * @param overwriteValues If true, overwrites any existing values in the new field. If false, makes no change for
-     *                        entries with existing value in the new field.
-     * @return A CompoundEdit for the entire operation.
-     */
-    private static UndoableEdit massRenameField(Collection<BibEntry> entries, String field, String newField,
-            boolean overwriteValues) {
-        NamedCompound ce = new NamedCompound(Localization.lang("Rename field"));
-        for (BibEntry entry : entries) {
-            String valToMove = entry.getField(field);
-            // If there is no value, do nothing:
-            if ((valToMove == null) || valToMove.isEmpty()) {
-                continue;
-            }
-            // If we are not allowed to overwrite values, check if there is a
-            // non-empty value already for this entry for the new field:
-            String valInNewField = entry.getField(newField);
-            if (!overwriteValues && (valInNewField != null) && !valInNewField.isEmpty()) {
-                continue;
-            }
-
-            entry.setField(newField, valToMove);
-            ce.addEdit(new UndoableFieldChange(entry, newField, valInNewField, valToMove));
-            entry.clearField(field);
-            ce.addEdit(new UndoableFieldChange(entry, field, valToMove, null));
-        }
-        ce.end();
-        return ce;
-    }
-
-    private static String[] getFieldNames(String s) {
-        return s.split("[\\s;,]");
     }
 }

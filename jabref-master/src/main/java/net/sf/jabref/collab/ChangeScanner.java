@@ -15,25 +15,7 @@
  */
 package net.sf.jabref.collab;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import net.sf.jabref.BibDatabaseContext;
-import net.sf.jabref.Defaults;
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefExecutorService;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.MetaData;
+import net.sf.jabref.*;
 import net.sf.jabref.bibtex.comparator.EntryComparator;
 import net.sf.jabref.exporter.BibDatabaseWriter;
 import net.sf.jabref.exporter.SaveException;
@@ -51,34 +33,33 @@ import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.database.EntrySorter;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexString;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 public class ChangeScanner implements Runnable {
 
-    private static final String[] SORT_BY = new String[] {"year", "author", "title"};
-
+    private static final String[] SORT_BY = new String[]{"year", "author", "title"};
+    private static final Log LOGGER = LogFactory.getLog(ChangeScanner.class);
+    private static final double MATCH_THRESHOLD = 0.4;
     private final File f;
-
     private final BibDatabase inMem;
     private final MetaData mdInMem;
     private final BasePanel panel;
     private final JabRefFrame frame;
-
-    private BibDatabase inTemp;
-    private MetaData mdInTemp;
-
-    private static final Log LOGGER = LogFactory.getLog(ChangeScanner.class);
-
-    private static final double MATCH_THRESHOLD = 0.4;
-
     /**
      * We create an ArrayList to hold the changes we find. These will be added in the form
      * of UndoEdit objects. We instantiate these so that the changes found in the file on disk
      * can be reproduced in memory by calling redo() on them. REDO, not UNDO!
      */
     private final DefaultMutableTreeNode changes = new DefaultMutableTreeNode(Localization.lang("External changes"));
+    private BibDatabase inTemp;
+    private MetaData mdInTemp;
 
     //  NamedCompound edit = new NamedCompound("Merged external changes")
 
@@ -88,6 +69,45 @@ public class ChangeScanner implements Runnable {
         this.inMem = bp.getDatabase();
         this.mdInMem = bp.getBibDatabaseContext().getMetaData();
         this.f = file;
+    }
+
+    /**
+     * Finds the entry in neu best fitting the specified entry in old. If no entries get a score
+     * above zero, an entry is still returned.
+     *
+     * @param old   EntrySorter
+     * @param neu   EntrySorter
+     * @param index int
+     * @return BibEntry
+     */
+    private static BibEntry bestFit(EntrySorter old, EntrySorter neu, int index) {
+        double comp = -1;
+        int found = 0;
+        for (int i = 0; i < neu.getEntryCount(); i++) {
+            double res = DuplicateCheck.compareEntriesStrictly(old.getEntryAt(index), neu.getEntryAt(i));
+            if (res > comp) {
+                comp = res;
+                found = i;
+            }
+            if (comp > 1) {
+                break;
+            }
+        }
+        return neu.getEntryAt(found);
+    }
+
+    private static Optional<BibtexString> findString(BibDatabase base, String name, Set<Object> used) {
+        if (!base.hasStringLabel(name)) {
+            return Optional.empty();
+        }
+        for (String key : base.getStringKeySet()) {
+            BibtexString bs = base.getString(key);
+            if (bs.getName().equals(name) && !used.contains(key)) {
+                used.add(key);
+                return Optional.of(bs);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -326,31 +346,6 @@ public class ChangeScanner implements Runnable {
         }
     }
 
-    /**
-     * Finds the entry in neu best fitting the specified entry in old. If no entries get a score
-     * above zero, an entry is still returned.
-     *
-     * @param old   EntrySorter
-     * @param neu   EntrySorter
-     * @param index int
-     * @return BibEntry
-     */
-    private static BibEntry bestFit(EntrySorter old, EntrySorter neu, int index) {
-        double comp = -1;
-        int found = 0;
-        for (int i = 0; i < neu.getEntryCount(); i++) {
-            double res = DuplicateCheck.compareEntriesStrictly(old.getEntryAt(index), neu.getEntryAt(i));
-            if (res > comp) {
-                comp = res;
-                found = i;
-            }
-            if (comp > 1) {
-                break;
-            }
-        }
-        return neu.getEntryAt(found);
-    }
-
     private void scanPreamble(BibDatabase inMem1, BibDatabase onTmp, BibDatabase onDisk) {
         String mem = inMem1.getPreamble();
         String tmp = onTmp.getPreamble();
@@ -467,20 +462,6 @@ public class ChangeScanner implements Runnable {
                 changes.add(new StringAddChange(disk));
             }
         }
-    }
-
-    private static Optional<BibtexString> findString(BibDatabase base, String name, Set<Object> used) {
-        if (!base.hasStringLabel(name)) {
-            return Optional.empty();
-        }
-        for (String key : base.getStringKeySet()) {
-            BibtexString bs = base.getString(key);
-            if (bs.getName().equals(name) && !used.contains(key)) {
-                used.add(key);
-                return Optional.of(bs);
-            }
-        }
-        return Optional.empty();
     }
 
     /**

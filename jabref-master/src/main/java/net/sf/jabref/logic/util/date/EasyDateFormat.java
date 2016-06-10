@@ -1,10 +1,10 @@
 package net.sf.jabref.logic.util.date;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EasyDateFormat {
 

@@ -15,31 +15,8 @@
  */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.BackingStoreException;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-
-import net.sf.jabref.Globals;
-import net.sf.jabref.JabRefException;
-import net.sf.jabref.JabRefPreferences;
-import net.sf.jabref.JabRefPreferencesFilter;
-import net.sf.jabref.JabRefPreferencesFilterDialog;
+import com.jgoodies.forms.builder.ButtonBarBuilder;
+import net.sf.jabref.*;
 import net.sf.jabref.exporter.ExportFormats;
 import net.sf.jabref.gui.FileDialogs;
 import net.sf.jabref.gui.GUIGlobals;
@@ -47,32 +24,34 @@ import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.keyboard.KeyBinder;
 import net.sf.jabref.gui.maintable.MainTable;
 import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.BackingStoreException;
 
 /**
  * Preferences dialog. Contains a TabbedPane, and tabs will be defined in
  * separate classes. Tabs MUST implement the PrefsTab interface, since this
  * dialog will call the storeSettings() method of all tabs when the user presses
  * ok.
- *
+ * <p>
  * With this design, it should be very easy to add new tabs later.
- *
  */
 public class PreferencesDialog extends JDialog {
 
+    private static final Log LOGGER = LogFactory.getLog(PreferencesDialog.class);
     private final JPanel main;
-
     private final JabRefFrame frame;
-
     private final JButton importPreferences = new JButton(Localization.lang("Import preferences"));
     private final JButton exportPreferences = new JButton(Localization.lang("Export preferences"));
     private final JButton showPreferences = new JButton(Localization.lang("Show preferences"));
     private final JButton resetPreferences = new JButton(Localization.lang("Reset preferences"));
-
-    private static final Log LOGGER = LogFactory.getLog(PreferencesDialog.class);
 
 
     public PreferencesDialog(JabRefFrame parent) {
@@ -241,6 +220,15 @@ public class PreferencesDialog extends JDialog {
         Globals.prefs.updateEntryEditorTabList();
     }
 
+    public void setValues() {
+        // Update all field values in the tabs:
+        int count = main.getComponentCount();
+        Component[] comps = main.getComponents();
+        for (int i = 0; i < count; i++) {
+            ((PrefsTab) comps[i]).setValues();
+        }
+    }
+
     class OkAction extends AbstractAction {
 
         public OkAction() {
@@ -272,17 +260,6 @@ public class PreferencesDialog extends JDialog {
             frame.output(Localization.lang("Preferences recorded."));
         }
     }
-
-
-    public void setValues() {
-        // Update all field values in the tabs:
-        int count = main.getComponentCount();
-        Component[] comps = main.getComponents();
-        for (int i = 0; i < count; i++) {
-            ((PrefsTab) comps[i]).setValues();
-        }
-    }
-
 
     class CancelAction extends AbstractAction {
 

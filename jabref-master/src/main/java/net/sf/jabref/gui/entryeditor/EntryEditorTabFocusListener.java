@@ -15,18 +15,15 @@
 */
 package net.sf.jabref.gui.entryeditor;
 
-import java.awt.Component;
-import java.awt.Rectangle;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import net.sf.jabref.gui.fieldeditors.FieldEditor;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
-
-import net.sf.jabref.gui.fieldeditors.FieldEditor;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /*
  * Focus listener that fires the storeFieldAction when a TextArea loses
@@ -34,11 +31,9 @@ import net.sf.jabref.gui.fieldeditors.FieldEditor;
  */
 class EntryEditorTabFocusListener implements FocusListener {
 
-    private JTextComponent textComponent;
-
-    private DocumentListener documentListener;
-
     private final EntryEditorTab entryEditorTab;
+    private JTextComponent textComponent;
+    private DocumentListener documentListener;
 
 
     public EntryEditorTabFocusListener(final EntryEditorTab entryEditorTab) {

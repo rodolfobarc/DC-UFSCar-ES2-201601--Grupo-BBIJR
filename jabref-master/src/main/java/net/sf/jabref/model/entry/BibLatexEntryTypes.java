@@ -22,6 +22,7 @@ import java.util.Optional;
 
 /**
  * This class defines entry types for BibLatex support.
+ *
  * @see http://mirrors.concertpass.com/tex-archive/macros/latex/contrib/biblatex/doc/biblatex.pdf
  */
 public class BibLatexEntryTypes {

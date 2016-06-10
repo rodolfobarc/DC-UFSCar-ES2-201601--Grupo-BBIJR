@@ -16,13 +16,8 @@
  */
 package net.sf.jabref.external.push;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.MetaData;
@@ -31,11 +26,12 @@ import net.sf.jabref.gui.actions.BrowseAction;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
-
-import com.jgoodies.forms.builder.FormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Abstract class for pushing entries into different editors.
@@ -43,12 +39,11 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AbstractPushToApplication implements PushToApplication {
 
     private static final Log LOGGER = LogFactory.getLog(AbstractPushToApplication.class);
-
+    protected final JTextField path = new JTextField(30);
     protected boolean couldNotCall; // Set to true in case the command could not be executed, e.g., if the file is not found
     protected boolean couldNotConnect; // Set to true in case the tunnel to the program (if one is used) does not operate
     protected boolean notDefined; // Set to true if the corresponding path is not defined in the preferences
     protected JPanel settings;
-    protected final JTextField path = new JTextField(30);
     protected String commandPath;
     protected String commandPathPreferenceKey;
     protected FormBuilder builder;

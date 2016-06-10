@@ -15,15 +15,6 @@
  */
 package net.sf.jabref.external;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jabref.Globals;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.importer.ParserResult;
@@ -32,12 +23,12 @@ import net.sf.jabref.logic.layout.format.NameFormatter;
 import net.sf.jabref.model.database.BibDatabase;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.BibtexEntryTypes;
+import org.junit.*;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -164,7 +155,7 @@ public class RegExpFileSearchTests {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         Globals.prefs = null;
     }
 

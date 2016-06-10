@@ -15,30 +15,19 @@
 */
 package net.sf.jabref.gui.preftabs;
 
-import java.awt.BorderLayout;
-import java.awt.Insets;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import net.sf.jabref.JabRefPreferences;
 import net.sf.jabref.gui.BasePanel;
 import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.logic.autocompleter.AutoCompleteFirstNameMode;
 import net.sf.jabref.logic.autocompleter.AutoCompletePreferences;
 import net.sf.jabref.logic.l10n.Localization;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.xnap.commons.gui.shortcut.EmacsKeyBindings;
+
+import javax.swing.*;
+import java.awt.*;
 
 class EntryEditorPrefsTab extends JPanel implements PrefsTab {
 
@@ -55,16 +44,15 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
     private final JRadioButton firstNameModeFull;
     private final JRadioButton firstNameModeAbbr;
     private final JRadioButton firstNameModeBoth;
-    private boolean oldAutoCompFF;
-    private boolean oldAutoCompLF;
-    private boolean oldAutoCompFModeAbbr;
-    private boolean oldAutoCompFModeFull;
     private final JSpinner shortestToComplete;
-
     private final JTextField autoCompFields;
     private final JabRefPreferences prefs;
     private final AutoCompletePreferences autoCompletePreferences;
     private final JabRefFrame frame;
+    private boolean oldAutoCompFF;
+    private boolean oldAutoCompLF;
+    private boolean oldAutoCompFModeAbbr;
+    private boolean oldAutoCompFModeFull;
 
     public EntryEditorPrefsTab(JabRefFrame frame, JabRefPreferences prefs) {
         this.prefs = prefs;
@@ -119,13 +107,13 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
 
         FormLayout layout = new FormLayout
                 (// columns
-                 "8dlu, left:pref, 8dlu, fill:150dlu, 4dlu, fill:pref", // 4dlu, left:pref, 4dlu",
-                 // rows  1 to 10
-                 "pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, " +
-                 // rows 11 to 20
-                 "pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, " +
-                 // rows 21 to 31
-                 "pref, 6dlu, pref, pref, pref, pref, 6dlu, pref, pref, pref, pref");
+                        "8dlu, left:pref, 8dlu, fill:150dlu, 4dlu, fill:pref", // 4dlu, left:pref, 4dlu",
+                        // rows  1 to 10
+                        "pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, " +
+                                // rows 11 to 20
+                                "pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, pref, 6dlu, " +
+                                // rows 21 to 31
+                                "pref, 6dlu, pref, pref, pref, pref, 6dlu, pref, pref, pref, pref");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         CellConstraints cc = new CellConstraints();
         builder.addSeparator(Localization.lang("Editor options"), cc.xyw(1, 1, 5));
@@ -139,8 +127,8 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
         builder.addSeparator(Localization.lang("Autocompletion options"), cc.xyw(1, 15, 5));
         builder.add(autoComplete, cc.xy(2, 19));
 
-        DefaultFormBuilder builder3 = new DefaultFormBuilder(new FormLayout("left:pref, 4dlu, fill:150dlu",""));
-        JLabel label = new JLabel(Localization.lang("Use autocompletion for the following fields")+":");
+        DefaultFormBuilder builder3 = new DefaultFormBuilder(new FormLayout("left:pref, 4dlu, fill:150dlu", ""));
+        JLabel label = new JLabel(Localization.lang("Use autocompletion for the following fields") + ":");
 
         builder3.append(label);
         builder3.append(autoCompFields);
@@ -150,14 +138,14 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
         builder.add(builder3.getPanel(), cc.xyw(2, 21, 3));
 
         builder.addSeparator(Localization.lang("Name format used for autocompletion"), cc.xyw(2, 23, 4));
-        builder.add(autoCompFF, cc.xy(2,24));
-        builder.add(autoCompLF, cc.xy(2,25));
-        builder.add(autoCompBoth, cc.xy(2,26));
+        builder.add(autoCompFF, cc.xy(2, 24));
+        builder.add(autoCompLF, cc.xy(2, 25));
+        builder.add(autoCompBoth, cc.xy(2, 26));
 
         builder.addSeparator(Localization.lang("Treatment of first names"), cc.xyw(2, 28, 4));
-        builder.add(firstNameModeAbbr, cc.xy(2,29));
-        builder.add(firstNameModeFull, cc.xy(2,30));
-        builder.add(firstNameModeBoth, cc.xy(2,31));
+        builder.add(firstNameModeAbbr, cc.xy(2, 29));
+        builder.add(firstNameModeFull, cc.xy(2, 30));
+        builder.add(firstNameModeBoth, cc.xy(2, 31));
 
         JPanel pan = builder.getPanel();
         pan.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -198,15 +186,15 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
         oldAutoCompLF = autoCompLF.isSelected();
 
         switch (autoCompletePreferences.getFirstnameMode()) {
-        case ONLY_ABBREVIATED:
-            firstNameModeAbbr.setSelected(true);
-            break;
-        case ONLY_FULL:
-            firstNameModeFull.setSelected(true);
-            break;
-        default:
-            firstNameModeBoth.setSelected(true);
-            break;
+            case ONLY_ABBREVIATED:
+                firstNameModeAbbr.setSelected(true);
+                break;
+            case ONLY_FULL:
+                firstNameModeFull.setSelected(true);
+                break;
+            default:
+                firstNameModeBoth.setSelected(true);
+                break;
         }
         // one field less than the option is enough. If one filed changes, another one also changes.
         oldAutoCompFModeAbbr = firstNameModeAbbr.isSelected();
@@ -254,12 +242,10 @@ class EntryEditorPrefsTab extends JPanel implements PrefsTab {
         if (autoCompBoth.isSelected()) {
             autoCompletePreferences.setOnlyCompleteFirstLast(false);
             autoCompletePreferences.setOnlyCompleteLastFirst(false);
-        }
-        else if (autoCompFF.isSelected()) {
+        } else if (autoCompFF.isSelected()) {
             autoCompletePreferences.setOnlyCompleteFirstLast(true);
             autoCompletePreferences.setOnlyCompleteLastFirst(false);
-        }
-        else {
+        } else {
             autoCompletePreferences.setOnlyCompleteFirstLast(false);
             autoCompletePreferences.setOnlyCompleteLastFirst(true);
         }

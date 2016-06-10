@@ -17,9 +17,8 @@ package net.sf.jabref.gui.help;
 
 /**
  * This enum globally defines all help pages with the name of the markdown file in the help repository at github
+ *
  * @see <a href=https://github.com/JabRef/help.jabref.org>help.jabref.org@github</a>
- *
- *
  */
 public enum HelpFiles {
     COMMAND_LINE(
@@ -121,20 +120,19 @@ public enum HelpFiles {
     FETCHER_BIBSONOMY_SCRAPER(
             "");
 
+    private final String pageName;
+
+
     /**
-     *
      * @param pageName The filename of the help page
      */
     HelpFiles(String pageName) {
         this.pageName = pageName;
     }
 
-
-    private final String pageName;
-
-
     /**
      * Get the filename of a help page
+     *
      * @return The filename of the associated help page
      */
     public String getPageName() {

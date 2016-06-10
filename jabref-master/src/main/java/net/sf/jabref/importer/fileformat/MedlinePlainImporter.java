@@ -17,6 +17,12 @@
 
 package net.sf.jabref.importer.fileformat;
 
+import net.sf.jabref.Globals;
+import net.sf.jabref.importer.ImportFormatReader;
+import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.model.entry.AuthorList;
+import net.sf.jabref.model.entry.BibEntry;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,15 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import net.sf.jabref.Globals;
-import net.sf.jabref.importer.ImportFormatReader;
-import net.sf.jabref.importer.OutputPrinter;
-import net.sf.jabref.model.entry.AuthorList;
-import net.sf.jabref.model.entry.BibEntry;
-
 /**
  * Importer for the MEDLINE Plain format.
- *
+ * <p>
  * check here for details on the format
  * http://www.nlm.nih.gov/bsd/mms/medlineelements.html
  *

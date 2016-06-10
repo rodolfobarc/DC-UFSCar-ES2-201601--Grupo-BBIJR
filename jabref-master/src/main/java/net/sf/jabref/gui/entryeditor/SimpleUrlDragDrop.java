@@ -15,26 +15,20 @@
 */
 package net.sf.jabref.gui.entryeditor;
 
-import java.awt.Component;
+import net.sf.jabref.gui.fieldeditors.FieldEditor;
+import net.sf.jabref.logic.l10n.Localization;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
-
-import javax.swing.JOptionPane;
-
-import net.sf.jabref.gui.fieldeditors.FieldEditor;
-import net.sf.jabref.logic.l10n.Localization;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Erik Putrycz erik.putrycz-at-nrc-cnrc.gc.ca
