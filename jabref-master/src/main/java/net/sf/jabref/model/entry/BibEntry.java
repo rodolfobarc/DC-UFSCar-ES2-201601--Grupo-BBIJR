@@ -204,6 +204,17 @@ public class BibEntry {
         // Finally, handle dates
         if ("date".equals(name)) {
             String year = getField("year");
+
+            /**
+             * Trata as datas
+             * Aceita somente anos entre 1900 e 2016
+             * Se o ano for invalido, retorna 2016
+             */
+            int ano = Integer.parseInt(year);
+            if(ano < 1900 || ano > 2016) {
+                return "2016";
+            }
+
             MonthUtil.Month month = MonthUtil.getMonth(getField("month"));
             if (year != null) {
                 if (month.isValid()) {
@@ -316,6 +327,30 @@ public class BibEntry {
 
         if (BibEntry.ID_FIELD.equals(fieldName)) {
             throw new IllegalArgumentException("The field name '" + name + "' is reserved");
+        }
+
+        /**
+         * Trata as datas
+         * Aceita somente anos entre 1900 e 2016
+         * Se o ano for invalido, retorna 2016
+         */
+        if (fieldName.equals("year") && (Integer.parseInt(value) < 1900 || Integer.parseInt(value) > 2016)) {
+            value = "2016";
+        }
+
+        /**
+         * Trata o bibtexkey
+         * Aceita somente bibtex com no minimo dois caracteres
+         * sendo o primeiro uma letra maiuscula ou minuscula
+         * Se o bibtex for invalido, retorna
+         */
+        if (fieldName.equals("bibtexkey")) {
+            char c = value.charAt(0);
+            int ascii = (int) c;
+            if  (value.length() < 2 || ascii < 65 || ascii > 122 || (ascii < 97 && ascii > 90)) {
+                    clearField(name);
+                    return;
+            }
         }
 
         changed = true;
