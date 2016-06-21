@@ -202,7 +202,7 @@ public class BibEntry {
      * <p>
      * Special attention is paid to dates: (see the BibLatex documentation,
      * chapter 2.3.8)
-     * The fields 'year' and 'month' are used if the 'date'
+     * The fields 'year' and 'month' are used if t he 'date'
      * field is empty. Conversely, getFieldOrAlias("year") also tries to
      * extract the year from the 'date' field (analogously for 'month').
      */
