@@ -35,21 +35,21 @@ public class CSVImporter extends ImportFormat {
 
         try (BufferedReader in = new BufferedReader(ImportFormatReader.getReaderDefaultEncoding(stream))) {
             String str = "";
-            //List<String> entries = new LinkedList<>();
             String[] campos = {};
             String[] valores = {};
-            //StringBuilder sb = new StringBuilder();
             str = in.readLine();
             campos = str.split(",");
             int tam = campos.length;
-            BibEntry b = new BibEntry(DEFAULT_BIBTEXENTRY_ID, "book");
+
             while (((str = in.readLine()) != null)) {
+                BibEntry b = new BibEntry(DEFAULT_BIBTEXENTRY_ID);
                     valores = str.split(",");
-                    for (int i = 0; i < tam; i++) {
+                b.setType(valores[0]);
+                for (int i = 1; i < tam; i++) {
                         b.setField(campos[i], valores[i]);
                     }
+                results.add(b);
                 }
-            results.add(b);
             }
 
         return results;
