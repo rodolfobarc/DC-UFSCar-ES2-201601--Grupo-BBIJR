@@ -332,14 +332,14 @@ public class BibEntry {
          * Trata o bibtexkey
          * Aceita somente bibtex com no minimo dois caracteres
          * sendo o primeiro uma letra maiuscula ou minuscula
-         * Se o bibtex for invalido, retorna
+         * Se o bibtex for invalido, recebe uma string vazia
          */
         if (fieldName.equals("bibtexkey")) {
             char c = value.charAt(0);
             int ascii = (int) c;
             if  (value.length() < 2 || ascii < 65 || ascii > 122 || (ascii < 97 && ascii > 90)) {
                     clearField(name);
-                    return;
+                    value = "";
             }
         }
 
