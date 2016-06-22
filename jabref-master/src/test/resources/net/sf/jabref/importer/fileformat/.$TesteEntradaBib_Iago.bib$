@@ -1,0 +1,26 @@
+% Encoding: UTF-8
+
+@Book{,
+  publisher = {pub1},
+  year      = {2016},
+  journal   = {Qualquer},
+}
+
+@Book{Bia2016,
+  year   = {2016},
+  author = {Bia},
+}
+
+@Article{Jorge2016,
+  author  = {Jorge},
+  journal = {X},
+  year    = {2016},
+}
+
+@Article{Rodolfo1989,
+  author    = {Rodolfo},
+  year      = {1989},
+  publisher = {pub2},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}

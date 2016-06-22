@@ -80,6 +80,7 @@ public class ImportFormatReader {
         /**
          * Adicionado o formato CSV
          */
+        formats.add(new CSVImporter());
 
         /**
          * Get custom import formats
