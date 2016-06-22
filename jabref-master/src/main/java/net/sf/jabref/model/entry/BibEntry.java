@@ -205,16 +205,6 @@ public class BibEntry {
         if ("date".equals(name)) {
             String year = getField("year");
 
-            /**
-             * Trata as datas
-             * Aceita somente anos entre 1900 e 2016
-             * Se o ano for invalido, retorna 2016
-             */
-            int ano = Integer.parseInt(year);
-            if(ano < 1900 || ano > 2016) {
-                return "2016";
-            }
-
             MonthUtil.Month month = MonthUtil.getMonth(getField("month"));
             if (year != null) {
                 if (month.isValid()) {
