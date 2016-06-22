@@ -77,6 +77,9 @@ public class ImportFormatReader {
         formats.add(new RepecNepImporter());
         formats.add(new RisImporter());
         formats.add(new SilverPlatterImporter());
+        /**
+         * Adiciona o suporte a arquivos CSV
+         */
         formats.add(new CSVImporter());
 
         /**
