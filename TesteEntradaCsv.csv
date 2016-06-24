@@ -1,0 +1,8 @@
+entrytype,bibtexkey,author,title,year,journal,publisher,editor,volume,pages,note,number,month,series,edition,address
+book,Iago2058,Iago,TesteAnoBibtex1,2058,,Publisher1,Editor1,,,,,,,,
+book,B,Beatriz,TesteAnoBibtex2,1989,,Publisher2,Editor2,,,,,,,,
+article,1900Jorge,Jorge,TesteAnoBibtex3,1900,Journal1,,,,,,,,,,
+book,Bruno2007,Bruno,TesteEntradaOK,2007,,Publisher3,Editor3,,,,,,,,
+article,Joao2008,Joao,TesteEntradaOK,2008,Journal3,,,,,,,,,,
+book,Jonas1918,Jonas,TesteCamposOpcionais1,1918,,Publisher4,Editor4,1,,Note1,1,##jan##,Series1,Edition1,Address1
+article,Lucas1999,Lucas,TesteCamposOpcionais2,1999,Journal4,,,1,214,Note2,2,##feb##,,,
