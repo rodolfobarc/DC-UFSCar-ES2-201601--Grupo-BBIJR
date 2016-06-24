@@ -47,8 +47,22 @@ public class CSVImporter extends ImportFormat {
                 }
                 valores = str.split(",");
                 b.setType(valores[0]);
+                boolean valido = false;
                 for (int i = 1; i < tam; i++) {
                     b.setField(campos[i], valores[i]);
+                }
+                if (b.getField("bibtexkey").equals(campos[1])) {
+                    //Checa se a bibtexkey foi aceita
+                    valido = true;
+                }
+                //Checa se o author eh valido, senao, recebe "UNKNOWN"
+                if(b.getField("author").equals("") || b.getField("author") == null) {
+                    b.setField("author", "UNKNOWN");
+                }
+                //Se a bibtexkey nao foi validada, recebe author + year
+                if (!valido) {
+                    //Nao precisa checar o year, pois, se invalido, sempre recebe "2016"
+                    b.setField("bibtexkey", b.getField("author") + b.getField("year"));
                 }
                 results.add(b);
             }
