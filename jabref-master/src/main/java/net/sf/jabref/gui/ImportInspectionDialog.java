@@ -15,6 +15,8 @@
 */
 package net.sf.jabref.gui;
 
+import net.sf.jabref.model.database.BibDatabaseMode;
+
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -49,6 +51,7 @@ import net.sf.jabref.gui.util.comparator.IconComparator;
 import net.sf.jabref.gui.util.component.CheckBoxMessage;
 import net.sf.jabref.importer.ImportInspector;
 import net.sf.jabref.importer.OutputPrinter;
+import net.sf.jabref.importer.ParserResult;
 import net.sf.jabref.logic.groups.AllEntriesGroup;
 import net.sf.jabref.logic.groups.EntriesGroupChange;
 import net.sf.jabref.logic.groups.GroupTreeNode;
@@ -57,7 +60,6 @@ import net.sf.jabref.logic.labelpattern.LabelPatternUtil;
 import net.sf.jabref.logic.util.UpdateField;
 import net.sf.jabref.model.DuplicateCheck;
 import net.sf.jabref.model.database.BibDatabase;
-import net.sf.jabref.model.database.BibDatabaseMode;
 import net.sf.jabref.model.entry.AuthorList;
 import net.sf.jabref.model.entry.BibEntry;
 import net.sf.jabref.model.entry.EntryUtil;
@@ -669,21 +671,29 @@ public class ImportInspectionDialog extends JDialog implements ImportInspector, 
                     // This status
                     // is indicated by the entry's group hit status:
                     if (entry.isGroupHit()) {
+                        String[] botao = {"Create a new database", "Yes", "No"};
                         CheckBoxMessage cbm = new CheckBoxMessage(
                                 Localization.lang("There are possible duplicates (marked with an icon) that haven't been resolved. Continue?"),
                                 Localization.lang("Disable this confirmation dialog"), false);
-                        int answer = JOptionPane.showConfirmDialog(ImportInspectionDialog.this,
-                                cbm, Localization.lang("Duplicates found"), JOptionPane.YES_NO_OPTION);
+                        int answer = JOptionPane.showOptionDialog(ImportInspectionDialog.this, cbm,
+                                Localization.lang("Duplicates found"), JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE, null, botao, botao[0]);
                         if (cbm.isSelected()) {
                             Globals.prefs.putBoolean(JabRefPreferences.WARN_ABOUT_DUPLICATES_IN_INSPECTION, false);
                         }
-                        if (answer == JOptionPane.NO_OPTION) {
+                        if (answer == 2) {
+                            return;
+                        } else if (answer == 0) {
+                            ParserResult pr = new ParserResult(entries);
+                            frame.addPResultNewTab(pr, true);
+                            dispose();
                             return;
                         }
                         break;
                     }
                 }
             }
+
 
             // The compund undo action used to contain all changes made by this
             // dialog.
