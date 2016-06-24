@@ -76,6 +76,7 @@ import java.util.List;
 /**
  * The main window of the application.
  */
+
 public class JabRefFrame extends JFrame implements OutputPrinter {
 
     private static final Log LOGGER = LogFactory.getLog(JabRefFrame.class);
@@ -354,7 +355,6 @@ public class JabRefFrame extends JFrame implements OutputPrinter {
     private SidePaneManager sidePaneManager;
     private JTabbedPane tabbedPane; // initialized at constructor
     private final GeneralAction checkIntegrity = new GeneralAction(Actions.CHECK_INTEGRITY, Localization.menuTitle("Check integrity") + ELLIPSES) {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             IntegrityCheck check = new IntegrityCheck(getCurrentBasePanel().getBibDatabaseContext());
@@ -1231,6 +1231,10 @@ public class JabRefFrame extends JFrame implements OutputPrinter {
         } else {
             addTab(pr.getDatabaseContext(), pr.getEncoding(), raisePanel);
         }
+    }
+
+    public void addPResultNewTab(ParserResult pr, boolean raisePanel) {
+        addTab(pr.getDatabaseContext(), pr.getEncoding(), raisePanel);
     }
 
     private void createToolBar() {
