@@ -21,6 +21,11 @@ public class CSVImporter extends ImportFormat {
     }
 
     @Override
+    public String getCLIId() {
+        return "csv";
+    }
+
+    @Override
     public List<BibEntry> importEntries(InputStream stream, OutputPrinter status) throws IOException {
         List<BibEntry> results = new LinkedList<>();
         if (stream == null) {
